@@ -119,20 +119,63 @@ public class Board {
    * @param location position du canard qui souhaite se cacher
    * @param left true si on a choisit de se cacher a gauche
    */
-   public void hide(int location, boolean left){
+   public boolean hide(int location, boolean left){
+      boolean verify = true;
+      int locationWish = 0;
+      if(left) {
+         locationWish = location + 1;
+      }
+      else {
+         locationWish = location - 1;
+      }
       
+      //verifie que les condition d'un hide soit correct
+      //qu'il n'y a pas de canard caché sous les canard
+      if(locations[locationWish].hiddenDuck != MISSING) {
+         verify = false;
+      }
+      if(locations[location].hiddenDuck == MISSING) {
+         verify = false;
+      }
+      //qu'il y ait des canard sous les positions
+      if(locations[location].duck == MISSING) {
+         verify = false;
+      }
+      if(locations[locationWish].duck == MISSING) {
+         verify = false;
+      }
+      //que la position souhaitée est dans le range possible
+      if(locationWish < 0 && locationWish >= NB_LOCATIONS) {
+         verify = false;
+      }
+      
+      //cache le canard
+      if(verify) {
+         locations[locationWish] = removeDuck(location);
+      }
+      
+      return verify;
    }
+   
    /**
     * melange la liste ducks mais pas les positions visibles
     */
    public void shuffleAll(){
       Collections.shuffle(ducks);
    }
+   
    /**
-    * enleve les canards des position visible et les places dans la liste ducks
+    * enleve les canards des positions visibles et les places dans la liste ducks
     */
    public void retrieveDucks(){
-      
+      for(int i = 0; i < 2; i++) {
+         for(int j = 0; j < NB_LOCATIONS; j++) {
+            int temp = removeDuck(j);
+            if(temp != MISSING) {
+               ducks.add(temp);
+            }
+         }
+      }
    }
    
    public void target(int duck){
@@ -155,4 +198,10 @@ public class Board {
    private void placeDuck(){
       
    }
+   
+   public static void main(String... args) {
+      
+   }
 }
+
+
