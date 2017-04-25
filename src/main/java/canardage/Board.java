@@ -55,10 +55,38 @@ public class Board {
    }
    
    private final static int MISSING = -1;
+   private final static int WATER_CARD_VALUE = 0;
+   private final static int MAX_DUCK_PER_PLAYER = 5;
    
    private List<Integer> ducks;
 
+   /**
+    * 
+    * @param nbPlayers 
+    */
    public Board(int nbPlayers) {
+      
+      int nbCardsWater = 0;
+      if(nbPlayers == 2) {
+         nbCardsWater = 2;
+      } else {
+         nbCardsWater = nbPlayers - 1;
+      }
+      
+      for(int i  = 0; i < nbCardsWater; i++) {
+         ducks.add(WATER_CARD_VALUE);
+      }
+      
+      int  cpt = 1;
+      for(int i  = 0; i < nbPlayers; i++) {
+         for(int j  = 0; j < MAX_DUCK_PER_PLAYER; j++) {
+            ducks.add(cpt);
+         }
+         cpt++;
+      }
+      
+      shuffleAll();
+      placeDucks();
    }
    
    public void placeDucks(){
