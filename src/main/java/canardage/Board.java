@@ -8,7 +8,7 @@ import java.util.List;
  */
 public class Board {
    
-   class Location {
+   private class Location {
 
       private boolean targetted;
       private boolean guarded;
@@ -24,6 +24,13 @@ public class Board {
       
       public int getDuck() {
          return duck;
+      }
+      
+      public int removeDuck(){
+         int removed = duck;
+         duck = hiddenDuck;
+         hiddenDuck = MISSING;
+         return removed;
       }
 
       public int getHiddenDuck() {
@@ -139,20 +146,62 @@ public class Board {
       
    }
    
-   public void guard(int position){
+   public void setGuard(int location, boolean value){
+      validate();
       
+      locations[location].guarded = value;
+   }
+   
+   public boolean isGuarded(int location){
+      validate();
+      return locations[location].guarded;
    }
    
    public void fire(int location){
-      
+      if(locations[location].targetted){
+         removeDuck(location);
+         untarget(location);
+      }
    }
 
    @Override
    public String toString() {
-      return super.toString(); //To change body of generated methods, choose Tools | Templates.
+      String display = "[";
+      
+      for (int i = 0; i < locations.length; i++) {
+         if(i != 0){
+            display += ", ";
+         }
+         display += locations[i].duck;
+      }
+      
+      display += "]   [" + ducks.size() + "]";
+      
+      return display;
    }
    
    private void placeDuck(){
+      locations[0].duck = ducks.remove(ducks.size() - 1);
+   }
+   
+   private int removeDuck(int location){
+      int duck = locations[location].removeDuck();
+      advance(location);
+      return duck;
+   }
+   
+   private void advance(int location){
+      for (int i = location; i != 0; i--) {
+         if(locations[i].duck == MISSING){
+            swap(i, false);
+         }
+         else{
+            break;
+         }
+      }
       
+      if(locations[0].duck == MISSING){
+         placeDuck();
+      }
    }
 }
