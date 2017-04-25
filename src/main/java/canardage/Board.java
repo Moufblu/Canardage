@@ -215,81 +215,81 @@ public class Board {
       board2Player.toString();
       System.out.println("");
       System.out.println("plateau pour 6 joueurs");
-      board6Player.toString();
+      System.out.println(board6Player);
       
       System.out.println("echange première et dernière carte");//X2 car 2 méthodes swap
       board6Player.swap(0, 5);
-      board6Player.toString();
+      System.out.println(board6Player);
       System.out.println("echange une carte et une carte en dehors du plateau");//X2 car 2 méthode swap
       try {
          board6Player.swap(0, 10);
       } catch (IndexOutOfBoundsException e) {
          System.out.println(e);
       }
-      board6Player.toString();
+      System.out.println(board6Player);
       System.out.println("placer une cible en 3");//il faut vérifier sur un canard(possible) et sur water(impossible)
       board6Player.setTarget(3, true);
-      board6Player.toString();
+      System.out.println(board6Player);
       System.out.println("placer une cible sur une cible");
       board6Player.setTarget(3, true);
-      board6Player.toString();
+      System.out.println(board6Player);
       System.out.println("placer une cible en dehors du plateau");
       board6Player.setTarget(10, true);
-      board6Player.toString();
+      System.out.println(board6Player);
       System.out.println("tirer alors qu'il y a une cible");//canard meurt et cible disparait /eau cible disparait
       board6Player.fire(3);
-      board6Player.toString();
+      System.out.println(board6Player);
       System.out.println("tirer alors qu'il n'y a pas de cible");//impossible
       board6Player.fire(4);
-      board6Player.toString();
+      System.out.println(board6Player);
       System.out.println("tirer en dehors du plateau");
       board6Player.fire(10);
-      board6Player.toString();
+      System.out.println(board6Player);
       System.out.println("proteger une position");
       board6Player.setGuard(3, true);
-      board6Player.toString();
+      System.out.println(board6Player);
       System.out.println("proteger une position déjà protégé"); //impossible
       board6Player.setGuard(3, true);
-      board6Player.toString();
+      System.out.println(board6Player);
       System.out.println("tirer sur une position protégé");
       board6Player.fire(3);
-      board6Player.toString();
+      System.out.println(board6Player);
       System.out.println("enlever une protection");
       board6Player.setGuard(3, false);
-      board6Player.toString();
+      System.out.println(board6Player);
       System.out.println("proteger une position en dehors du plateau");//impossible
       board6Player.setGuard(10, true);
-      board6Player.toString();
+      System.out.println(board6Player);
       System.out.println("hide a gauche en position 5");//impossible
       board6Player.hide(5, true);
-      board6Player.toString();
+      System.out.println(board6Player);
       System.out.println("hide a droite en position 0");//impossible
       board6Player.hide(0, false);
-      board6Player.toString();
+      System.out.println(board6Player);
       System.out.println("hide a gauche en 3");//possible s'il y a un canard en 4 sinon impossible
       board6Player.hide(3, true);
-      board6Player.toString();
+      System.out.println(board6Player);
       System.out.println("hide a droite en 3");//possible s'il y a un canard en 2 sinon impossible
       board6Player.hide(3, false);
-      board6Player.toString();
+      System.out.println(board6Player);
       System.out.println("hide en dehors du plateau");//impossible
       board6Player.hide(10, true);
-      board6Player.toString();
+      System.out.println(board6Player);
       System.out.println("placeDucks alors qu'il y a déjà des canards");//impossible
       board6Player.placeDucks();
-      board6Player.toString();
+      System.out.println(board6Player);
       System.out.println("enlever les canards du plateau");
       board6Player.retrieveDucks();
-      board6Player.toString();
+      System.out.println(board6Player);
       System.out.println("enlever les canards du plateau alors que ça à déjà été fait");
       board6Player.retrieveDucks();
-      board6Player.toString();
+      System.out.println(board6Player);
       System.out.println("placer les canards");
       board6Player.placeDucks();
-      board6Player.toString();
+      System.out.println(board6Player);
       System.out.println("shuffleAll ne mélange que la pile de carte");//ducks doit se modifier et locations doit resté inchangé
       board6Player.shuffleAll();
-      board6Player.toString();
+      System.out.println(board6Player);
       
    }
 }
