@@ -2,6 +2,7 @@ package canardage;
 
 import java.util.Collections;
 import java.util.List;
+import java.lang.IndexOutOfBoundsException;
 
 /**
  *
@@ -113,20 +114,52 @@ public class Board {
    }
    
    public void placeDucks(){
-      
+      //nadir
+       for (int i = 0; i < NB_LOCATIONS; i++)
+       {
+           placeDuck();
+       }
    }
    
-   public void pushBack(){
-      
+   public void pushBack(int duck){
+      //nadir
+       ducks.add(duck);
    }
    
-   public void swap(int location, boolean left){
+   public boolean swap(int location, boolean left) {
+      //nadir       
+      if (left) {
+         if (location < NB_LOCATIONS - 1 && location >= 0) {
+            swap(location, location + 1);
+         } else {
+            return false;
+         }
+      } else {
+         if (location < NB_LOCATIONS && location > 0) {
+            swap(location, location - 1);
+         } else {
+            return false;
+         }
+      }
       
+      return true;
    }
    
    public void swap(int location1, int location2){
+      //nadir
+      validate(location1);
+      validate(location2);
       
+      int duckTemp       = locations[location1].duck,
+          hiddenDuckTemp = locations[location1].hiddenDuck;
+
+      locations[location1].duck = locations[location2].duck;
+      locations[location1].hiddenDuck = locations[location2].hiddenDuck;
+
+      locations[location2].duck = duckTemp;
+      locations[location2].hiddenDuck = hiddenDuckTemp;
    }
+   
   /**
    * cache un canard derriere un autre
    * @param location position du canard qui souhaite se cacher
@@ -191,8 +224,19 @@ public class Board {
       }
    }
    
-   public void target(int duck){
+   public void setTarget(int posDuck, boolean value){
+      validate(posDuck);
       
+      if (locations[posDuck].duck > 0)
+      {
+         locations[posDuck].targetted = value;
+      }
+   }
+   
+   public boolean isTargetted(int location)
+   {
+      validate(location);
+      return locations[location].targetted;
    }
    
    public void setGuard(int location, boolean value){
@@ -340,6 +384,14 @@ public class Board {
       board6Player.shuffleAll();
       System.out.println(board6Player);
       
+   }
+   
+   private void validate(int location)
+   {
+      if (!(location >= 0 && location < NB_LOCATIONS))
+      {
+         throw new IndexOutOfBoundsException("Location out of bounds !");
+      }
    }
 }
 
