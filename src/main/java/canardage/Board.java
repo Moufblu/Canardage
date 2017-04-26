@@ -164,7 +164,7 @@ public class Board {
       
       //cache le canard
       if(verify) {
-         locations[locationWish] = removeDuck(location);
+         locations[locationWish].hiddenDuck = removeDuck(location);
       }
       
       return verify;
