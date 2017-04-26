@@ -2,7 +2,7 @@ package canardage;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  *
@@ -55,8 +55,12 @@ public class Board {
          throw new IllegalArgumentException("Invalid number of players ");
       }
       
-      ducks = new ArrayList();
+      ducks = new LinkedList();
       locations = new Location[NB_LOCATIONS];
+      
+      for (int i = 0; i < locations.length; i++) {
+         locations[i] = new Location();
+      }
       
       /* calcul du nombre de carte eau selon le nombre de joueur */
       int nbCardsWater = 0;
