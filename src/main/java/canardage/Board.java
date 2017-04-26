@@ -53,10 +53,11 @@ public class Board {
    public Board(int nbPlayers) throws IllegalArgumentException {
       
       if(nbPlayers < NB_PLAYERS_MIN || nbPlayers > NB_PLAYERS_MAX) {
-         throw new IllegalArgumentException("Number of players unvalid");
+         throw new IllegalArgumentException("Invalid number of players ");
       }
       
       ducks = new ArrayList();
+      locations = new Location[NB_LOCATIONS];
       
       /* calcul du nombre de carte eau selon le nombre de joueur */
       int nbCardsWater = 0;
@@ -68,7 +69,7 @@ public class Board {
       
       /* ajout des cartes eau */
       for(int i  = 0; i < nbCardsWater; i++) {
-         ducks.add(WATER_CARD_VALUE);
+         pushBack(WATER_CARD_VALUE);
       }
       
       /* ajout des cartes canards */
@@ -84,16 +85,13 @@ public class Board {
       shuffleAll();
       /* place les canards sur la partie visible du plateau */
       placeDucks();
-      
-      locations = new Location[NB_LOCATIONS];
-      placeDucks();
    }
    
    public void placeDucks(){
       //nadir
        for (int i = 0; i < NB_LOCATIONS; i++)
        {
-           placeDuck();
+           placeDuck(i);
        }
    }
    
@@ -248,8 +246,9 @@ public class Board {
       return display;
    }
    
-   private void placeDuck(){
-      locations[0].duck = ducks.remove(ducks.size() - 1);
+   private void placeDuck(int location) throws IndexOutOfBoundsException {
+      validate(location);
+      locations[location].duck = ducks.remove(0);
    }
    
    private int removeDuck(int location){
@@ -269,7 +268,7 @@ public class Board {
       }
       
       if(locations[0].duck == MISSING){
-         placeDuck();
+         placeDuck(0);
       }
    }
    
