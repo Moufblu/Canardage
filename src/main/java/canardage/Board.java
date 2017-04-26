@@ -205,6 +205,7 @@ public class Board {
       //cache le canard
       if(possibleHide(location, left)) {
          locations[locationWish].hiddenDuck = removeDuck(location);
+         advance(location);
       }
       
    }
@@ -266,6 +267,7 @@ public class Board {
       validate(location);
       if(locations[location].targetted){
          removeDuck(location);
+         advance(location);
          setTarget(location, false);
       }
    }
@@ -306,7 +308,6 @@ public class Board {
    
    private int removeDuck(int location){
       int duck = locations[location].removeDuck();
-      advance(location);
       return duck;
    }
    
