@@ -2,7 +2,6 @@ package canardage;
 
 import java.util.Collections;
 import java.util.List;
-import java.lang.IndexOutOfBoundsException;
 import java.util.ArrayList;
 
 /**
@@ -81,7 +80,7 @@ public class Board {
       }
       
       /* melange des cartes */
-      shuffleAll();
+      shuffle();
       /* place les canards sur la partie visible du plateau */
       placeDucks();
       
@@ -89,7 +88,7 @@ public class Board {
       placeDucks();
    }
    
-   public void placeDucks(){
+   private void placeDucks(){
       //nadir
        for (int i = 0; i < NB_LOCATIONS; i++)
        {
@@ -180,8 +179,14 @@ public class Board {
    /**
     * melange la liste ducks mais pas les positions visibles
     */
-   public void shuffleAll(){
+   private void shuffle(){
       Collections.shuffle(ducks);
+   }
+   
+   public void shuffleAll(){
+      retrieveDucks();
+      shuffle();
+      placeDucks();
    }
    
    /**
@@ -356,7 +361,7 @@ public class Board {
       board6Player.placeDucks();
       System.out.println(board6Player);
       System.out.println("shuffleAll ne mélange que la pile de carte");//ducks doit se modifier et locations doit resté inchangé
-      board6Player.shuffleAll();
+      board6Player.shuffle();
       System.out.println(board6Player);
       
    }
