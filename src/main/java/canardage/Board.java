@@ -3,6 +3,7 @@ package canardage;
 import java.util.Collections;
 import java.util.List;
 import java.lang.IndexOutOfBoundsException;
+import java.util.ArrayList;
 
 /**
  *
@@ -33,34 +34,6 @@ public class Board {
          hiddenDuck = MISSING;
          return removed;
       }
-
-      public int getHiddenDuck() {
-         return hiddenDuck;
-      }
-
-      public boolean isGuarded() {
-         return guarded;
-      }
-
-      public boolean isTargetted() {
-         return targetted;
-      }
-
-      public void setDuck(int duck) {
-         this.duck = duck;
-      }
-
-      public void setGuarded(boolean guarded) {
-         this.guarded = guarded;
-      }
-
-      public void setHiddenDuck(int hiddenDuck) {
-         this.hiddenDuck = hiddenDuck;
-      }
-
-      public void setTargetted(boolean targetted) {
-         this.targetted = targetted;
-      }
    }
    
    private final static int MISSING = -1;
@@ -80,8 +53,11 @@ public class Board {
    public Board(int nbPlayers) throws IllegalArgumentException {
       
       if(nbPlayers < NB_PLAYERS_MIN || nbPlayers > NB_PLAYERS_MAX) {
-         throw new IllegalArgumentException("number of players unvalid");
+         throw new IllegalArgumentException("Number of players unvalid");
       }
+      
+      ducks = new ArrayList();
+      
       /* calcul du nombre de carte eau selon le nombre de joueur */
       int nbCardsWater = 0;
       if(nbPlayers == 2) {
@@ -126,7 +102,7 @@ public class Board {
        ducks.add(duck);
    }
    
-   public boolean swap(int location, boolean left) {
+   public boolean swap(int location, boolean left) throws IndexOutOfBoundsException {
       //nadir       
       if (left) {
          if (location < NB_LOCATIONS - 1 && location >= 0) {
@@ -145,7 +121,7 @@ public class Board {
       return true;
    }
    
-   public void swap(int location1, int location2){
+   public void swap(int location1, int location2) throws IndexOutOfBoundsException {
       //nadir
       validate(location1);
       validate(location2);
@@ -165,7 +141,9 @@ public class Board {
    * @param location position du canard qui souhaite se cacher
    * @param left true si on a choisit de se cacher a gauche
    */
-   public boolean hide(int location, boolean left){
+   public boolean hide(int location, boolean left) throws IndexOutOfBoundsException {
+      validate(location);
+      
       boolean verify = true;
       int locationWish = 0;
       if(left) {
@@ -188,10 +166,6 @@ public class Board {
          verify = false;
       }
       if(locations[locationWish].duck == MISSING) {
-         verify = false;
-      }
-      //que la position souhaitée est dans le range possible
-      if(locationWish < 0 && locationWish >= NB_LOCATIONS) {
          verify = false;
       }
       
@@ -224,7 +198,7 @@ public class Board {
       }
    }
    
-   public void setTarget(int posDuck, boolean value){
+   public void setTarget(int posDuck, boolean value) throws IndexOutOfBoundsException {
       validate(posDuck);
       
       if (locations[posDuck].duck > 0)
@@ -233,27 +207,28 @@ public class Board {
       }
    }
    
-   public boolean isTargetted(int location)
+   public boolean isTargetted(int location) throws IndexOutOfBoundsException
    {
       validate(location);
       return locations[location].targetted;
    }
    
-   public void setGuard(int location, boolean value){
-      validate();
+   public void setGuard(int location, boolean value) throws IndexOutOfBoundsException {
+      validate(location);
       
       locations[location].guarded = value;
    }
    
-   public boolean isGuarded(int location){
-      validate();
+   public boolean isGuarded(int location) throws IndexOutOfBoundsException {
+      validate(location);
       return locations[location].guarded;
    }
    
-   public void fire(int location){
+   public void fire(int location) throws IndexOutOfBoundsException {
+      validate(location);
       if(locations[location].targetted){
          removeDuck(location);
-         untarget(location);
+         setTarget(location, false);
       }
    }
 
@@ -386,7 +361,7 @@ public class Board {
       
    }
    
-   private void validate(int location)
+   private void validate(int location) throws IndexOutOfBoundsException
    {
       if (!(location >= 0 && location < NB_LOCATIONS))
       {
