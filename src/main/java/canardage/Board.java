@@ -243,11 +243,20 @@ public class Board {
    public String toString() {
       String display = "[";
       
-      for (int i = 0; i < locations.length; i++) {
+      for (int i = locations.length - 1; i <= 0; i--) {
+         if (locations[i].targetted) {
+            display += "*";
+         }
+         
+         if (locations[i].guarded) {
+            display += "G";
+         }
+         
+         display += locations[i].duck;
+         
          if(i != 0){
             display += ", ";
          }
-         display += locations[i].duck;
       }
       
       display += "]   [" + ducks.size() + "]";
