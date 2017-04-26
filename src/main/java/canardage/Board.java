@@ -90,6 +90,12 @@ public class Board {
       placeDucks();
    }
    
+   /**
+    * @brief Place les 6 premiers canards du deck de canards sur le plateau.
+    * 
+    * Prend les 6 premiers canards du deck de canards. Chaque canard est placé sur
+    * un emplacement du plateau différent.
+    */
    private void placeDucks(){
       //nadir
        for (int i = 0; i < NB_LOCATIONS; i++)
@@ -98,28 +104,38 @@ public class Board {
        }
    }
    
+   /**
+    * @brief Ajoute un canard à la fin du deck de canards
+    * @param duck Le canard à ajouter dans le deck
+    */
    public void pushBack(int duck){
       //nadir
        ducks.add(duck);
    }
    
-   public boolean swap(int location, boolean left) throws IndexOutOfBoundsException {
+   /**
+    * @brief Échange les positions de deux canards adjacents dans le deck
+    * @param location L'emplacement de référence d'un canard à intervertir
+    * @param left Vrai si on désire intervertir avec le canard adjacent à gauche.
+    *             Faux si on désire intervertir avec le canard adjacent à droite.
+    * @return 
+    * @throws IndexOutOfBoundsException 
+    */
+   public void swap(int location, boolean left) throws IndexOutOfBoundsException {
       //nadir       
       if (left) {
          if (location < NB_LOCATIONS - 1 && location >= 0) {
             swap(location, location + 1);
          } else {
-            return false;
+            throw new IndexOutOfBoundsException("Cannot swap left !");
          }
       } else {
          if (location < NB_LOCATIONS && location > 0) {
             swap(location, location - 1);
          } else {
-            return false;
+            throw new IndexOutOfBoundsException("Cannot swap right !");
          }
       }
-      
-      return true;
    }
    
    public void swap(int location1, int location2) throws IndexOutOfBoundsException {
@@ -243,7 +259,7 @@ public class Board {
    public String toString() {
       String display = "[";
       
-      for (int i = locations.length - 1; i <= 0; i--) {
+      for (int i = locations.length - 1; i >= 0; i--) {
          if (locations[i].targetted) {
             display += "*";
          }
@@ -253,6 +269,10 @@ public class Board {
          }
          
          display += locations[i].duck;
+         
+         if (locations[i].hiddenDuck != MISSING) {
+            display += "~" + locations[i].hiddenDuck + "~";
+         }
          
          if(i != 0){
             display += ", ";
@@ -324,7 +344,14 @@ public class Board {
       board6Player.setTarget(3, true);
       System.out.println(board6Player);
       System.out.println("placer une cible sur une cible");
-      board6Player.setTarget(3, true);
+      if (board6Player.isTargetted(3))
+      {
+         System.out.println("Deja cible !!!");
+      }
+      else
+      {
+         board6Player.setTarget(3, true);
+      }
       System.out.println(board6Player);
       System.out.println("placer une cible en dehors du plateau");
       try {
