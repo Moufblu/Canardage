@@ -281,6 +281,14 @@ public class Board {
       }
    }
    
+   private void validate(int location) throws IndexOutOfBoundsException
+   {
+      if (!(location >= 0 && location < NB_LOCATIONS))
+      {
+         throw new IndexOutOfBoundsException("Location out of bounds !");
+      }
+   }
+   
    public static void main(String... args) {
       
       //creation de 2 plateau un a 2 joueur et un a 6
@@ -310,7 +318,11 @@ public class Board {
       board6Player.setTarget(3, true);
       System.out.println(board6Player);
       System.out.println("placer une cible en dehors du plateau");
-      board6Player.setTarget(10, true);
+      try {
+         board6Player.setTarget(10, true);
+      } catch(IndexOutOfBoundsException e) {
+         System.out.println(e.toString());
+      }
       System.out.println(board6Player);
       System.out.println("tirer alors qu'il y a une cible");//canard meurt et cible disparait /eau cible disparait
       board6Player.fire(3);
@@ -319,7 +331,11 @@ public class Board {
       board6Player.fire(4);
       System.out.println(board6Player);
       System.out.println("tirer en dehors du plateau");
-      board6Player.fire(10);
+      try {
+         board6Player.fire(10);
+      } catch(IndexOutOfBoundsException e) {
+         System.out.println(e.toString());
+      }
       System.out.println(board6Player);
       System.out.println("proteger une position");
       board6Player.setGuard(3, true);
@@ -334,13 +350,25 @@ public class Board {
       board6Player.setGuard(3, false);
       System.out.println(board6Player);
       System.out.println("proteger une position en dehors du plateau");//impossible
-      board6Player.setGuard(10, true);
+      try {
+         board6Player.setGuard(10, true);
+      } catch(IndexOutOfBoundsException e) {
+         System.out.println(e.toString());
+      }
       System.out.println(board6Player);
       System.out.println("hide a gauche en position 5");//impossible
-      board6Player.hide(5, true);
+      try {
+         board6Player.hide(5, true);
+      } catch(IndexOutOfBoundsException e) {
+         System.out.println(e.toString());
+      }
       System.out.println(board6Player);
       System.out.println("hide a droite en position 0");//impossible
-      board6Player.hide(0, false);
+      try {
+         board6Player.hide(0, false);
+      } catch(IndexOutOfBoundsException e) {
+         System.out.println(e.toString());
+      }
       System.out.println(board6Player);
       System.out.println("hide a gauche en 3");//possible s'il y a un canard en 4 sinon impossible
       board6Player.hide(3, true);
@@ -349,7 +377,11 @@ public class Board {
       board6Player.hide(3, false);
       System.out.println(board6Player);
       System.out.println("hide en dehors du plateau");//impossible
-      board6Player.hide(10, true);
+      try {
+         board6Player.hide(10, true);
+      } catch(IndexOutOfBoundsException e) {
+         System.out.println(e.toString());
+      }
       System.out.println(board6Player);
       System.out.println("placeDucks alors qu'il y a déjà des canards");//impossible
       board6Player.placeDucks();
@@ -363,19 +395,13 @@ public class Board {
       System.out.println("placer les canards");
       board6Player.placeDucks();
       System.out.println(board6Player);
-      System.out.println("shuffleAll ne mélange que la pile de carte");//ducks doit se modifier et locations doit resté inchangé
+      System.out.println("shuffleAll ne mélange que la pile de carte");//ducks doit se modifier 
       board6Player.shuffle();
       System.out.println(board6Player);
       
    }
    
-   private void validate(int location) throws IndexOutOfBoundsException
-   {
-      if (!(location >= 0 && location < NB_LOCATIONS))
-      {
-         throw new IndexOutOfBoundsException("Location out of bounds !");
-      }
-   }
+   
 }
 
 
