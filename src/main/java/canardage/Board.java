@@ -240,7 +240,7 @@ public class Board {
    public void setTarget(int posDuck, boolean value) throws IndexOutOfBoundsException {
       validate(posDuck);
       
-      if (locations[posDuck].duck > 0)
+      if (!value || locations[posDuck].duck > 0)
       {
          locations[posDuck].targetted = value;
       }
@@ -267,8 +267,8 @@ public class Board {
       validate(location);
       if(locations[location].targetted){
          removeDuck(location);
-         advance(location);
          setTarget(location, false);
+         advance(location);
       }
    }
 
@@ -341,7 +341,7 @@ public class Board {
       Board board6Player = new Board(6);
       
       System.out.println("plateau pour 2 joueurs :");
-      board2Player.toString();
+      System.out.println(board2Player);
       System.out.println("");
       System.out.println("plateau pour 6 joueurs");
       System.out.println(board6Player);
@@ -393,7 +393,14 @@ public class Board {
       board6Player.setGuard(3, true);
       System.out.println(board6Player);
       System.out.println("proteger une position déjà protégé"); //impossible
-      board6Player.setGuard(3, true);
+      if (board6Player.isGuarded(3))
+      {
+         System.out.println("Deja garde !!!");
+      }
+      else
+      {
+         board6Player.setGuard(3, true);
+      }
       System.out.println(board6Player);
       System.out.println("tirer en 3 sur une position protégé");
       board6Player.fire(3);
@@ -472,8 +479,11 @@ public class Board {
       System.out.println("placer les canards");
       board6Player.placeDucks();
       System.out.println(board6Player);
-      System.out.println("shuffleAll ne mélange que la pile de carte");//ducks doit se modifier 
+      System.out.println("shuffle ne mélange que la pile de carte");//ducks doit se modifier 
       board6Player.shuffle();
+      System.out.println(board6Player);
+      System.out.println("shuffleAll mélange tout");//ducks doit se modifier 
+      board6Player.shuffleAll();
       System.out.println(board6Player);
       
    }
