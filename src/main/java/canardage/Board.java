@@ -137,14 +137,8 @@ public class Board {
       locations[location2].hiddenDuck = hiddenDuckTemp;
    }
    
-  /**
-   * cache un canard derriere un autre
-   * @param location position du canard qui souhaite se cacher
-   * @param left true si on a choisit de se cacher a gauche
-   */
-   public boolean hide(int location, boolean left) throws IndexOutOfBoundsException {
+   public boolean possibleHide(int location, boolean left) {
       validate(location);
-      
       boolean verify = true;
       int locationWish = 0;
       if(left) {
@@ -159,7 +153,7 @@ public class Board {
       if(locations[locationWish].hiddenDuck != MISSING) {
          verify = false;
       }
-      if(locations[location].hiddenDuck == MISSING) {
+      if(locations[location].hiddenDuck != MISSING) {
          verify = false;
       }
       //qu'il y ait des canard sous les positions
@@ -169,13 +163,28 @@ public class Board {
       if(locations[locationWish].duck == MISSING) {
          verify = false;
       }
+      return verify;
+   }
+   
+  /**
+   * cache un canard derriere un autre
+   * @param location position du canard qui souhaite se cacher
+   * @param left true si on a choisit de se cacher a gauche
+   */
+   public void hide(int location, boolean left) throws IndexOutOfBoundsException {
+      validate(location);
       
+      int locationWish = 0;
+      if(left) {
+         locationWish = location + 1;
+      } else {
+         locationWish = location - 1;
+      }
       //cache le canard
-      if(verify) {
+      if(possibleHide(location, left)) {
          locations[locationWish].hiddenDuck = removeDuck(location);
       }
       
-      return verify;
    }
    
    /**
@@ -343,7 +352,7 @@ public class Board {
       System.out.println("proteger une position déjà protégé"); //impossible
       board6Player.setGuard(3, true);
       System.out.println(board6Player);
-      System.out.println("tirer sur une position protégé");
+      System.out.println("tirer en 3 sur une position protégé");
       board6Player.fire(3);
       System.out.println(board6Player);
       System.out.println("enlever une protection");
@@ -358,27 +367,52 @@ public class Board {
       System.out.println(board6Player);
       System.out.println("hide a gauche en position 5");//impossible
       try {
-         board6Player.hide(5, true);
+         if(board6Player.possibleHide(5, true)) {
+            board6Player.hide(5, true);
+         }
+         else {
+            System.out.println("pas pu deplacer");
+         }
       } catch(IndexOutOfBoundsException e) {
          System.out.println(e.toString());
       }
       System.out.println(board6Player);
       System.out.println("hide a droite en position 0");//impossible
       try {
-         board6Player.hide(0, false);
+         if(board6Player.possibleHide(0, false)) {
+            board6Player.hide(0, false);
+         }
+         else {
+            System.out.println("pas pu deplacer");
+         }
       } catch(IndexOutOfBoundsException e) {
          System.out.println(e.toString());
       }
       System.out.println(board6Player);
       System.out.println("hide a gauche en 3");//possible s'il y a un canard en 4 sinon impossible
-      board6Player.hide(3, true);
+      if(board6Player.possibleHide(3, true)) {
+         board6Player.hide(3, true);
+      }
+      else {
+         System.out.println("pas pu deplacer");
+      }
       System.out.println(board6Player);
       System.out.println("hide a droite en 3");//possible s'il y a un canard en 2 sinon impossible
-      board6Player.hide(3, false);
+      if(board6Player.possibleHide(3, false)) {
+         board6Player.hide(3, false);
+      }
+      else {
+         System.out.println("pas pu deplacer");
+      }
       System.out.println(board6Player);
       System.out.println("hide en dehors du plateau");//impossible
       try {
-         board6Player.hide(10, true);
+         if(board6Player.possibleHide(10, true)) {
+            board6Player.hide(10, true);
+         }
+         else {
+            System.out.println("pas pu deplacer");
+         }
       } catch(IndexOutOfBoundsException e) {
          System.out.println(e.toString());
       }
