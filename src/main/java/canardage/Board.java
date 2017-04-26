@@ -172,6 +172,12 @@ public class Board {
       if(locations[location].hiddenDuck != MISSING) {
          verify = false;
       }
+      if(locations[locationWish].duck == WATER_CARD_VALUE) {
+         verify = false;
+      }
+      if(locations[location].duck == WATER_CARD_VALUE) {
+         verify = false;
+      }
       //qu'il y ait des canard sous les positions
       if(locations[location].duck == MISSING) {
          verify = false;
