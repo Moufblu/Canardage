@@ -1,11 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package canardage;
 
-import java.util.Stack;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -15,10 +9,13 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author Miguel-Portable
+ * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
  */
 public class BoardTest {
+   
    private Board board;
+   private int players;
+   
    public BoardTest() {
    }
    
@@ -32,17 +29,18 @@ public class BoardTest {
    
    @Before
    public void setUp() {
-      board = new Board();
+      players = 6;
+      Board.getInstance(players);
    }
    
    @After
    public void tearDown() {
    }
    @Test
-   public void boardPopDeleteTheFirstElementAndAddItAtTheEnd {
-      board.add(1);
-      board.add(2);
-      board.add(3);
+   public void boardPopDeleteTheFirstElementAndAddItAtTheEnd() {
+      board.pushBack(1);
+      board.pushBack(2);
+      board.pushBack(3);
       assertEquals(1, board.pop()); //retourne et enlève le premier élément du board
       assertEquals(2, board.pop());
       assertEquals(3, board.pop());
@@ -50,37 +48,37 @@ public class BoardTest {
    }
            
    @Test
-   public void pileCanAddElementAtTheQueue {
-      board.add(1);
-      board.add(2);
+   public void pileCanAddElementAtTheQueue() {
+      board.pushBack(1);
+      board.pushBack(2);
       board.pop();
       assertEquals(2, board.pop());
    }
    
    @Test
-   public void pileHasCorrectSize {
-      board.add(1);
-      board.add(2);
-      board.add(3);
+   public void pileHasCorrectSize() {
+      board.pushBack(1);
+      board.pushBack(2);
+      board.pushBack(3);
       int expectedSize = 3;
-      assertEquals( expectedSize, board.size());
+      assertEquals(expectedSize, board.size());
    }
    
    @Test
-   public void pileCanSwap6FirstElements {
-      board.add(1);
-      board.add(2);
-      board.add(3);
-      board.add(4);
-      board.add(5);
-      board.add(6);
+   public void pileCanSwap6FirstElements() {
+      board.pushBack(1);
+      board.pushBack(2);
+      board.pushBack(3);
+      board.pushBack(4);
+      board.pushBack(5);
+      board.pushBack(6);
       board.swap(4, 5);
       board.swap(0, 4);
-      assertEquals()
+      assertEquals();
    }
    
    @Test
-   public void pileCantSwapElementsAfter6th {
+   public void pileCantSwapElementsAfter6th() {
    
    }
    

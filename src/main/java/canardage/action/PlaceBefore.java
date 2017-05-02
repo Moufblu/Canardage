@@ -1,13 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package canardage.action;
 
 /**
  *
- * @author jimmy
+ * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
  */
 public class PlaceBefore extends WithLocation {
 
@@ -21,7 +16,7 @@ public class PlaceBefore extends WithLocation {
 
    @Override
    public boolean isPlayable(int position) {
-      if(board.isDuck(position - 1) && board.isMyDuck(position, player) ) {
+      if(board.isDuck(position - 1) && board.isMyDuck(position, getPlayer()) ) {
          return true;
       }
       return false;
@@ -29,7 +24,7 @@ public class PlaceBefore extends WithLocation {
    
    @Override
    public boolean hasEffect() {
-      for(int i = 1; i < board.NB_LOCATIONS; i++) {
+      for(int i = 1; i < board.getNbLocations(); i++) {
          if(isPlayable(i)) {
             return true;
          }

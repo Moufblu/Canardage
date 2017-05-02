@@ -1,10 +1,10 @@
 package canardage.action;
 
 import canardage.Board;
-import java.util.Scanner;
 
 /**
  * root class to inherit from when we want to add a card/effect
+ * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
  */
 public abstract class Action {
    
@@ -16,14 +16,18 @@ public abstract class Action {
     * @param board where the effect will be done
     */
    public Action() {
-      board = Board.getInstance();
+      Board.getInstance(board.getMaxPlayers());
    }
    
    public void setPlayer(int player) throws IllegalArgumentException {
-      if(player < 0 || player >= board.nbPlayer) {
-         throw new IllegalArgumentException("le numero de joueur est invalide");
+      if(player < 0 || player >= board.getMaxPlayers()) {
+         throw new IllegalArgumentException("Le numéro de joueur est invalide.");
       }
       this.player = player;
+   }
+   
+   public int getPlayer() {
+      return player;
    }
    
    /**

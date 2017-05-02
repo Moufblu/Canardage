@@ -1,15 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package canardage.action;
 
 import java.util.Scanner;
 
 /**
  *
- * @author jimmy
+ * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
  */
 public abstract class WithLocation extends Action {
 
@@ -30,6 +25,7 @@ public abstract class WithLocation extends Action {
     * @return the choosen number of the location
     */
    protected int getLocationChoice() {
+      
       Scanner in = new Scanner(System.in);
       int positionChoice;
       
@@ -49,7 +45,8 @@ public abstract class WithLocation extends Action {
     */
    @Override
    public boolean hasEffect() {
-      for(int i = 0; i < board.NB_LOCATIONS; i++) {
+      
+      for(int i = 0; i < board.getNbLocations(); i++) {
          if(isPlayable(i)) {
             return true;
          }

@@ -3,9 +3,11 @@ package canardage;
 import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
+import canardage.action.Action;
 
 /**
- *
+ * 
+ * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
  */
 public class Board {
    
@@ -42,14 +44,18 @@ public class Board {
    private final static int NB_PLAYERS_MAX = 6;
    
    private List<Integer> ducks;
+   private int currentPlayer = 0;
+   
    private final static int NB_LOCATIONS = 6;
    private final Location[] locations;
+   
+   private static Board instance;
 
    /**
     * 
     * @param nbPlayers nombre de joueurs accepte
     */
-   public Board(int nbPlayers) throws IllegalArgumentException {
+   private Board(int nbPlayers) throws IllegalArgumentException {
       
       if(nbPlayers < NB_PLAYERS_MIN || nbPlayers > NB_PLAYERS_MAX) {
          throw new IllegalArgumentException("Invalid number of players ");
@@ -91,12 +97,41 @@ public class Board {
    }
    
    /**
+    * Classe Board en tant que Singleton, on utilise la méthode getInstance pour
+    * obtenir une instance de la classe Board
+    * @param players Nombre de joueur dans la partie
+    * @return Une instance de la classe Board
+    */
+   public static Board getInstance(int players) {
+      if (instance == null) {
+         instance = new Board(players); // instanciation retardée
+      }
+      return instance;
+   }
+   
+   /**
+    * Méthode pour retourner le nombre maximum de joueurs
+    * @return Le nombre maximum de joueurs
+    */
+   public int getMaxPlayers() {
+      return NB_PLAYERS_MAX;
+   }
+   
+   /**
+    * Méthode pour retourner le nombre maximum de joueurs
+    * @return Le nombre maximum de joueurs
+    */
+   public int getNbLocations() {
+      return NB_LOCATIONS;
+   }
+   
+   /**
     * @brief Place les 6 premiers canards du deck de canards sur le plateau.
     * 
     * Prend les 6 premiers canards du deck de canards. Chaque canard est placé sur
     * un emplacement du plateau différent.
     */
-   private void placeDucks(){
+   private void placeDucks() {
       //nadir
        for (int i = 0; i < NB_LOCATIONS; i++)
        {
@@ -108,7 +143,7 @@ public class Board {
     * @brief Ajoute un canard à la fin du deck de canards
     * @param duck Le canard à ajouter dans le deck
     */
-   public void pushBack(int duck){
+   public void pushBack(int duck) {
       //nadir
        ducks.add(duck);
    }
@@ -138,6 +173,12 @@ public class Board {
       }
    }
    
+   /**
+    * 
+    * @param location1
+    * @param location2
+    * @throws IndexOutOfBoundsException 
+    */
    public void swap(int location1, int location2) throws IndexOutOfBoundsException {
       //nadir
       validate(location1);
@@ -153,6 +194,12 @@ public class Board {
       locations[location2].hiddenDuck = hiddenDuckTemp;
    }
    
+   /**
+    * 
+    * @param location
+    * @param left
+    * @return 
+    */
    public boolean possibleHide(int location, boolean left) {
       validate(location);
       boolean verify = true;
@@ -231,6 +278,12 @@ public class Board {
       }
    }
    
+   /**
+    * 
+    * @param posDuck
+    * @param value
+    * @throws IndexOutOfBoundsException 
+    */
    public void setTarget(int posDuck, boolean value) throws IndexOutOfBoundsException {
       validate(posDuck);
       
@@ -240,23 +293,46 @@ public class Board {
       }
    }
    
+   /**
+    * 
+    * @param location
+    * @return
+    * @throws IndexOutOfBoundsException 
+    */
    public boolean isTargetted(int location) throws IndexOutOfBoundsException
    {
       validate(location);
       return locations[location].targetted;
    }
    
+   /**
+    * 
+    * @param location
+    * @param value
+    * @throws IndexOutOfBoundsException 
+    */
    public void setGuard(int location, boolean value) throws IndexOutOfBoundsException {
       validate(location);
       
       locations[location].guarded = value;
    }
    
+   /**
+    * 
+    * @param location
+    * @return
+    * @throws IndexOutOfBoundsException 
+    */
    public boolean isGuarded(int location) throws IndexOutOfBoundsException {
       validate(location);
       return locations[location].guarded;
    }
    
+   /**
+    * 
+    * @param location
+    * @throws IndexOutOfBoundsException 
+    */
    public void fire(int location) throws IndexOutOfBoundsException {
       validate(location);
       if(locations[location].targetted){
@@ -265,7 +341,11 @@ public class Board {
          setTarget(location, false);
       }
    }
-
+   
+   /**
+    * 
+    * @return 
+    */
    @Override
    public String toString() {
       String display = "[";
@@ -295,19 +375,33 @@ public class Board {
       return display;
    }
    
+   /**
+    * 
+    * @param location
+    * @throws IndexOutOfBoundsException 
+    */
    private void placeDuck(int location) throws IndexOutOfBoundsException {
       validate(location);
       locations[location].duck = ducks.remove(0);
    }
    
+   /**
+    * 
+    * @param location
+    * @return 
+    */
    private int removeDuck(int location){
       int duck = locations[location].removeDuck();
       return duck;
    }
    
+   /**
+    * 
+    * @param location 
+    */
    private void advance(int location){
       for (int i = location; i != 0; i--) {
-         if(locations[i].duck == MISSING){
+         if(locations[i].duck == MISSING) {
             swap(i, false);
          }
          else{
@@ -315,17 +409,44 @@ public class Board {
          }
       }
       
-      if(locations[0].duck == MISSING){
+      if(locations[0].duck == MISSING) {
          placeDuck(0);
       }
    }
    
+   /**
+    * 
+    * @param location
+    * @throws IndexOutOfBoundsException 
+    */
    private void validate(int location) throws IndexOutOfBoundsException
    {
       if (!(location >= 0 && location < NB_LOCATIONS))
       {
          throw new IndexOutOfBoundsException("Location out of bounds !");
       }
+   }
+   
+   /**
+    * Méthode qui nous dit s'il y a un canard à une position donnée
+    * @return Vrai s'il y a u canard, faux sinon
+    */
+   public boolean isDuck(int location) {
+      return locations[location].duck != 0;
+   }
+   
+   /**
+    * Méthode qui nous dit si le canard est le notre ou pas
+    * @param location Position de la carte choisie
+    * @param player Joueur courrant
+    * @return Vrai si c'est le cannard de player, faux sinon
+    */
+   public boolean isMyDuck(int location, int player) {
+      currentPlayer = player;
+      if(locations[location].duck == currentPlayer){
+         return true;
+      }
+      return false;
    }
    
    public static void main(String... args) {
@@ -469,10 +590,5 @@ public class Board {
       System.out.println("shuffleAll ne mélange que la pile de carte");//ducks doit se modifier 
       board6Player.shuffle();
       System.out.println(board6Player);
-      
    }
-   
-   
 }
-
-
