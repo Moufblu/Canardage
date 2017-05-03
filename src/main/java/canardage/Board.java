@@ -217,7 +217,7 @@ public class Board {
    public boolean possibleHide(int location, boolean left) {
       validate(location);
       boolean verify = true;
-      int locationWish = 0;
+      int locationWish;
       if(left) {
          locationWish = location + 1;
       }
@@ -482,7 +482,9 @@ public class Board {
       Shoot shoot = new Shoot();
       Guard guard = new Guard();
       PlaceBefore placeBefore = new PlaceBefore();
+      placeBefore.setPlayer(3);
       Hide hide = new Hide();
+      hide.setPlayer(3);
       
       System.out.println("Veuillez entrer uniquement 3 lorsqu'une entrée est demandée pour que tous les tests soient fait");
       
@@ -506,6 +508,7 @@ public class Board {
       hide.effect();
       System.out.println(board6Player);
       
+      /*
       System.out.println("test avec positions définie :");
       System.out.println("test la carte target");
       System.out.println("pas de canard, pas de target on essaye de target -> pas d'effet");
@@ -514,7 +517,7 @@ public class Board {
       target.effect();
       System.out.println(board6Player);
       System.out.println("un canard, pas de target on essaye de target -> effet");
-      board6Player.setLocation(3, 2);
+      board6Player.setLocation(3, 3);
       board6Player.setTarget(3, false);
       target.effect();
       System.out.println(board6Player);
@@ -539,7 +542,7 @@ public class Board {
       shoot.effect();
       System.out.println(board6Player);
       System.out.println("un canard, pas de target on essaye de shoot -> pas d'effet");
-      board6Player.setLocation(3, 2);
+      board6Player.setLocation(3, 3);
       board6Player.setTarget(3, false);
       shoot.effect();
       System.out.println(board6Player);
@@ -564,7 +567,7 @@ public class Board {
       guard.effect();
       System.out.println(board6Player);
       System.out.println("un canard, pas de guard on essaye de guard -> effet");
-      board6Player.setLocation(3, 2);
+      board6Player.setLocation(3, 3);
       board6Player.setGuard(3, false);
       guard.effect();
       System.out.println(board6Player);
@@ -589,7 +592,7 @@ public class Board {
       placeBefore.effect();
       System.out.println(board6Player);
       System.out.println("un canard, pas de canardAvant on essaye de placeBefore -> pas d'effet");
-      board6Player.setLocation(3, 2);
+      board6Player.setLocation(3, 3);
       board6Player.setLocation(2, WATER_CARD_VALUE);
       placeBefore.effect();
       System.out.println(board6Player);
@@ -615,7 +618,7 @@ public class Board {
       hide.effect();
       System.out.println(board6Player);
       System.out.println("un canard, pas de canardAvant on essaye de hideDroite -> pas d'effet");
-      board6Player.setLocation(3, 2);
+      board6Player.setLocation(3, 3);
       board6Player.setLocation(2, WATER_CARD_VALUE);
       hide.effect();
       System.out.println(board6Player);
@@ -628,7 +631,7 @@ public class Board {
       board6Player.setLocation(3, WATER_CARD_VALUE);
       board6Player.setLocation(2, 3);
       hide.effect();
-      System.out.println(board6Player);
+      System.out.println(board6Player);*/
    }
    
    /**
