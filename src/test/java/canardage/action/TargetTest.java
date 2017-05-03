@@ -19,35 +19,29 @@ import static org.junit.Assert.*;
  */
 public class TargetTest {
    
-   private static Board board;
-   
-   public TargetTest() {
-   }
+   private Board board;
    
    @BeforeClass
    public static void setUpClass() {
-   }
-   
-   @AfterClass
-   public static void tearDownClass() {
+      Board.registerInstance(Board.getMaxPlayers());
    }
    
    @Before
-   public void setUp() {
-      Board.registerInstance(Board.getMaxPlayers());
+   public void setup() {
       board = Board.getInstance();
-   }
-   
-   @After
-   public void tearDown() {
+      
+      for (int i = 0; i < board.getNbLocations(); i++)
+      {
+         board.setTarget(i, false);
+         board.setLocation(i, 1);
+      }
    }
    
    @Test
    public void canPutATarget() {
       System.out.println("isPlayable");
       Target t = new Target();
-      board.setTarget(0, true);
-      board.setTarget(5, true);
+      board.setTarget(3, false);
       assertTrue(t.isPlayable(3));
    }
    
@@ -55,7 +49,6 @@ public class TargetTest {
    public void cannotPutATarget() {
       System.out.println("isPlayable");
       Target t = new Target();
-      board.setTarget(0, true);
       board.setTarget(5, true);
       assertFalse(t.isPlayable(5));
    }
@@ -78,8 +71,7 @@ public class TargetTest {
    public void canPutATargetAtOnePlaceOnBoard() {
       System.out.println("hasEffect");
       Target t = new Target();
-      board.setTarget(0, true);
-      board.setTarget(5, true);
+      board.setTarget(0, false);
       assertTrue(t.hasEffect());
    }
 }

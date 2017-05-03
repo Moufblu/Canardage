@@ -19,35 +19,29 @@ import static org.junit.Assert.*;
  */
 public class ShootTest {
    
-   private static Board board;
-   
-   public ShootTest() {
-   }
+   private Board board;
    
    @BeforeClass
    public static void setUpClass() {
-   }
-   
-   @AfterClass
-   public static void tearDownClass() {
+      Board.registerInstance(Board.getMaxPlayers());
    }
    
    @Before
    public void setUp() {
-      Board.registerInstance(Board.getMaxPlayers());
       board = Board.getInstance();
-   }
-   
-   @After
-   public void tearDown() {
+      
+      for (int i = 0; i < board.getNbLocations(); i++)
+      {
+         board.setTarget(i, false);
+         board.setLocation(i, 1);
+      }
    }
    
    @Test
    public void cannotShootIfNotTargeted() {
       System.out.println("isPlayable");
       Shoot sh = new Shoot();
-      board.setTarget(0, true);
-      board.setTarget(5, true);
+      board.setTarget(3, false);
       assertFalse(sh.isPlayable(3));
    }
    
@@ -56,7 +50,6 @@ public class ShootTest {
       System.out.println("isPlayable");
       Shoot sh = new Shoot();
       board.setTarget(0, true);
-      board.setTarget(5, true);
       assertTrue(sh.isPlayable(0));
    }
    
@@ -65,6 +58,7 @@ public class ShootTest {
       System.out.println("hasEffect");
       Shoot sh = new Shoot();
       board.setTarget(1, true);
+      board.setTarget(2, false);
       board.setTarget(3, true);
       board.setTarget(5, true);
       assertTrue(sh.hasEffect());
@@ -74,6 +68,7 @@ public class ShootTest {
    public void cannotShootAtOnePlaceOnBoard() {
       System.out.println("hasEffect");
       Shoot sh = new Shoot();
+      
       // There aren't targets
       assertFalse(sh.hasEffect());
    }
