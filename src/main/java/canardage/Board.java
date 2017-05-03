@@ -432,7 +432,8 @@ public class Board {
     * @return Vrai s'il y a u canard, faux sinon
     */
    public boolean isDuck(int location) {
-      return locations[location].duck != 0;
+      return locations[location].duck != WATER_CARD_VALUE ||
+             locations[location].duck != MISSING;
    }
    
    /**

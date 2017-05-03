@@ -1,5 +1,7 @@
 package canardage;
 
+import canardage.action.Shoot;
+import canardage.action.Target;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -13,7 +15,7 @@ import static org.junit.Assert.*;
  */
 public class BoardTest {
    
-   private Board board;
+   private static Board board;
    private int players;
    
    public BoardTest() {
@@ -29,8 +31,8 @@ public class BoardTest {
    
    @Before
    public void setUp() {
-      players = 6;
-      Board.getInstance(players);
+      Board.registerInstance(Board.getMaxPlayers());
+      board = Board.getInstance();
    }
    
    @After
@@ -79,7 +81,75 @@ public class BoardTest {
    
    @Test
    public void pileCantSwapElementsAfter6th() {
-   
+      
    }
    
+   // Shoot Target
+   
+   @Test
+   public void cannotShootIfNotTargeted() {
+      Shoot sh = new Shoot();
+      board.setTarget(5, true);
+      board.setTarget(0, true);
+      assertFalse(sh.isPlayable(3));
+   }
+   
+   @Test
+   public void canShootIfTargeted() {
+      Shoot sh = new Shoot();
+      board.setTarget(5, true);
+      board.setTarget(0, true);
+      assertTrue(sh.isPlayable(0));
+   }
+   
+   @Test
+   public void canPutATarget() {
+      Target t = new Target();
+      board.setTarget(5, true);
+      board.setTarget(0, true);
+      assertTrue(t.isPlayable(3));
+   }
+   
+   @Test
+   public void cannotPutATarget() {
+      Target t = new Target();
+      board.setTarget(5, true);
+      board.setTarget(0, true);
+      assertFalse(t.isPlayable(5));
+   }
+   
+   @Test
+   public void cannotPutATargetAtOnePlaceOnBoard() {
+      Target t = new Target();
+      board.setTarget(0, true);
+      board.setTarget(1, true);
+      board.setTarget(2, true);
+      board.setTarget(3, true);
+      board.setTarget(4, true);
+      board.setTarget(5, true);
+      assertFalse(t.hasEffect());
+   }
+   
+   @Test
+   public void canPutATargetAtOnePlaceOnBoard() {
+      Target t = new Target();
+      board.setTarget(5, true);
+      board.setTarget(0, true);
+      assertTrue(t.hasEffect());
+   }
+   
+   @Test
+   public void canShootAtOnePlaceOnBoard() {
+      Shoot sh = new Shoot();
+      board.setTarget(1, true);
+      board.setTarget(3, true);
+      board.setTarget(5, true);
+      assertTrue(sh.hasEffect());
+   }
+   
+   @Test
+   public void cannotShootAtOnePlaceOnBoard() {
+      Shoot sh = new Shoot();
+      assertFalse(sh.hasEffect());
+   }
 }
