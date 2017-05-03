@@ -1,5 +1,6 @@
 package canardage.action;
 
+import canardage.Board;
 import java.util.Scanner;
 
 /**
@@ -9,22 +10,27 @@ import java.util.Scanner;
 public class Hide extends WithLocation implements IDirection {
 
    private boolean direction = true;
-   
+
    @Override
    public void effect() {
-      if(hasEffect()) {
+      if (hasEffect()) {
          int positionChoice;
          do {
             positionChoice = getLocationChoice();
             direction = getDirectionChoice();
-         } while(isPlayable(positionChoice));
+         } while (isPlayable(positionChoice));
          board.hide(positionChoice, direction);
       }
    }
 
    @Override
    public boolean isPlayable(int position) {
-      if(board.possibleHide(position, direction)) {
+      if ((position == 0 && !direction)
+              || (position == Board.NB_LOCATIONS && direction)) {
+         
+         return false;
+      }
+      if (board.possibleHide(position, direction)) {
          return true;
       }
       return false;
@@ -32,14 +38,15 @@ public class Hide extends WithLocation implements IDirection {
 
    /**
     * check the two direction possible
-    * @return 
+    *
+    * @return
     */
    @Override
    public boolean hasEffect() {
       boolean effect = super.hasEffect();
       direction = !direction;
       effect |= super.hasEffect();
-      
+
       return effect;
    }
 

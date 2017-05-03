@@ -43,14 +43,14 @@ public class Board {
    
    private final static int MISSING = -1;
    private final static int WATER_CARD_VALUE = 0;
-   private final static int MAX_DUCK_PER_PLAYER = 5;
-   private final static int NB_PLAYERS_MIN = 2;
-   private final static int NB_PLAYERS_MAX = 6;
+   public final static int MAX_DUCK_PER_PLAYER = 5;
+   public final static int NB_PLAYERS_MIN = 2;
+   public final static int NB_PLAYERS_MAX = 6;
    
    private List<Integer> ducks;
    private int currentPlayer = 0;
    
-   private final static int NB_LOCATIONS = 6;
+   public final static int NB_LOCATIONS = 6;
    private final Location[] locations;
    
    private static Board instance;
