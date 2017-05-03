@@ -18,7 +18,7 @@ public class Hide extends WithLocation implements IDirection {
          do {
             positionChoice = getLocationChoice();
             direction = getDirectionChoice();
-         } while (isPlayable(positionChoice));
+         } while (!isPlayable(positionChoice));
          board.hide(positionChoice, direction);
       }
    }
@@ -26,7 +26,7 @@ public class Hide extends WithLocation implements IDirection {
    @Override
    public boolean isPlayable(int position) {
       if ((position == 0 && !direction)
-              || (position == Board.NB_LOCATIONS && direction)) {
+              || (position == Board.NB_LOCATIONS - 1 && direction)) {
          
          return false;
       }
