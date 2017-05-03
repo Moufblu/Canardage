@@ -31,6 +31,7 @@ public abstract class WithLocation extends Action {
       
       // Loop while the user choose a bad move
       while(true) {
+         System.out.println("Veuillez entrer une position valide : (0..5)");
          positionChoice = in.nextInt();
          if(isPlayable(positionChoice)) {
             break;
