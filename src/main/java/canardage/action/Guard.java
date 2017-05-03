@@ -15,7 +15,7 @@ public class Guard extends WithLocation {
 
    @Override
    public boolean isPlayable(int position) {
-      if(!board.isGuarded(position) && board.isDuck(position)) {
+      if(!board.isGuarded(position)) {
          return true;
       }
       return false;

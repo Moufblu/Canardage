@@ -16,7 +16,7 @@ public abstract class Action {
     * @param board where the effect will be done
     */
    public Action() {
-      Board.getInstance();
+      board = Board.getInstance();
    }
    
    public void setPlayer(int player) throws IllegalArgumentException {

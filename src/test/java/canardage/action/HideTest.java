@@ -39,6 +39,11 @@ public class HideTest {
    @Test
    public void ADuckCannotHideIfAdjacentIsNotADuck() {
       System.out.println("isPlayable");
+      board.setLocation(2, 0);
+      board.setLocation(3, 3);
+      board.setLocation(4, 0);
+            
+      assertFalse(hideCard.isPlayable(3));
    }
    
    /**
@@ -67,8 +72,6 @@ public class HideTest {
       boolean expResult = false;
       boolean result = instance.hasEffect();
       assertEquals(expResult, result);
-      // TODO review the generated test code and remove the default call to fail.
-      fail("The test case is a prototype.");
    }
 
    /**
