@@ -42,9 +42,7 @@ public class HideTest {
       board.setLocation(2, 0);
       board.setLocation(3, 3);
       board.setLocation(4, 0);
-      
-      Hide hideCard = new Hide();
-      
+            
       assertFalse(hideCard.isPlayable(3));
    }
    

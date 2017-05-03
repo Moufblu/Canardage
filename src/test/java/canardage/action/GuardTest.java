@@ -34,6 +34,7 @@ public class GuardTest {
    
    @Before
    public void setUp() {
+      guard = new Guard();
    }
    
    @After
@@ -54,21 +55,24 @@ public class GuardTest {
     * Test of isPlayable method, of class Guard.
     */
    @Test
-   public void CannotBePlayedIfIsNotGuardedButIsNotADuck() {
+   public void CanBePlayedIfThereIsADuck() {
       System.out.println("isPlayable");
-      board.setLocation(0, 0);
-      assertFalse(guard.isPlayable(0));
+      board.setLocation(0, 3);
+      board.setGuard(0, false);
+      assertTrue(guard.isPlayable(0));
    }
    
    /**
     * Test of isPlayable method, of class Guard.
     */
    @Test
-   public void CanBePlayedIfThereIsADuck() {
+   public void CanBePlayedEvenIfNotADuck() {
       System.out.println("isPlayable");
+      board.setLocation(0, 0);
       board.setGuard(0, false);
       assertTrue(guard.isPlayable(0));
-   }
+   }  
+
    
    /**
     * Test of isPlayable method, of class Guard.
