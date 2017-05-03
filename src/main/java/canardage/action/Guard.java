@@ -10,6 +10,8 @@ public class Guard extends WithLocation {
    public void effect() {
       if(hasEffect()) {
          board.setGuard(getLocationChoice(), true);
+      } else {
+         System.out.println("aucun emplacement valdie on brûle la carte");
       }
    }
 

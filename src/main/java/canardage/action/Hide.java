@@ -1,6 +1,7 @@
 package canardage.action;
 
 import canardage.Board;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /**
@@ -16,21 +17,23 @@ public class Hide extends WithLocation implements IDirection {
       if (hasEffect()) {
          int positionChoice;
          do {
-            positionChoice = getLocationChoice();
             direction = getDirectionChoice();
+            positionChoice = getLocationChoice();
          } while (!isPlayable(positionChoice));
          board.hide(positionChoice, direction);
+      } else {
+         System.out.println("aucun emplacement valdie on brûle la carte");
       }
    }
 
    @Override
    public boolean isPlayable(int position) {
-      if ((position == 0 && !direction)
-              || (position == Board.NB_LOCATIONS - 1 && direction)) {
+      if ((position == 0 && direction == false)
+              || (position == Board.NB_LOCATIONS - 1 && direction == true)) {
          
          return false;
       }
-      if (board.possibleHide(position, direction)) {
+      if (board.possibleHide(position, direction) && board.isMyDuck(position, player)) {
          return true;
       }
       return false;
@@ -52,8 +55,17 @@ public class Hide extends WithLocation implements IDirection {
 
    @Override
    public boolean getDirectionChoice() {
-      Scanner scanner = new Scanner(System.in);
-      System.out.println("Souhaitez-vous aller à gauche ? (true/false)");
-      return scanner.nextBoolean();
+      Scanner in = new Scanner(System.in);
+      boolean ok;
+      while(true) {
+         System.out.println("Souhaitez-vous aller à gauche ? (true/false)");
+         try {
+            ok = in.nextBoolean();
+            break;
+         } catch(InputMismatchException e) {
+            in.nextLine();
+         }
+      }
+      return ok;
    }
 }

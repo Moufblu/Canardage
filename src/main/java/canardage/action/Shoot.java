@@ -11,6 +11,8 @@ public class Shoot extends WithLocation {
       if(hasEffect()) {
          int positionChoice = getLocationChoice();
          board.fire(positionChoice);
+      } else {
+         System.out.println("aucun emplacement valdie on brûle la carte");
       }
    }
 

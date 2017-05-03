@@ -11,6 +11,8 @@ public class PlaceBefore extends WithLocation {
       if(hasEffect()) {
          int positionChoice = getLocationChoice();
          board.swap(positionChoice, false);
+      } else {
+         System.out.println("aucun emplacement valdie on brûle la carte");
       }
    }
 

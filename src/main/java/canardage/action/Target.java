@@ -16,12 +16,14 @@ public class Target extends WithLocation {
       //check if this effect is possible somewhere
       if(hasEffect()) {
          board.setTarget(getLocationChoice(), true);
+      } else {
+         System.out.println("aucun emplacement valdie on brûle la carte");
       }
    }
 
    @Override
    public boolean isPlayable(int position) {
-      if(!board.isTargetted(position)) {
+      if(!board.isTargetted(position) && board.isDuck(position)) {
          return true;
       }
       return false;

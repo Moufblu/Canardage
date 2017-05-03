@@ -1,5 +1,6 @@
 package canardage.action;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /**
@@ -32,9 +33,16 @@ public abstract class WithLocation extends Action {
       // Loop while the user choose a bad move
       while(true) {
          System.out.println("Veuillez entrer une position valide : (0..5)");
-         positionChoice = in.nextInt();
-         if(isPlayable(positionChoice)) {
-            break;
+         try {
+            positionChoice = in.nextInt();
+            board.validateLocation(positionChoice);
+            if(isPlayable(positionChoice)) {
+               break;
+            }
+         } catch (InputMismatchException e) {
+            in.nextLine();
+         } catch(IndexOutOfBoundsException e) {
+            
          }
       }
       return positionChoice;

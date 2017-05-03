@@ -195,8 +195,8 @@ public class Board {
     */
    public void swap(int location1, int location2) throws IndexOutOfBoundsException {
       //nadir
-      validate(location1);
-      validate(location2);
+      validateLocation(location1);
+      validateLocation(location2);
       
       int duckTemp       = locations[location1].duck,
           hiddenDuckTemp = locations[location1].hiddenDuck;
@@ -215,7 +215,7 @@ public class Board {
     * @return 
     */
    public boolean possibleHide(int location, boolean left) {
-      validate(location);
+      validateLocation(location);
       boolean verify = true;
       int locationWish;
       if(left) {
@@ -255,7 +255,7 @@ public class Board {
    * @param left true si on a choisit de se cacher a gauche
    */
    public void hide(int location, boolean left) throws IndexOutOfBoundsException {
-      validate(location);
+      validateLocation(location);
       
       int locationWish = 0;
       if(left) {
@@ -305,7 +305,7 @@ public class Board {
     * @throws IndexOutOfBoundsException 
     */
    public void setTarget(int posDuck, boolean value) throws IndexOutOfBoundsException {
-      validate(posDuck);
+      validateLocation(posDuck);
       
       if (!value || locations[posDuck].duck > 0)
       {
@@ -321,7 +321,7 @@ public class Board {
     */
    public boolean isTargetted(int location) throws IndexOutOfBoundsException
    {
-      validate(location);
+      validateLocation(location);
       return locations[location].targetted;
    }
    
@@ -332,7 +332,7 @@ public class Board {
     * @throws IndexOutOfBoundsException 
     */
    public void setGuard(int location, boolean value) throws IndexOutOfBoundsException {
-      validate(location);
+      validateLocation(location);
       
       locations[location].guarded = value;
    }
@@ -344,7 +344,7 @@ public class Board {
     * @throws IndexOutOfBoundsException 
     */
    public boolean isGuarded(int location) throws IndexOutOfBoundsException {
-      validate(location);
+      validateLocation(location);
       return locations[location].guarded;
    }
    
@@ -354,9 +354,11 @@ public class Board {
     * @throws IndexOutOfBoundsException 
     */
    public void fire(int location) throws IndexOutOfBoundsException {
-      validate(location);
+      validateLocation(location);
       if(locations[location].targetted){
-         removeDuck(location);
+         if(!isGuarded(location)) {
+            removeDuck(location);
+         }
          setTarget(location, false);
          advance(location);
       }
@@ -401,7 +403,7 @@ public class Board {
     * @throws IndexOutOfBoundsException 
     */
    private void placeDuck(int location) throws IndexOutOfBoundsException {
-      validate(location);
+      validateLocation(location);
       locations[location].duck = ducks.remove(0);
    }
    
@@ -439,7 +441,7 @@ public class Board {
     * @param location
     * @throws IndexOutOfBoundsException 
     */
-   private void validate(int location) throws IndexOutOfBoundsException
+   public void validateLocation(int location) throws IndexOutOfBoundsException
    {
       if (!(location >= 0 && location < NB_LOCATIONS))
       {
@@ -452,7 +454,7 @@ public class Board {
     * @return Vrai s'il y a u canard, faux sinon
     */
    public boolean isDuck(int location) throws IndexOutOfBoundsException {
-      validate(location);
+      validateLocation(location);
       return locations[location].duck != 0;
    }
    
@@ -463,7 +465,7 @@ public class Board {
     * @return Vrai si c'est le cannard de player, faux sinon
     */
    public boolean isMyDuck(int location, int player) throws IndexOutOfBoundsException {
-      validate(location);
+      validateLocation(location);
       currentPlayer = player;
       if(locations[location].duck == currentPlayer){
          return true;
@@ -495,11 +497,11 @@ public class Board {
       System.out.println("test la carte target");
       target.effect();
       System.out.println(board6Player);
-      System.out.println("test la carte shoot");
-      shoot.effect();
-      System.out.println(board6Player);
       System.out.println("test la carte guard");
       guard.effect();
+      System.out.println(board6Player);
+      System.out.println("test la carte shoot");
+      shoot.effect();
       System.out.println(board6Player);
       System.out.println("test la carte placeBefore");
       placeBefore.effect();
