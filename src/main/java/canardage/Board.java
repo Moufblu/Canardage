@@ -29,6 +29,10 @@ public class Board {
          return duck;
       }
       
+      public void setDuck(int duck) {
+         this.duck = duck;
+      }
+      
       public int removeDuck(){
          int removed = duck;
          duck = hiddenDuck;
@@ -102,18 +106,28 @@ public class Board {
     * @param players Nombre de joueur dans la partie
     * @return Une instance de la classe Board
     */
-   public static Board getInstance(int players) {
-      if (instance == null) {
-         instance = new Board(players); // instanciation retardée
+   public static Board getInstance() {
+      if (instance != null) {
+         return instance;
+      } else {
+         throw new RuntimeException("Instance not registered !");
       }
-      return instance;
+   }
+   
+   /**
+    * @brief Instancie le singleton.
+    * @param nbPlayers Nombre de joueur dans la partie
+    */
+   public static void registerInstance(int nbPlayers) {
+      if (instance == null)
+         instance = new Board(nbPlayers);
    }
    
    /**
     * Méthode pour retourner le nombre maximum de joueurs
     * @return Le nombre maximum de joueurs
     */
-   public int getMaxPlayers() {
+   public static int getMaxPlayers() {
       return NB_PLAYERS_MAX;
    }
    
@@ -219,6 +233,12 @@ public class Board {
       if(locations[location].hiddenDuck != MISSING) {
          verify = false;
       }
+      if(locations[locationWish].duck == WATER_CARD_VALUE) {
+         verify = false;
+      }
+      if(locations[location].duck == WATER_CARD_VALUE) {
+         verify = false;
+      }
       //qu'il y ait des canard sous les positions
       if(locations[location].duck == MISSING) {
          verify = false;
@@ -287,7 +307,7 @@ public class Board {
    public void setTarget(int posDuck, boolean value) throws IndexOutOfBoundsException {
       validate(posDuck);
       
-      if (locations[posDuck].duck > 0)
+      if (!value || locations[posDuck].duck > 0)
       {
          locations[posDuck].targetted = value;
       }
@@ -337,8 +357,8 @@ public class Board {
       validate(location);
       if(locations[location].targetted){
          removeDuck(location);
-         advance(location);
          setTarget(location, false);
+         advance(location);
       }
    }
    
@@ -431,9 +451,9 @@ public class Board {
     * Méthode qui nous dit s'il y a un canard à une position donnée
     * @return Vrai s'il y a u canard, faux sinon
     */
-   public boolean isDuck(int location) {
-      return locations[location].duck != WATER_CARD_VALUE ||
-             locations[location].duck != MISSING;
+   public boolean isDuck(int location) throws IndexOutOfBoundsException {
+      validate(location);
+      return locations[location].duck != 0;
    }
    
    /**
@@ -442,7 +462,8 @@ public class Board {
     * @param player Joueur courrant
     * @return Vrai si c'est le cannard de player, faux sinon
     */
-   public boolean isMyDuck(int location, int player) {
+   public boolean isMyDuck(int location, int player) throws IndexOutOfBoundsException {
+      validate(location);
       currentPlayer = player;
       if(locations[location].duck == currentPlayer){
          return true;
@@ -453,12 +474,13 @@ public class Board {
    public static void main(String... args) {
       
       //creation de 2 plateau un a 2 joueur et un a 6
-      Board board2Player = new Board(2);
-      Board board6Player = new Board(6);
+      //Board board2Player = new Board(2);
+      Board.registerInstance(6);
+      Board board6Player = Board.getInstance();
       
-      System.out.println("plateau pour 2 joueurs :");
-      board2Player.toString();
-      System.out.println("");
+      //System.out.println("plateau pour 2 joueurs :");
+      //System.out.println(board2Player);
+      //System.out.println("");
       System.out.println("plateau pour 6 joueurs");
       System.out.println(board6Player);
       
@@ -509,7 +531,14 @@ public class Board {
       board6Player.setGuard(3, true);
       System.out.println(board6Player);
       System.out.println("proteger une position déjà protégé"); //impossible
-      board6Player.setGuard(3, true);
+      if (board6Player.isGuarded(3))
+      {
+         System.out.println("Deja garde !!!");
+      }
+      else
+      {
+         board6Player.setGuard(3, true);
+      }
       System.out.println(board6Player);
       System.out.println("tirer en 3 sur une position protégé");
       board6Player.fire(3);
@@ -588,8 +617,21 @@ public class Board {
       System.out.println("placer les canards");
       board6Player.placeDucks();
       System.out.println(board6Player);
-      System.out.println("shuffleAll ne mélange que la pile de carte");//ducks doit se modifier 
+      System.out.println("shuffle ne mélange que la pile de carte");//ducks doit se modifier 
       board6Player.shuffle();
       System.out.println(board6Player);
+      System.out.println("shuffleAll mélange tout");//ducks doit se modifier 
+      board6Player.shuffleAll();
+      System.out.println(board6Player);
+   }
+   
+   /**
+    * This method exists only to eliminate the random factor in the tests.
+    * @param location
+    * @param duck 
+    */
+   public void setLocation(int location, int duck)
+   {
+      locations[location].setDuck(duck);
    }
 }

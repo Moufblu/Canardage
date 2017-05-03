@@ -1,7 +1,6 @@
 package canardage;
 
-import canardage.action.Shoot;
-import canardage.action.Target;
+import canardage.action.*;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
