@@ -30,7 +30,8 @@ public class BoardTest {
    @Before
    public void setUp() {
       players = 6;
-      Board.getInstance(players);
+      Board.registerInstance(players);
+      Board.getInstance();
    }
    
    @After

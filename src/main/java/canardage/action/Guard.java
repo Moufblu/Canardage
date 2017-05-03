@@ -9,13 +9,13 @@ public class Guard extends WithLocation {
    @Override
    public void effect() {
       if(hasEffect()) {
-         board.setGuard(super.getLocationChoice(), true);
+         board.setGuard(getLocationChoice(), true);
       }
    }
 
    @Override
    public boolean isPlayable(int position) {
-      if(!board.isGuarded(position)) {
+      if(!board.isGuarded(position) && board.isDuck(position)) {
          return true;
       }
       return false;

@@ -29,6 +29,10 @@ public class Board {
          return duck;
       }
       
+      public void setDuck(int duck) {
+         this.duck = duck;
+      }
+      
       public int removeDuck(){
          int removed = duck;
          duck = hiddenDuck;
@@ -99,21 +103,30 @@ public class Board {
    /**
     * Classe Board en tant que Singleton, on utilise la méthode getInstance pour
     * obtenir une instance de la classe Board
-    * @param players Nombre de joueur dans la partie
     * @return Une instance de la classe Board
     */
-   public static Board getInstance(int players) {
-      if (instance == null) {
-         instance = new Board(players); // instanciation retardée
+   public static Board getInstance() {
+      if (instance != null) {
+         return instance;
+      } else {
+         throw new RuntimeException("Instance not registered !");
       }
-      return instance;
+   }
+   
+   /**
+    * @brief Instancie le singleton.
+    * @param nbPlayers Nombre de joueur dans la partie
+    */
+   public static void registerInstance(int nbPlayers) {
+      if (instance == null)
+         instance = new Board(nbPlayers);
    }
    
    /**
     * Méthode pour retourner le nombre maximum de joueurs
     * @return Le nombre maximum de joueurs
     */
-   public int getMaxPlayers() {
+   public static int getMaxPlayers() {
       return NB_PLAYERS_MAX;
    }
    
@@ -437,7 +450,8 @@ public class Board {
     * Méthode qui nous dit s'il y a un canard à une position donnée
     * @return Vrai s'il y a u canard, faux sinon
     */
-   public boolean isDuck(int location) {
+   public boolean isDuck(int location) throws IndexOutOfBoundsException {
+      validate(location);
       return locations[location].duck != 0;
    }
    
@@ -447,7 +461,8 @@ public class Board {
     * @param player Joueur courrant
     * @return Vrai si c'est le cannard de player, faux sinon
     */
-   public boolean isMyDuck(int location, int player) {
+   public boolean isMyDuck(int location, int player) throws IndexOutOfBoundsException {
+      validate(location);
       currentPlayer = player;
       if(locations[location].duck == currentPlayer){
          return true;
@@ -458,12 +473,13 @@ public class Board {
    public static void main(String... args) {
       
       //creation de 2 plateau un a 2 joueur et un a 6
-      Board board2Player = new Board(2);
-      Board board6Player = new Board(6);
+      //Board board2Player = new Board(2);
+      Board.registerInstance(6);
+      Board board6Player = Board.getInstance();
       
-      System.out.println("plateau pour 2 joueurs :");
-      System.out.println(board2Player);
-      System.out.println("");
+      //System.out.println("plateau pour 2 joueurs :");
+      //System.out.println(board2Player);
+      //System.out.println("");
       System.out.println("plateau pour 6 joueurs");
       System.out.println(board6Player);
       
@@ -606,5 +622,15 @@ public class Board {
       System.out.println("shuffleAll mélange tout");//ducks doit se modifier 
       board6Player.shuffleAll();
       System.out.println(board6Player);
+   }
+   
+   /**
+    * This method exists only to eliminate the random factor in the tests.
+    * @param location
+    * @param duck 
+    */
+   public void setLocation(int location, int duck)
+   {
+      locations[location].setDuck(duck);
    }
 }
