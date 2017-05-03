@@ -36,16 +36,11 @@ public class Hide extends WithLocation implements IDirection {
     */
    @Override
    public boolean hasEffect() {
-      if(super.hasEffect()) {
-         return true;
-      }
-      else {
-         direction = !direction;
-         if(super.hasEffect()) {
-            return true;
-         }
-         return false;
-      }
+      boolean effect = super.hasEffect();
+      direction = !direction;
+      effect |= super.hasEffect();
+      
+      return effect;
    }
 
    @Override
