@@ -53,6 +53,7 @@ public class Hide extends WithLocation implements IDirection {
    @Override
    public boolean getDirectionChoice() {
       Scanner scanner = new Scanner(System.in);
+      System.out.println("Souhaitez-vous aller à gauche ? (true/false)");
       return scanner.nextBoolean();
    }
 }
