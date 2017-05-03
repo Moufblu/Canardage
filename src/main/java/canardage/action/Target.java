@@ -15,7 +15,7 @@ public class Target extends WithLocation {
    public void effect() {
       //check if this effect is possible somewhere
       if(hasEffect()) {
-         board.setTarget(super.getLocationChoice(), true);
+         board.setTarget(getLocationChoice(), true);
       }
    }
 
