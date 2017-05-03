@@ -32,8 +32,8 @@ public class TargetTest {
       
       for (int i = 0; i < board.getNbLocations(); i++)
       {
-         board.setTarget(i, false);
          board.setLocation(i, 1);
+         board.setTarget(i, false);
       }
    }
    

@@ -106,7 +106,7 @@ public class Board {
     * @param players Nombre de joueur dans la partie
     * @return Une instance de la classe Board
     */
-   public static Board getInstance() {
+   public static Board getInstance() throws RuntimeException {
       if (instance != null) {
          return instance;
       } else {
