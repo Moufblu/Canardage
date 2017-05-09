@@ -5,16 +5,19 @@ package Protocol;
  *
  */
 public class ProtocolV1 {
-   private final static String USE_CARD        = "Action";
-   private final static String DISTRIBUTE_HAND = "Hand";
-   private final static String REFUSE_CARD     = "Refuse";
-   private final static String PATCH_BOARD     = "Board";
-   private final static String DISTRIBUTE_CARD = "Card";
+   public final static String USE_CARD        = "Action";
+   public final static String DISTRIBUTE_HAND = "Hand";
+   public final static String REFUSE_CARD     = "Refuse";
+   public final static String PATCH_BOARD     = "Board";
+   public final static String DISTRIBUTE_CARD = "Card";
    
    public final static String DISCONNECT       = "Stop";
    public final static String YOUR_TURN        = "Turn";
    public final static String ASK_FOR_POSITION = "Position";
    public final static String END_GAME         = "End";
+   
+   public final static String ACCEPT_CONNECTION = "Accept";
+   public final static String REFUSE_CONNECTION = "Refuse";
    
    public final static int HAND_SIZE    = 3;
    public final static int MIN_ID_CARD  = 0;
