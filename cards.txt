@@ -1,0 +1,5 @@
+0;Guard;url;garde une position;4;1
+1;Hide;url;cache un canard sous un autre;4;0
+2;PlaceBefore;echange son canard avec le canard voisin arrière;4;0
+3;Shoot;utilise une cible et tue le canard de la position s'il y en a un;4;0
+4;Target;cible un position;4;0
