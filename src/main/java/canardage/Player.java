@@ -85,6 +85,7 @@ public class Player {
          System.out.print(toShow[i] + " ");
       }
    }
+   
    public void connect(String adress) throws IOException {
       if (!isConnected()) {
          clientSocket = new Socket(adress, ProtocolV1.PORT);
