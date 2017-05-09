@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
 
 public class GuardTest {
    
-   private static Board board;
+   private Board board;
    private Guard guard;
    
    public GuardTest() {
@@ -25,7 +25,6 @@ public class GuardTest {
    @BeforeClass
    public static void setUpClass() {
       Board.registerInstance(Board.getMaxPlayers());
-      board = Board.getInstance();
    }
    
    @AfterClass
@@ -34,7 +33,11 @@ public class GuardTest {
    
    @Before
    public void setUp() {
+      board = Board.getInstance();
       guard = new Guard();
+      
+      for (int i = 0; i < board.getNbLocations(); i++)
+         board.setGuard(i, false);
    }
    
    @After

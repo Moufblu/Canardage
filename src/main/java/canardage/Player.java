@@ -15,8 +15,10 @@ import java.util.Scanner;
 /**
  *
  */
-public class Joueur {
-
+public class Player {
+   
+   private final int HAND_CARDS_NUMBER = 3;
+   
    private Socket clientSocket;
    private BufferedReader responseBuffer;
    private PrintWriter writer;

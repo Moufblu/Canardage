@@ -28,6 +28,9 @@ public class ProtocolV1 {
    
    public final static String[] ERRORS = {"error1", "error2"};
    
+   public final static String ADDRESS = "192.168.192.168";
+   public final static int PORT       = 1337;
+   
    /**
     * Indique quel carte on souhaite jouer
     * @param idCard identifiant de la carte (position dans la tableau des cartes action existantes)

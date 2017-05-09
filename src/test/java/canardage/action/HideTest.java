@@ -10,29 +10,25 @@ import static org.junit.Assert.*;
 
 public class HideTest {
    
-   private static Board board;
+   private Board board;
    private Hide hide;
-   
-   public HideTest() {
-   }
    
    @BeforeClass
    public static void setUpClass() {
       Board.registerInstance(Board.getMaxPlayers());
-      board = Board.getInstance();
-   }
-   
-   @AfterClass
-   public static void tearDownClass() {
    }
    
    @Before
    public void setUp() {
+      board = Board.getInstance();
       hide = new Hide();
-   }
-   
-   @After
-   public void tearDown() {
+      
+      for (int i = 0; i < board.getNbLocations(); i++)
+      {
+         board.setLocation(i, 1);
+         board.setTarget(i, false);
+         board.setGuard(i, false);
+      }
    }
 
    /**
