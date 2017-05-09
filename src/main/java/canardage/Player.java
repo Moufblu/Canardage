@@ -7,7 +7,7 @@ import Protocol.ProtocolV1;
 /**
  *
  */
-public class Joueur {
+public class Player {
    
    private final int HAND_CARDS_NUMBER = 3;
    
