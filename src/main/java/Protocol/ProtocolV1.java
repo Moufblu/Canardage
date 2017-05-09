@@ -5,11 +5,11 @@ package Protocol;
  *
  */
 public class ProtocolV1 {
-   private final static String USE_CARD        = "Action";
-   private final static String DISTRIBUTE_HAND = "Hand";
-   private final static String REFUSE_CARD     = "Refuse";
-   private final static String PATCH_BOARD     = "Board";
-   private final static String DISTRIBUTE_CARD = "Card";
+   public final static String USE_CARD        = "Action";
+   public final static String DISTRIBUTE_HAND = "Hand";
+   public final static String REFUSE_CARD     = "Refuse";
+   public final static String PATCH_BOARD     = "Board";
+   public final static String DISTRIBUTE_CARD = "Card";
    
    public final static String DISCONNECT       = "Stop";
    public final static String YOUR_TURN        = "Turn";
@@ -24,6 +24,9 @@ public class ProtocolV1 {
    public final static String SEPARATOR = " ";
    
    public final static String[] ERRORS = {"error1", "error2"};
+   
+   public final static String ADDRESS = "192.168.192.168";
+   public final static int PORT       = 1337;
    
    /**
     * Indique quel carte on souhaite jouer
