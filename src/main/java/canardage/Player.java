@@ -11,6 +11,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.regex.PatternSyntaxException;
 
 /**
  *
@@ -27,9 +28,9 @@ public class Player {
 
    boolean connected = false;
 
-   public Joueur() {
+   public Player(String adress) {
       try {
-         connect();
+         connect(adress);
       } catch (IOException e) {
          System.out.println(e.toString());
       }
@@ -37,22 +38,54 @@ public class Player {
 
    private void startGame() throws IllegalStateException {
       if (isConnected()) {
+         
+         String inputServer;
+         String[] splittedCommand;
+         
          do {
-            // readline
-            switch (/*premier mot*/){
-               case ProtocolV1.POSITION:
-                  writeline(ProtocolV1.messageAskPosition(getLocationChoice()));
+            try {
+               inputServer = responseBuffer.readLine();
+               splittedCommand = inputServer.split(ProtocolV1.SEPARATOR);
+            } catch(IOException e) {
+               System.out.println(e.toString());
+               continue;
+            } catch(PatternSyntaxException e) {
+               System.out.println(e.toString());
+               continue;
+            }
+            
+            switch (splittedCommand[0]){
+               case ProtocolV1.ASK_FOR_POSITION:
+                  writer.println(ProtocolV1.messageAskPosition(getLocationChoice()));
+                  break;
+               case ProtocolV1.DISTRIBUTE_CARD:
+                  writer.println(ProtocolV1.messageAskPosition(getLocationChoice()));
+                  break;
+               case ProtocolV1.DISTRIBUTE_HAND:
+                  writer.println(ProtocolV1.messageAskPosition(getLocationChoice()));
+                  break;
+               case ProtocolV1.PATCH_BOARD:
+                  writer.println(ProtocolV1.messageAskPosition(getLocationChoice()));
+                  break;
+               case ProtocolV1.YOUR_TURN:
+                  writer.println(ProtocolV1.messageAskPosition(getLocationChoice()));
+                  break;
+               case ProtocolV1.REFUSE_CARD:
+                  writer.println(ProtocolV1.messageAskPosition(getLocationChoice()));
+                  break;
+               case ProtocolV1.:
+                  writer.println(ProtocolV1.messageAskPosition(getLocationChoice()));
                   break;
             }
-         }while(true); // arrêt si doit arrêter
+         }while(!splittedCommand[0].equals(ProtocolV1.END_GAME));
       } else {
          throw new IllegalStateException("vous devez vous connecter à un serveur avant de pouvoir commencer une partie");
       }
    }
 
-   public void connect() throws IOException {
+   public void connect(String adress) throws IOException {
       if (!isConnected()) {
-         clientSocket = new Socket(ProtocolV1., port);
+         clientSocket = new Socket(adress, ProtocolV1.PORT);
 
          responseBuffer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
          writer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
