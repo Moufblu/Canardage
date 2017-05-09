@@ -4,6 +4,9 @@ import java.net.ServerSocket;
 import Protocol.ProtocolV1;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -11,26 +14,56 @@ import java.net.InetAddress;
 public class Server {
 
    private final static int MAX_NB_PLAYERS = 6;
-   ServerSocket serverSocket;
+   private final static int NB_ACTION_CARDS = 10;
+   private ServerSocket serverSocket;
 
-   private int[] actionCards;
-   private int[][] playerCards;
+   private int[] deck;
+   private List<List<Integer>> playerCards;
 
    private int nbPlayers;
-
-   public Server() {
-      new Thread() {
-
-         @Override
-         public void run() {
-            try {
-               serverSocket = new ServerSocket(ProtocolV1.PORT, MAX_NB_PLAYERS, InetAddress.getByName(ProtocolV1.ADDRESS));
-            } catch (IOException e) {
-
-            }
-         }
-
-      }.run();
+   
+   private List<Socket> playersSockets;
+   
+   public Server()
+   {
+      deck = new int[NB_ACTION_CARDS];
+      playerCards = new ArrayList<>();
+      playersSockets = new ArrayList<>();
+      nbPlayers = 0;
    }
 
+   public void startServer() throws IOException 
+   {
+    if (serverSocket != null || serverSocket.isBound()) 
+    {
+       serverSocket = new ServerSocket(ProtocolV1.PORT, MAX_NB_PLAYERS);
+    }
+
+    Thread serverThread = new Thread(new Runnable() {
+      @Override
+      public void run() 
+      {
+         if (nbPlayers < MAX_NB_PLAYERS)
+         {
+            try
+            {
+               Socket clientSocket = serverSocket.accept();
+               playersSockets.add(clientSocket);
+               nbPlayers++;
+               
+            }
+            catch(IOException e)
+            {
+               System.out.println(e.getMessage());
+            }
+         }
+      }
+    });
+    serverThread.start();
+  }
+   
+   public boolean isRunning()
+   {
+      return serverSocket.isBound();
+   }
 }
