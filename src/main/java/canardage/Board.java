@@ -6,18 +6,26 @@ import java.util.LinkedList;
 import canardage.action.*;
 
 /**
- * 
+ * Description: Classe principale dans laquelle on implémente le tableau de jeu
+ * Date: 19.04.2017
  * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
+ * @version 0.1
  */
 public class Board {
    
+   /**
+    * Classe interne de Board pour la position sur le plateau
+    */
    private class Location {
 
-      private boolean targetted;
-      private boolean guarded;
-      private int duck;
-      private int hiddenDuck;
+      private boolean targetted; // Si l'endroit possède une cible
+      private boolean guarded;   // Si l'endroit est protégé
+      private int duck;          // Le numéro du canard
+      private int hiddenDuck;    // Le numéro du canard caché
 
+      /**
+       * Constructeur de la classe Location
+       */
       public Location() {
          targetted = false;
          guarded = false;
@@ -25,14 +33,26 @@ public class Board {
          hiddenDuck = MISSING;
       }
       
+      /**
+       * Méthode pour obtenir le numéro du canard
+       * @return Le numéro du canard
+       */
       public int getDuck() {
          return duck;
       }
       
+      /**
+       * Méthode pour donner un numéro à un canard
+       * @param duck Le numéro du canard
+       */
       public void setDuck(int duck) {
          this.duck = duck;
       }
       
+      /**
+       * Méthode pour enlever un canard
+       * @return Le canard enlevé
+       */
       public int removeDuck(){
          int removed = duck;
          duck = hiddenDuck;
@@ -41,23 +61,23 @@ public class Board {
       }
    }
    
-   private final static int MISSING = -1;
-   private final static int WATER_CARD_VALUE = 0;
-   public final static int MAX_DUCK_PER_PLAYER = 5;
-   public final static int NB_PLAYERS_MIN = 2;
-   public final static int NB_PLAYERS_MAX = 6;
+   private final static int MISSING = -1;        // Signifie qu'il n'y a pas de carte
+   private final static int WATER_CARD_VALUE = 0;// Pour dire qu'il y a une carte eau
+   public final static int MAX_DUCK_PER_PLAYER = 5;  // Maximum de canard par joueur
+   public final static int NB_PLAYERS_MIN = 2;       // Nombre minimum de joueur
+   public final static int NB_PLAYERS_MAX = 6;       // Nombre maximum de joueur
    
-   private List<Integer> ducks;
-   private int currentPlayer = 0;
+   private List<Integer> ducks;     // Liste de canard sur le plateau
+   private int currentPlayer = 0;   // Le numéro du joueur courrant
    
-   public final static int NB_LOCATIONS = 6;
-   private final Location[] locations;
+   public final static int NB_LOCATIONS = 6; // Le nombre de position maximum
+   private final Location[] locations;       // Tableau avec les positions
    
-   private static Board instance;
+   private static Board instance;   // Instance pour le plateau
 
    /**
-    * 
-    * @param nbPlayers nombre de joueurs accepte
+    * Constructeur de la classe Board
+    * @param nbPlayers Nombre de joueurs acceptés
     */
    private Board(int nbPlayers) throws IllegalArgumentException {
       
@@ -72,7 +92,7 @@ public class Board {
          locations[i] = new Location();
       }
       
-      /* calcul du nombre de carte eau selon le nombre de joueur */
+      /* Calcul du nombre de cartes eau selon le nombre de joueurs */
       int nbCardsWater = 0;
       if(nbPlayers == 2) {
          nbCardsWater = 2;
@@ -80,12 +100,12 @@ public class Board {
          nbCardsWater = nbPlayers - 1;
       }
       
-      /* ajout des cartes eau */
+      /* Ajout des cartes eau */
       for(int i  = 0; i < nbCardsWater; i++) {
          pushBack(WATER_CARD_VALUE);
       }
       
-      /* ajout des cartes canards */
+      /* Ajout des cartes canards */
       int  cpt = 1;
       for(int i  = 0; i < nbPlayers; i++) {
          for(int j  = 0; j < MAX_DUCK_PER_PLAYER; j++) {
@@ -94,16 +114,15 @@ public class Board {
          cpt++;
       }
       
-      /* melange des cartes */
+      /* Mélange des cartes */
       shuffle();
-      /* place les canards sur la partie visible du plateau */
+      /* Place les canards sur la partie visible du plateau */
       placeDucks();
    }
    
    /**
     * Classe Board en tant que Singleton, on utilise la méthode getInstance pour
     * obtenir une instance de la classe Board
-    * @param players Nombre de joueur dans la partie
     * @return Une instance de la classe Board
     */
    public static Board getInstance() throws RuntimeException {
@@ -141,7 +160,6 @@ public class Board {
    
    /**
     * @brief Place les 6 premiers canards du deck de canards sur le plateau.
-    * 
     * Prend les 6 premiers canards du deck de canards. Chaque canard est placé sur
     * un emplacement du plateau différent.
     */
@@ -166,9 +184,9 @@ public class Board {
     * @brief Échange les positions de deux canards adjacents dans le deck
     * @param location L'emplacement de référence d'un canard à intervertir
     * @param left Vrai si on désire intervertir avec le canard adjacent à gauche.
-    *             Faux si on désire intervertir avec le canard adjacent à droite.
-    * @return 
-    * @throws IndexOutOfBoundsException 
+    *             Faux si on désire intervertir avec le canard adjacent à droite. 
+    * @throws IndexOutOfBoundsException Si on essaie de faire un échange à une 
+    * position pas possible sur un canard
     */
    public void swap(int location, boolean left) throws IndexOutOfBoundsException {
       //nadir       
@@ -188,10 +206,11 @@ public class Board {
    }
    
    /**
-    * 
-    * @param location1
-    * @param location2
-    * @throws IndexOutOfBoundsException 
+    * Échange les positions de deux canards dans le deck
+    * @param location1 L'emplacement de référence du premier canard à intervertir
+    * @param location2 L'emplacement de référence du deuxième canard à intervertir
+    * @throws IndexOutOfBoundsException Si on essaie de faire un échange à une 
+    * position pas possible sur un canard, lancée par validate
     */
    public void swap(int location1, int location2) throws IndexOutOfBoundsException {
       //nadir
@@ -209,10 +228,10 @@ public class Board {
    }
    
    /**
-    * 
-    * @param location
-    * @param left
-    * @return 
+    * Méthode pour vérifier si c'est possible d'utiliser la carte Hide
+    * @param location Position du canard
+    * @param left Si on cache à gauche ou à droite
+    * @return Vrai si c'est possible de joueur, faux sinon
     */
    public boolean possibleHide(int location, boolean left) {
       validate(location);
@@ -225,8 +244,8 @@ public class Board {
          locationWish = location - 1;
       }
       
-      //verifie que les condition d'un hide soit correct
-      //qu'il n'y a pas de canard caché sous les canard
+      // Vèrifie que les condition d'un hide soient corrects,
+      // qu'il n'y a pas de canard caché sous les canards
       if(locations[locationWish].hiddenDuck != MISSING) {
          verify = false;
       }
@@ -250,9 +269,9 @@ public class Board {
    }
    
   /**
-   * cache un canard derriere un autre
-   * @param location position du canard qui souhaite se cacher
-   * @param left true si on a choisit de se cacher a gauche
+   * Cache un canard derrière un autre
+   * @param location Position du canard qui souhaite se cacher
+   * @param left Vrai si on a choisit de se cacher à gauche, faux à droite
    */
    public void hide(int location, boolean left) throws IndexOutOfBoundsException {
       validate(location);
@@ -272,12 +291,15 @@ public class Board {
    }
    
    /**
-    * melange la liste ducks mais pas les positions visibles
+    * Mélange la liste ducks mais pas les positions visibles
     */
    private void shuffle(){
       Collections.shuffle(ducks);
    }
    
+   /**
+    * Fait un mélange de tous les canards ce trouvant sur le plateau
+    */
    public void shuffleAll(){
       retrieveDucks();
       shuffle();
@@ -285,7 +307,7 @@ public class Board {
    }
    
    /**
-    * enleve les canards des positions visibles et les places dans la liste ducks
+    * Enlève les canards des positions visibles et les places dans la liste ducks
     */
    public void retrieveDucks(){
       for(int i = 0; i < 2; i++) {
@@ -299,9 +321,9 @@ public class Board {
    }
    
    /**
-    * 
-    * @param posDuck
-    * @param value
+    * Méthode pour poser une cible sur le plateau
+    * @param posDuck Position du canard
+    * @param value Si l'on veut mettre ou enlever une cible
     * @throws IndexOutOfBoundsException 
     */
    public void setTarget(int posDuck, boolean value) throws IndexOutOfBoundsException {
@@ -314,10 +336,11 @@ public class Board {
    }
    
    /**
-    * 
-    * @param location
-    * @return
-    * @throws IndexOutOfBoundsException 
+    * Vérifie si la position est ciblée ou pas
+    * @param location La position à vérifier
+    * @return Vrai si possibilité de ciblé, faux sinon
+    * @throws IndexOutOfBoundsException Si on veut mettre une cible dans une position
+    * en dehors des possibles
     */
    public boolean isTargetted(int location) throws IndexOutOfBoundsException
    {
@@ -326,10 +349,11 @@ public class Board {
    }
    
    /**
-    * 
-    * @param location
-    * @param value
-    * @throws IndexOutOfBoundsException 
+    * Met une carte de protection si c'est possible
+    * @param location La position sur laquelle mettre la protection
+    * @param value Si on veut mettre ou enlever une protection
+    * @throws IndexOutOfBoundsException Si on veut mettre une protection dans une 
+    * position en dehors des possibles
     */
    public void setGuard(int location, boolean value) throws IndexOutOfBoundsException {
       validate(location);
@@ -338,9 +362,9 @@ public class Board {
    }
    
    /**
-    * 
-    * @param location
-    * @return
+    * Vérifie si la position est déjà gardée ou pas
+    * @param location La position à vérifier
+    * @return Vrai si c'est possible, faux sinon
     * @throws IndexOutOfBoundsException 
     */
    public boolean isGuarded(int location) throws IndexOutOfBoundsException {
@@ -349,9 +373,10 @@ public class Board {
    }
    
    /**
-    * 
-    * @param location
-    * @throws IndexOutOfBoundsException 
+    * Méthode pour tirer sur un canard ciblé
+    * @param location Position sur laquelle on tire
+    * @throws IndexOutOfBoundsException Si la position de tir est en dehors des 
+    * positions possibles
     */
    public void fire(int location) throws IndexOutOfBoundsException {
       validate(location);
@@ -363,8 +388,8 @@ public class Board {
    }
    
    /**
-    * 
-    * @return 
+    * Affichage en console des différents affichage possibles (canards, cibles, etc.)
+    * @return L'affiche en lui-même
     */
    @Override
    public String toString() {
@@ -396,9 +421,10 @@ public class Board {
    }
    
    /**
-    * 
-    * @param location
-    * @throws IndexOutOfBoundsException 
+    * Met un canard sur une position donée
+    * @param location Position sur laquelle placer le canard
+    * @throws IndexOutOfBoundsException Si on veut placer un canard en dehors des 
+    * positions possibles
     */
    private void placeDuck(int location) throws IndexOutOfBoundsException {
       validate(location);
@@ -406,20 +432,26 @@ public class Board {
    }
    
    /**
-    * 
-    * @param location
-    * @return 
+    * Enlève un canard à une position du plateau
+    * @param location Position de laquelle on veut retirer un canard
+    * @return Le canard retiré
+    * @throws IndexOutOfBoundsException Si on veut retirer un canard en dehors des 
+    * positions possibles
     */
-   private int removeDuck(int location){
+   private int removeDuck(int location) throws IndexOutOfBoundsException {
+      validate(location);
       int duck = locations[location].removeDuck();
       return duck;
    }
    
    /**
-    * 
-    * @param location 
+    * Sert à faire avancer un canard sur le plateau
+    * @param location Position vers laquelle on avance
+    * @throws IndexOutOfBoundsException Si on veut placer un canard en avant en 
+    * dehors des positions possibles
     */
-   private void advance(int location){
+   private void advance(int location) throws IndexOutOfBoundsException {
+      validate(location);
       for (int i = location; i != 0; i--) {
          if(locations[i].duck == MISSING) {
             swap(i, false);
@@ -435,9 +467,10 @@ public class Board {
    }
    
    /**
-    * 
+    * Méthode pour vérifier si une action est possible sur une position donnée
     * @param location
-    * @throws IndexOutOfBoundsException 
+    * @throws IndexOutOfBoundsException Si on veut faire une action en dehors des 
+    * positions possibles
     */
    private void validate(int location) throws IndexOutOfBoundsException
    {
@@ -449,6 +482,7 @@ public class Board {
    
    /**
     * Méthode qui nous dit s'il y a un canard à une position donnée
+    * @param location
     * @return Vrai s'il y a u canard, faux sinon
     */
    public boolean isDuck(int location) throws IndexOutOfBoundsException {
