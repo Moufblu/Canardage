@@ -28,8 +28,7 @@ public class ProtocolV1 {
    public final static int MAX_ID_CARD  = 4;
    public final static int MIN_NO_POS   = 0;
    public final static int MAX_NO_POS   = 5;
-   
-   public final static String ADDRESS = "192.168.192.168";
+
    public final static int PORT       = 1337;
    
    /**
