@@ -434,7 +434,7 @@ public class Board {
       return display;
    }
 
-   String getBoardState() {
+   public String getBoardState() {
       String display = "";
 
       for (int i = locations.length - 1; i >= 0; i--) {
