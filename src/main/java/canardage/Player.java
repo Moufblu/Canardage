@@ -20,6 +20,10 @@ public class Player {
 
    boolean connected = false;
 
+   /**
+    * 
+    * @param adress 
+    */
    public Player(String adress) {
       cards = new ArrayList<Integer>();
       
@@ -30,6 +34,10 @@ public class Player {
       }
    }
 
+   /**
+    * 
+    * @throws IllegalStateException 
+    */
    private void startGame() throws IllegalStateException {
       if (isConnected()) {
          
@@ -80,11 +88,22 @@ public class Player {
          throw new IllegalStateException("vous devez vous connecter à un serveur avant de pouvoir commencer une partie");
       }
    }
+   
+   /**
+    * 
+    * @param toShow 
+    */
    public void showBoard(String[] toShow) {
       for(int i = 1; i < toShow.length; i++) {
          System.out.print(toShow[i] + " ");
       }
    }
+   
+   /**
+    * 
+    * @param adress
+    * @throws IOException 
+    */
    public void connect(String adress) throws IOException {
       if (!isConnected()) {
          clientSocket = new Socket(adress, ProtocolV1.PORT);
@@ -105,9 +124,18 @@ public class Player {
       }
    }
 
+   /**
+    * 
+    * @return 
+    */
    public boolean isConnected() {
       return connected;
    }
+   
+   /**
+    * 
+    * @return 
+    */
    public int getCardChoice() {
       Scanner in = new Scanner(System.in);
       int cardChoice = 0;
@@ -131,6 +159,12 @@ public class Player {
       return cardChoice;
    }
    
+   /**
+    * 
+    * @param lineNo
+    * @return
+    * @throws IllegalArgumentException 
+    */
    public int readLineCardFileInfo(int lineNo) throws IllegalArgumentException {
       try{
          BufferedReader buff = new BufferedReader(new InputStreamReader(new FileInputStream("cards.txt")));
@@ -151,11 +185,14 @@ public class Player {
       throw new IllegalArgumentException("card number not valid");
    }
    
+   /**
+    * 
+    * @return 
+    */
    public int getLocationChoice() {
       Scanner in = new Scanner(System.in);
       int positionChoice;
 
-      // Loop while the user choose a bad move
       while (true) {
          try {
             System.out.println("Veuillez entrer une position valide : (0..5)");
@@ -166,5 +203,10 @@ public class Player {
          }
       }
       return positionChoice;
+   }
+   
+   public static void main(String... args) {
+      Player player = new Player(args[0]);
+      player.startGame();
    }
 }
