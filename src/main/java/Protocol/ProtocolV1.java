@@ -5,6 +5,7 @@ package Protocol;
  *
  */
 public class ProtocolV1 {
+   
    public final static String USE_CARD        = "Action";
    public final static String DISTRIBUTE_HAND = "Hand";
    public final static String REFUSE_CARD     = "Refuse";
@@ -15,17 +16,20 @@ public class ProtocolV1 {
    public final static String YOUR_TURN        = "Turn";
    public final static String ASK_FOR_POSITION = "Position";
    public final static String END_GAME         = "End";
+   public final static String SEPARATOR = " ";
+   
+   public final static String[] ERRORS = {"error1", "error2"};
+   
+   public final static String ACCEPT_CONNECTION = "Accept";
+   public final static String REFUSE_CONNECTION = "Refuse";
    
    public final static int HAND_SIZE    = 3;
    public final static int MIN_ID_CARD  = 0;
    public final static int MAX_ID_CARD  = 4;
    public final static int MIN_NO_POS   = 0;
    public final static int MAX_NO_POS   = 5;
-   public final static String SEPARATOR = " ";
-   
-   public final static String[] ERRORS = {"error1", "error2"};
 
-   public final static int PORT = 1337;
+   public final static int PORT       = 1337;
    
    /**
     * Indique quel carte on souhaite jouer
@@ -81,7 +85,21 @@ public class ProtocolV1 {
    }
    
    /**
-    * indique qu'un choix est refusé par un message d'erreur et son identifiant
+    * Permet d'indiquer la distribution d'une carte
+    * @param idCard identifiant de la carte distribuée
+    * @return une String valide du protocol indiquant la distribution d'une carte
+    * @throws IllegalArgumentException si l'identifiant de la carte est impossible
+    */
+   public static String messageDistributeCard(int idCard) throws IllegalArgumentException{
+      if(idCard < MIN_ID_CARD || idCard > MAX_ID_CARD) {
+         throw new IllegalArgumentException("id carte invalide: " + idCard);
+      }
+      String result = DISTRIBUTE_CARD + SEPARATOR + idCard;
+      return result;
+   }
+   
+   /**
+    * Indique qu'un choix est refusé par un message d'erreur et son identifiant
     * @param idError position dans le tableau des erreurs connus
     * @return une String valide du protocol indiquant une erreur
     * @throws IllegalArgumentException si l'erreur n'existe pas dans le tableau des erreurs connues
@@ -91,12 +109,12 @@ public class ProtocolV1 {
          throw new IllegalArgumentException("id d'erreur n'existant pas: " + idError);
       }
       
-      String result = REFUSE_CARD + SEPARATOR + idError + SEPARATOR + ERRORS[idError];
+      String result = REFUSE_CARD + SEPARATOR + idError;
       return result;
    }
    
    /**
-    * permet de récupérer le numéro de l'erreur à partir d'un message de protocol d'erreur valide
+    * Permet de récupérer le numéro de l'erreur à partir d'un message de protocol d'erreur valide
     * @param error message du protocol signifiant une erreur
     * @return le numéro de l'erreur soit la position dans le tableau des erreurs connues
     * @throws IllegalArgumentException soit parce que le numéro de l'erreur est invalide, 
@@ -114,19 +132,5 @@ public class ProtocolV1 {
          throw new IllegalArgumentException("cette erreur n'est pas enregistree : " + error);
       }
       return idError;
-   }
-   
-   /**
-    * permet d'indiquer la distribution d'une carte
-    * @param idCard identifiant de la carte distribuée
-    * @return une String valide du protocol indiquant la distribution d'une carte
-    * @throws IllegalArgumentException si l'identifiant de la carte est impossible
-    */
-   public static String messageDistributeCard(int idCard) throws IllegalArgumentException{
-      if(idCard < MIN_ID_CARD || idCard > MAX_ID_CARD) {
-         throw new IllegalArgumentException("id carte invalide: " + idCard);
-      }
-      String result = DISTRIBUTE_CARD + SEPARATOR + idCard;
-      return result;
    }
 }
