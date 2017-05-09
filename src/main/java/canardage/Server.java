@@ -26,7 +26,7 @@ public class Server {
 
    private int nbPlayers;
    
-   private List<Socket> playersSockets;
+   private List<Client> playersSockets;
    
    public Server()
    {
@@ -51,24 +51,18 @@ public class Server {
          {
             try
             {
-               Socket clientSocket = serverSocket.accept();
-               playersSockets.add(clientSocket);
+               Client client = new Client(serverSocket.accept());
+               playersSockets.add(client);
                nbPlayers++;
                
-               BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-               PrintWriter writer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-               
-               writer.println(ProtocolV1.ACCEPT_CONNECTION);
-               writer.flush();
+               client.writeLine(ProtocolV1.ACCEPT_CONNECTION);
                
                int[] hand = {1, 2, 3};
-               writer.println(ProtocolV1.messageHand(hand));
-               writer.flush();
+               client.writeLine(ProtocolV1.messageHand(hand));
                
-               writer.println(ProtocolV1.ASK_FOR_POSITION);
-               writer.flush();
+               client.writeLine(ProtocolV1.ASK_FOR_POSITION);
                
-               String answer = reader.readLine();
+               String answer = client.readLine();
                if (answer.contains(ProtocolV1.ASK_FOR_POSITION))
                {
                   System.out.println("Tout va bien");
@@ -78,10 +72,9 @@ public class Server {
                   System.out.println("DEGUEU");
                }
                
-               writer.println(ProtocolV1.END_GAME);
-               writer.flush();
+               client.writeLine(ProtocolV1.END_GAME);
                
-               clientSocket.close();
+               client.close();
                
             }
             catch(IOException e)
