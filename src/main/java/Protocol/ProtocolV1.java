@@ -110,7 +110,7 @@ public class ProtocolV1 {
          throw new IllegalArgumentException("id d'erreur n'existant pas: " + idError);
       }
       
-      String result = REFUSE_CARD + SEPARATOR + idError + SEPARATOR + ERRORS[idError];
+      String result = REFUSE_CARD + SEPARATOR + idError;
       return result;
    }
    

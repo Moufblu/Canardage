@@ -2,16 +2,8 @@ package canardage;
 
 import java.net.Socket;
 import Protocol.ProtocolV1;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.util.InputMismatchException;
-import java.util.Scanner;
-import java.util.regex.PatternSyntaxException;
+import java.io.*;
+import java.util.*;
 
 /**
  *
@@ -24,11 +16,13 @@ public class Player {
    private BufferedReader responseBuffer;
    private PrintWriter writer;
 
-   private int[] cards = new int[ProtocolV1.HAND_SIZE];
+   private List<Integer> cards;
 
    boolean connected = false;
 
    public Player(String adress) {
+      cards = new ArrayList<Integer>();
+      
       try {
          connect(adress);
       } catch (IOException e) {
@@ -40,16 +34,13 @@ public class Player {
       if (isConnected()) {
          
          String inputServer;
-         String[] splittedCommand;
+         String[] splittedCommand = {""};
          
          do {
             try {
                inputServer = responseBuffer.readLine();
                splittedCommand = inputServer.split(ProtocolV1.SEPARATOR);
             } catch(IOException e) {
-               System.out.println(e.toString());
-               continue;
-            } catch(PatternSyntaxException e) {
                System.out.println(e.toString());
                continue;
             }
@@ -59,22 +50,29 @@ public class Player {
                   writer.println(ProtocolV1.messageAskPosition(getLocationChoice()));
                   break;
                case ProtocolV1.DISTRIBUTE_CARD:
-                  writer.println(ProtocolV1.messageAskPosition(getLocationChoice()));
+                  if(cards.size() > 0) {
+                     throw new IllegalStateException("Action Cards of player full yet");
+                  } else {
+                     cards.add(Integer.parseInt(splittedCommand[1]));
+                  }
                   break;
                case ProtocolV1.DISTRIBUTE_HAND:
-                  writer.println(ProtocolV1.messageAskPosition(getLocationChoice()));
+                  if(cards.size() > 0) {
+                     throw new IllegalStateException("Action cards yet distributed");
+                  } else {
+                     for(int i = 1; i < ProtocolV1.HAND_SIZE + 1; i++) {
+                        cards.add(Integer.parseInt(splittedCommand[i]));
+                     }
+                  }
                   break;
                case ProtocolV1.PATCH_BOARD:
-                  writer.println(ProtocolV1.messageAskPosition(getLocationChoice()));
+                  showBoard(splittedCommand);
                   break;
                case ProtocolV1.YOUR_TURN:
-                  writer.println(ProtocolV1.messageAskPosition(getLocationChoice()));
+                  writer.println(ProtocolV1.messageAskPosition(getCardChoice()));
                   break;
                case ProtocolV1.REFUSE_CARD:
-                  writer.println(ProtocolV1.messageAskPosition(getLocationChoice()));
-                  break;
-               case ProtocolV1.:
-                  writer.println(ProtocolV1.messageAskPosition(getLocationChoice()));
+                  System.out.println(ProtocolV1.ERRORS[Integer.parseInt(splittedCommand[1])]);
                   break;
             }
          }while(!splittedCommand[0].equals(ProtocolV1.END_GAME));
@@ -82,7 +80,11 @@ public class Player {
          throw new IllegalStateException("vous devez vous connecter à un serveur avant de pouvoir commencer une partie");
       }
    }
-
+   public void showBoard(String[] toShow) {
+      for(int i = 1; i < toShow.length; i++) {
+         System.out.print(toShow[i] + " ");
+      }
+   }
    public void connect(String adress) throws IOException {
       if (!isConnected()) {
          clientSocket = new Socket(adress, ProtocolV1.PORT);
@@ -106,7 +108,49 @@ public class Player {
    public boolean isConnected() {
       return connected;
    }
+   public int getCardChoice() {
+      Scanner in = new Scanner(System.in);
+      int cardChoice = 0;
 
+      // Loop while the user choose a bad move
+      while (true) {
+         try {
+            System.out.println("Veuillez choisir une carte : (0..3)");
+            for(Integer i : cards) {
+               readLineCardFileInfo(i);
+            }
+            int positionCard = in.nextInt();
+            if(positionCard < 0 || positionCard > ProtocolV1.HAND_SIZE) {
+               continue;
+            }
+            break;
+         } catch (InputMismatchException e) {
+            System.out.println("entrée non valide");
+         }
+      }
+      return cardChoice;
+   }
+   
+   public int readLineCardFileInfo(int lineNo) throws IllegalArgumentException {
+      try{
+         BufferedReader buff = new BufferedReader(new InputStreamReader(new FileInputStream("cards.txt")));
+         String line;
+         int counter = 0;
+         while ((line = buff.readLine())!=null){
+            if(counter == lineNo) {
+               String[] infosCard = line.split(";");
+               System.out.println(infosCard[1]);
+               return Integer.parseInt(infosCard[0]);
+            }
+            counter++;
+         }
+         buff.close(); 
+      } catch (Exception e){
+         System.out.println(e.toString());
+      }
+      throw new IllegalArgumentException("card number not valid");
+   }
+   
    public int getLocationChoice() {
       Scanner in = new Scanner(System.in);
       int positionChoice;
