@@ -20,7 +20,7 @@ public class ProtocolV1 {
    public final static String END_GAME         = "End";
    public final static String SEPARATOR = " ";
    
-   public final static String[] ERRORS = {"error1", "error2"};
+   public final static String[] ERRORS = {"Mauvaise commande utilisée", "error2"};
    
    public final static String ACCEPT_CONNECTION = "Accept";
    public final static String REFUSE_CONNECTION = "Refuse";

@@ -67,6 +67,28 @@ public class Server {
                            System.out.println("Message reçu : " + answer);
                            isGood = true;
                         } else {
+                           playersSockets.get(i).writeLine(ProtocolV1.ERRORS[0]);
+                           System.out.println("DEGUEU");
+                           isGood = false;
+                        }
+                     } while (!isGood);
+                  }
+                  
+                  for (int i = 0; i < 2; i++) {
+
+                     boolean isGood = false;
+                     do {
+                        System.out.println("Demande une carte au joueur " + i);
+                        playersSockets.get(i).writeLine(ProtocolV1.YOUR_TURN);
+
+                        System.out.println("Attente d'une carte au joueur " + i);
+                        String answer = playersSockets.get(i).readLine();
+
+                        if (answer.contains(ProtocolV1.USE_CARD)) {
+                           System.out.println("Message reçu : " + answer);
+                           isGood = true;
+                        } else {
+                           playersSockets.get(i).writeLine(ProtocolV1.ERRORS[0]);
                            System.out.println("DEGUEU");
                            isGood = false;
                         }
