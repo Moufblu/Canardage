@@ -38,7 +38,7 @@ public class Server {
 
    public void startServer() throws IOException 
    {
-    if (serverSocket != null || serverSocket.isBound()) 
+    if (serverSocket == null) 
     {
        serverSocket = new ServerSocket(ProtocolV1.PORT, MAX_NB_PLAYERS);
     }
@@ -102,7 +102,10 @@ public class Server {
    
    public boolean isRunning()
    {
-      return serverSocket.isBound();
+      if (serverSocket != null)
+         return (serverSocket.isBound());
+      
+      return false;
    }
    
    public static void main(String ... args)
@@ -112,7 +115,7 @@ public class Server {
       {
          try
          {
-         server.startServer();
+            server.startServer();
          }
          catch(IOException e)
          {
