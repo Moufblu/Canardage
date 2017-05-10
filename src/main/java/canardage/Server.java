@@ -39,8 +39,8 @@ public class Server {
          public void run() {
             if (nbPlayers < MAX_NB_PLAYERS) {
                try {
-                  
-                  for (int i = 0; i < 2; i++) {
+                  final int nbjoueursTest = 3;
+                  for (int i = 0; i < nbjoueursTest; i++) {
                      System.out.println("Attente d'une connexion au joueur " + i);
                      playersSockets.add(new Client(serverSocket.accept()));
                      nbPlayers++;
@@ -53,7 +53,7 @@ public class Server {
                      playersSockets.get(i).writeLine(ProtocolV1.messageHand(hand));
                   }
 
-                  for (int i = 0; i < 2; i++) {
+                  for (int i = 0; i < nbjoueursTest; i++) {
 
                      boolean isGood = false;
                      do {
@@ -73,8 +73,8 @@ public class Server {
                         }
                      } while (!isGood);
                   }
-                  
-                  for (int i = 0; i < 2; i++) {
+
+                  for (int i = 0; i < nbjoueursTest; i++) {
 
                      boolean isGood = false;
                      do {
@@ -95,7 +95,7 @@ public class Server {
                      } while (!isGood);
                   }
 
-                  for (int i = 0; i < 2; i++) {
+                  for (int i = 0; i < nbjoueursTest; i++) {
                      System.out.println("Annonce la fin de partie au joueur " + i);
                      playersSockets.get(i).writeLine(ProtocolV1.END_GAME);
 
@@ -109,14 +109,13 @@ public class Server {
             }
 
             //Uniquement pour itération 3
-            if (nbPlayers == 2) {
-               try {
-                  serverSocket.close();
+            try {
+               serverSocket.close();
 
-               } catch (IOException e) {
-                  System.out.println(e.getMessage());
-               }
+            } catch (IOException e) {
+               System.out.println(e.getMessage());
             }
+
          }
       });
       serverThread.start();
