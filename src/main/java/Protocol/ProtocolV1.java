@@ -1,6 +1,8 @@
 
 package Protocol;
 
+import canardage.Board;
+
 /**
  *
  */
@@ -133,4 +135,12 @@ public class ProtocolV1 {
       }
       return idError;
    }
+   /*
+   public static String messageBoardState() {
+      Board board = Board.getInstance();
+      String result = PATCH_BOARD;
+      result += SEPARATOR;
+      result += board.getBoardState();
+      return result;
+   }*/
 }
