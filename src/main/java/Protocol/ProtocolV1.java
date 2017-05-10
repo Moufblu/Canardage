@@ -29,7 +29,7 @@ public class ProtocolV1 {
    public final static int MIN_ID_CARD  = 0;
    public final static int MAX_ID_CARD  = 4;
    public final static int MIN_NO_POS   = 0;
-   public final static int MAX_NO_POS   = 5;
+   public final static int MAX_NO_POS   = 6;
 
    public final static int PORT       = 1337;
    
@@ -54,7 +54,7 @@ public class ProtocolV1 {
     * @throws IllegalArgumentException si le numéro de la position est impossible
     */
    public static String messageAskPosition(int noPosition) throws IllegalArgumentException{
-      if(noPosition < MIN_ID_CARD || noPosition > MAX_ID_CARD) {
+      if(noPosition < MIN_NO_POS || noPosition > MAX_NO_POS) {
          throw new IllegalArgumentException("numéro de case impossible: " + noPosition);
       }
       
