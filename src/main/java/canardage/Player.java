@@ -56,12 +56,14 @@ public class Player {
             switch (splittedCommand[0]){
                case ProtocolV1.ASK_FOR_POSITION:
                   writer.println(ProtocolV1.messageAskPosition(getLocationChoice()));
+                  writer.flush();
                   break;
                case ProtocolV1.DISTRIBUTE_CARD:
                   if(cards.size() > 0) {
                      throw new IllegalStateException("Action Cards of player full yet");
                   } else {
-                     cards.add(Integer.parseInt(splittedCommand[1]));
+                     
+                     cards.add(readLineCardFileInfo(Integer.parseInt(splittedCommand[1])));
                   }
                   break;
                case ProtocolV1.DISTRIBUTE_HAND:
@@ -69,7 +71,7 @@ public class Player {
                      throw new IllegalStateException("Action cards yet distributed");
                   } else {
                      for(int i = 1; i < ProtocolV1.HAND_SIZE + 1; i++) {
-                        cards.add(Integer.parseInt(splittedCommand[i]));
+                        cards.add(readLineCardFileInfo(Integer.parseInt(splittedCommand[i])));
                      }
                   }
                   break;
@@ -77,7 +79,8 @@ public class Player {
                   showBoard(splittedCommand);
                   break;
                case ProtocolV1.YOUR_TURN:
-                  writer.println(ProtocolV1.messageAskPosition(getCardChoice()));
+                  writer.println(ProtocolV1.messageUseCard(getCardChoice()));
+                  writer.flush();
                   break;
                case ProtocolV1.REFUSE_CARD:
                   System.out.println(ProtocolV1.ERRORS[Integer.parseInt(splittedCommand[1])]);
@@ -143,14 +146,15 @@ public class Player {
       // Loop while the user choose a bad move
       while (true) {
          try {
-            System.out.println("Veuillez choisir une carte : (0..3)");
+            System.out.println("Veuillez choisir une carte : (1..3)");
             for(Integer i : cards) {
                readLineCardFileInfo(i);
             }
             int positionCard = in.nextInt();
-            if(positionCard < 0 || positionCard > ProtocolV1.HAND_SIZE) {
+            if(positionCard <= 0 || positionCard > ProtocolV1.HAND_SIZE) {
                continue;
             }
+            cardChoice = cards.get(positionCard - 1);
             break;
          } catch (InputMismatchException e) {
             System.out.println("entrée non valide");

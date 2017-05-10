@@ -39,8 +39,8 @@ public class Server {
          public void run() {
             if (nbPlayers < MAX_NB_PLAYERS) {
                try {
-
-                  for (int i = 0; i < 2; i++) {
+                  final int nbjoueursTest = 3;
+                  for (int i = 0; i < nbjoueursTest; i++) {
                      System.out.println("Attente d'une connexion au joueur " + i);
                      playersSockets.add(new Client(serverSocket.accept()));
                      nbPlayers++;
@@ -53,7 +53,7 @@ public class Server {
                      playersSockets.get(i).writeLine(ProtocolV1.messageHand(hand));
                   }
 
-                  for (int i = 0; i < 2; i++) {
+                  for (int i = 0; i < nbjoueursTest; i++) {
 
                      boolean isGood = false;
                      do {
@@ -67,13 +67,35 @@ public class Server {
                            System.out.println("Message reçu : " + answer);
                            isGood = true;
                         } else {
+                           playersSockets.get(i).writeLine(ProtocolV1.ERRORS[0]);
                            System.out.println("DEGUEU");
                            isGood = false;
                         }
                      } while (!isGood);
                   }
 
-                  for (int i = 0; i < 2; i++) {
+                  for (int i = 0; i < nbjoueursTest; i++) {
+
+                     boolean isGood = false;
+                     do {
+                        System.out.println("Demande une carte au joueur " + i);
+                        playersSockets.get(i).writeLine(ProtocolV1.YOUR_TURN);
+
+                        System.out.println("Attente d'une carte au joueur " + i);
+                        String answer = playersSockets.get(i).readLine();
+
+                        if (answer.contains(ProtocolV1.USE_CARD)) {
+                           System.out.println("Message reçu : " + answer);
+                           isGood = true;
+                        } else {
+                           playersSockets.get(i).writeLine(ProtocolV1.ERRORS[0]);
+                           System.out.println("DEGUEU");
+                           isGood = false;
+                        }
+                     } while (!isGood);
+                  }
+
+                  for (int i = 0; i < nbjoueursTest; i++) {
                      System.out.println("Annonce la fin de partie au joueur " + i);
                      playersSockets.get(i).writeLine(ProtocolV1.END_GAME);
 
@@ -87,14 +109,13 @@ public class Server {
             }
 
             //Uniquement pour itération 3
-            if (nbPlayers == 2) {
-               try {
-                  serverSocket.close();
+            try {
+               serverSocket.close();
 
-               } catch (IOException e) {
-                  System.out.println(e.getMessage());
-               }
+            } catch (IOException e) {
+               System.out.println(e.getMessage());
             }
+
          }
       });
       serverThread.start();
