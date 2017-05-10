@@ -79,7 +79,7 @@ public class Player {
                   showBoard(splittedCommand);
                   break;
                case ProtocolV1.YOUR_TURN:
-                  writer.println(ProtocolV1.messageAskPosition(getCardChoice()));
+                  writer.println(ProtocolV1.messageUseCard(getCardChoice()));
                   writer.flush();
                   break;
                case ProtocolV1.REFUSE_CARD:
