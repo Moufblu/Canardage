@@ -104,4 +104,20 @@ public class Server {
    {
       return serverSocket.isBound();
    }
+   
+   public static void main(String ... args)
+   {
+      Server server = new Server();
+      if (!server.isRunning())
+      {
+         try
+         {
+         server.startServer();
+         }
+         catch(IOException e)
+         {
+            System.out.println(e.getMessage());
+         }
+      }
+   }
 }

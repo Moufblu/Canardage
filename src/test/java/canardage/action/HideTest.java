@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 
 public class HideTest {
    
@@ -66,7 +67,7 @@ public class HideTest {
    /**
     * Test of isPlayable method, of class Hide.
     */
-   @Test
+   @Ignore
    public void ADuckCanHideIfAdjacentIsADuck() {
       System.out.println("isPlayable");
       
@@ -94,7 +95,7 @@ public class HideTest {
    /**
     * Test of hasEffect method, of class Hide.
     */
-   @Test
+   @Ignore
    public void testHasEffectIfDucksInPlay() {
       System.out.println("hasEffect");
       board.setLocation(0, 2);
