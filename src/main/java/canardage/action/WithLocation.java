@@ -3,33 +3,39 @@ package canardage.action;
 import java.util.Scanner;
 
 /**
- *
+ * Description: Classe pour vérifier la position dans le tableau de jeu et pouvoir 
+ * jouer à une certaine position
+ * Date: 03.05.2017
  * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
+ * @version 0.1
  */
 public abstract class WithLocation extends Action {
-
+   
+   /**
+    * Constructeur de WithLocation (utile?)
+    */
    public WithLocation() {
       super();
    }
    
    /**
-    * to Override.
-    * check if we the choosen location is playable.
-    * @param position the number of the location
-    * @return true if we can play at this location
+    * Méthode à redéfinir dans les sous-classes pour savoir si la carte est jouable 
+    * à une position donnée
+    * @param position La position sur laquelle on veut jouer la carte
+    * @return Vrai si on peut jouer sur cette position, faux sinon
     */
    public abstract boolean isPlayable(int position);
    
    /**
-    * ask a location in console (to be modified later)
-    * @return the choosen number of the location
+    * Demande une position en console (à modifier)
+    * @return La position demandée à l'utilisateur
     */
    protected int getLocationChoice() {
       
       Scanner in = new Scanner(System.in);
       int positionChoice;
       
-      // Loop while the user choose a bad move
+      // Bocle tant que le choix de l'utilisateur est fausse
       while(true) {
          System.out.println("Veuillez entrer une position valide : (0..5)");
          positionChoice = in.nextInt();
@@ -41,8 +47,8 @@ public abstract class WithLocation extends Action {
    }
    
    /**
-    * 
-    * @return 
+    * Méthode qui vérifie si la carte possède un effet à ce moment sur le plateau
+    * @return Vrai si on peut la jouer, faux sinon
     */
    @Override
    public boolean hasEffect() {
