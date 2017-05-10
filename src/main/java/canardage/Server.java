@@ -39,27 +39,47 @@ public class Server {
          public void run() {
             if (nbPlayers < MAX_NB_PLAYERS) {
                try {
-                  Client client = new Client(serverSocket.accept());
-                  playersSockets.add(client);
-                  nbPlayers++;
 
-                  client.writeLine(ProtocolV1.ACCEPT_CONNECTION);
+                  for (int i = 0; i < 2; i++) {
+                     System.out.println("Attente d'une connexion au joueur " + i);
+                     playersSockets.add(new Client(serverSocket.accept()));
+                     nbPlayers++;
 
-                  int[] hand = {1, 2, 3};
-                  client.writeLine(ProtocolV1.messageHand(hand));
+                     System.out.println("Acceptation d'une connexion au joueur " + i);
+                     playersSockets.get(i).writeLine(ProtocolV1.ACCEPT_CONNECTION);
 
-                  client.writeLine(ProtocolV1.ASK_FOR_POSITION);
-
-                  String answer = client.readLine();
-                  if (answer.contains(ProtocolV1.ASK_FOR_POSITION)) {
-                     System.out.println("Tout va bien");
-                  } else {
-                     System.out.println("DEGUEU");
+                     System.out.println("Envoi d'une main au joueur " + i);
+                     int[] hand = {1, 2, 3};
+                     playersSockets.get(i).writeLine(ProtocolV1.messageHand(hand));
                   }
 
-                  client.writeLine(ProtocolV1.END_GAME);
+                  for (int i = 0; i < 2; i++) {
 
-                  client.close();
+                     boolean isGood = false;
+                     do {
+                        System.out.println("Demande une position au joueur " + i);
+                        playersSockets.get(i).writeLine(ProtocolV1.ASK_FOR_POSITION);
+
+                        System.out.println("Attente d'une position au joueur " + i);
+                        String answer = playersSockets.get(i).readLine();
+
+                        if (answer.contains(ProtocolV1.ASK_FOR_POSITION)) {
+                           System.out.println("Message reçu : " + answer);
+                           isGood = true;
+                        } else {
+                           System.out.println("DEGUEU");
+                           isGood = false;
+                        }
+                     } while (!isGood);
+                  }
+
+                  for (int i = 0; i < 2; i++) {
+                     System.out.println("Annonce la fin de partie au joueur " + i);
+                     playersSockets.get(i).writeLine(ProtocolV1.END_GAME);
+
+                     System.out.println("Ferme le client du joueur " + i);
+                     playersSockets.get(i).close();
+                  }
 
                } catch (IOException e) {
                   System.out.println(e.getMessage());
