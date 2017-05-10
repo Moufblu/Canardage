@@ -154,7 +154,7 @@ public class Player {
             if(positionCard <= 0 || positionCard > ProtocolV1.HAND_SIZE) {
                continue;
             }
-            cardChoice = cards.get(positionCard);
+            cardChoice = cards.get(positionCard - 1);
             break;
          } catch (InputMismatchException e) {
             System.out.println("entrée non valide");
