@@ -97,9 +97,11 @@ public class Player {
     * @param toShow 
     */
    public void showBoard(String[] toShow) {
+      System.out.println("Board : ");
       for(int i = 1; i < toShow.length; i++) {
          System.out.print(toShow[i] + " ");
       }
+      System.out.println("");
    }
    
    /**
