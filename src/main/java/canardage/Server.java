@@ -96,45 +96,20 @@ public class Server {
                }
             }
          }
-<<<<<<< HEAD
-      }
-    });
-    serverThread.start();
-  }
-   
-   public boolean isRunning()
-   {
-      if (serverSocket != null)
-         return (serverSocket.isBound());
-      
-      return false;
-=======
       });
       serverThread.start();
    }
 
    public boolean isRunning() {
       return serverSocket != null && serverSocket.isBound();
->>>>>>> 832835dc11fdce83c71fdb9421628032a85327fc
    }
 
    public static void main(String... args) {
       Server server = new Server();
-<<<<<<< HEAD
-      if (!server.isRunning())
-      {
-         try
-         {
-            server.startServer();
-         }
-         catch(IOException e)
-         {
-=======
       if (!server.isRunning()) {
          try {
             server.startServer();
          } catch (IOException e) {
->>>>>>> 832835dc11fdce83c71fdb9421628032a85327fc
             System.out.println(e.getMessage());
          }
       }
