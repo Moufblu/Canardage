@@ -39,7 +39,7 @@ public class Server {
          public void run() {
             if (nbPlayers < MAX_NB_PLAYERS) {
                try {
-
+                  
                   for (int i = 0; i < 2; i++) {
                      System.out.println("Attente d'une connexion au joueur " + i);
                      playersSockets.add(new Client(serverSocket.accept()));
