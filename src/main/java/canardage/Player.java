@@ -6,6 +6,8 @@ import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,6 +18,9 @@ import java.util.logging.Logger;
 public class Player {
    
    private final int HAND_CARDS_NUMBER = 3;
+   
+   private final String ENCODING_ALGORITHM = "SHA-256";
+   private final String FORMAT_TEXT = "UTF-8";
    
    private Socket clientSocket;
    private BufferedReader responseBuffer;
@@ -39,7 +44,7 @@ public class Player {
       }
    }
 
-   public void getServer() {
+   public void getServers() {
       boolean socketInitOk = false;
       while(!socketInitOk) {
          try {
@@ -51,7 +56,7 @@ public class Player {
                try {
                    socket.receive(datagram);
                    String msg = new String(datagram.getData());
-                   String[] msgs = msg.split(" ");
+                   Server server = JSON.from(msg);
                    if(!msg.equals("")) {
                       messageRed = true;
                    }
@@ -63,12 +68,27 @@ public class Player {
             System.out.println("socket creation fail");
          }
       }
-
-      
+   }
+   
+   private byte[] hash(String password) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+      MessageDigest md = MessageDigest.getInstance(ENCODING_ALGORITHM);
+      md.update(password.getBytes(FORMAT_TEXT));
+      return md.digest();
    }
    
    public void createServer(String name, String password) {
-      ServerManager server = new ServerManager(name, password);
+      byte[] hash;
+      try {
+         hash = hash(password);
+      } catch (NoSuchAlgorithmException ex) {
+         System.out.println("bad choice of hash algorithm");
+         return;
+      } catch (UnsupportedEncodingException ex) {
+         System.out.println("bad choice of text format");
+         return;
+      }
+      
+      ServerManager server = new ServerManager(name, hash);
       if (!server.isRunning()) {
          try {
             server.startServer();

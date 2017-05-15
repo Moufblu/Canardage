@@ -2,15 +2,18 @@ package canardage;
 
 import java.net.ServerSocket;
 import Protocol.ProtocolV1;
+import java.lang.reflect.Type;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
 
 /**
  *
@@ -18,8 +21,6 @@ import java.util.UUID;
 public class ServerManager {
 
    private byte[] hash;
-   private final String ENCODING_ALGORITHM = "SHA-256";
-   private final String FORMAT_TEXT = "UTF-8";
    private Thread thread;
    private Server server;
    
@@ -34,34 +35,45 @@ public class ServerManager {
 
    private List<Client> playersSockets;
 
-   public ServerManager(String name, String password) {
+   public ServerManager(String name, byte[] hash) {
       deck = new ArrayList<>(NB_ACTION_CARDS);
       playerCards = new ArrayList<>();
       playersSockets = new ArrayList<>();
       nbPlayers = 0;
-      encrypt(password);
+      
+      this.hash = hash;
       try {
          server = new Server(UUID.randomUUID(), name, InetAddress.getLocalHost().getHostAddress(), ProtocolV1.PORT);
       } catch (UnknownHostException ex) {
-         System.out.println("impossible de trouver l'adresse ip de l'hote");
+         System.out.println("impossible to find the ip address of the host");
       }
    }
    
    public void sendInfo() {
+      thread = new Thread(new Runnable() {
+         @Override
+         public void run() {
+            Gson gson = new Gson();
+            Type type = new TypeToken<Server>(){}.getType();
+            String msg = gson.toJson(server, type);
+            try {
+               DatagramSocket socket = new DatagramSocket(ProtocolV1.MULTICAST_PORT);
+               
+               while(true) {
+                  Thread.sleep(1);
+               }
+            } catch (SocketException ex) {
+               System.out.println("couldn't create socket");
+            } catch (InterruptedException ex) {
+               System.out.println("couldn't stop thread");
+            }
+         }
+         
+      });
       
    }
    
-   public void encrypt(String password) {
-      try {
-         MessageDigest md = MessageDigest.getInstance(ENCODING_ALGORITHM);
-         md.update(password.getBytes(FORMAT_TEXT));
-         hash = md.digest();
-      } catch (NoSuchAlgorithmException e) {
-         System.out.println("le type d'encryption n'existe pas");
-      } catch (UnsupportedEncodingException e) {
-         System.out.println("le type d'encodage de caractère n'est pas supporte");
-      }
-   }
+   
    public void startServer() throws IOException {
       if (serverSocket == null || serverSocket.isBound()) {
          serverSocket = new ServerSocket(ProtocolV1.PORT, MAX_NB_PLAYERS);

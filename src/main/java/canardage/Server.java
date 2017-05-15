@@ -1,9 +1,10 @@
 package canardage;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 
-public class Server {
+public class Server implements Serializable {
    
    private UUID uuid;
    private String name;
@@ -18,6 +19,7 @@ public class Server {
    }
    
    public String toString() {
-      return "name: " + name + "[" + ipAddress + "]:" + port;
+      return "name:" + name + "[" + ipAddress + ":" + port + "]";
    }
+   
 }
