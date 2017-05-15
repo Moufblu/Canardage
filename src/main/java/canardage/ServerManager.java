@@ -6,14 +6,18 @@ import java.lang.reflect.Type;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Timer;
 import java.util.List;
+import java.util.TimerTask;
 import java.util.UUID;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -23,7 +27,7 @@ public class ServerManager {
    private byte[] hash;
    private Thread thread;
    private Server server;
-   
+
    private final static int MAX_NB_PLAYERS = 6;
    private final static int NB_ACTION_CARDS = 10;
    private ServerSocket serverSocket;
@@ -40,40 +44,55 @@ public class ServerManager {
       playerCards = new ArrayList<>();
       playersSockets = new ArrayList<>();
       nbPlayers = 0;
-      
+
       this.hash = hash;
       try {
          server = new Server(UUID.randomUUID(), name, InetAddress.getLocalHost().getHostAddress(), ProtocolV1.PORT);
       } catch (UnknownHostException ex) {
          System.out.println("impossible to find the ip address of the host");
       }
+      sendInfo();
    }
-   
+
    public void sendInfo() {
       thread = new Thread(new Runnable() {
          @Override
          public void run() {
             Gson gson = new Gson();
-            Type type = new TypeToken<Server>(){}.getType();
+            Type type = new TypeToken<Server>() {}.getType();
             String msg = gson.toJson(server, type);
             try {
-               DatagramSocket socket = new DatagramSocket(ProtocolV1.MULTICAST_PORT);
-               
-               while(true) {
-                  Thread.sleep(1);
-               }
+               final DatagramSocket socket = new DatagramSocket();
+               socket.setBroadcast(true);
+               byte[] payload = msg.getBytes();
+               final DatagramPacket datagram = new DatagramPacket(payload,
+                       payload.length,
+                       InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS),
+                       ProtocolV1.MULTICAST_PORT);
+
+               new Timer().scheduleAtFixedRate(new TimerTask() {
+
+                  @Override
+                  public void run() {
+                     try {
+                        socket.send(datagram);
+                     } catch (IOException ex) {
+                        System.out.println(ex + " : error sending datagram");
+                     }
+                  }
+
+               }, 1000, 0);
             } catch (SocketException ex) {
-               System.out.println("couldn't create socket");
-            } catch (InterruptedException ex) {
-               System.out.println("couldn't stop thread");
+               System.out.println(ex + " : couldn't create socket");
+            } catch (UnknownHostException ex) {
+               System.out.println(ex + " : impossible to find the ip address of the host");
             }
          }
-         
+
       });
-      
+
    }
-   
-   
+
    public void startServer() throws IOException {
       if (serverSocket == null || serverSocket.isBound()) {
          serverSocket = new ServerSocket(ProtocolV1.PORT, MAX_NB_PLAYERS);
@@ -82,10 +101,10 @@ public class ServerManager {
       Thread serverThread = new Thread(new Runnable() {
          @Override
          public void run() {
-            
+
             Board.registerInstance(3);
             Board board = Board.getInstance();
-            
+
             if (nbPlayers < MAX_NB_PLAYERS) {
                try {
                   final int nbjoueursTest = 3;
@@ -106,10 +125,10 @@ public class ServerManager {
 
                      boolean isGood = false;
                      do {
-                        
+
                         System.out.println("Envoi du Board au joueur " + i);
                         playersSockets.get(i).writeLine(ProtocolV1.messageBoardState());
-                        
+
                         System.out.println("Demande une carte au joueur " + i);
                         playersSockets.get(i).writeLine(ProtocolV1.YOUR_TURN);
 
@@ -126,7 +145,6 @@ public class ServerManager {
                         }
                      } while (!isGood);
                   }
-
 
                   for (int i = 0; i < nbjoueursTest; i++) {
 
@@ -148,12 +166,12 @@ public class ServerManager {
                         }
                      } while (!isGood);
                   }
-                  
+
                   for (int i = 0; i < nbjoueursTest; i++) {
-                     
+
                      System.out.println("Envoi d'une erreur bidon");
                      playersSockets.get(i).writeLine(ProtocolV1.messageRefuse(1));
-                     
+
                      System.out.println("Annonce la fin de partie au joueur " + i);
                      playersSockets.get(i).writeLine(ProtocolV1.END_GAME);
 
@@ -181,16 +199,5 @@ public class ServerManager {
 
    public boolean isRunning() {
       return serverSocket != null && serverSocket.isBound();
-   }
-
-   public static void main(String... args) {
-      ServerManager server = new ServerManager();
-      if (!server.isRunning()) {
-         try {
-            server.startServer();
-         } catch (IOException e) {
-            System.out.println(e.getMessage());
-         }
-      }
    }
 }

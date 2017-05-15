@@ -2,15 +2,16 @@ package canardage;
 
 import java.net.Socket;
 import Protocol.ProtocolV1;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import java.io.*;
+import java.lang.reflect.Type;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -25,6 +26,7 @@ public class Player {
    private Socket clientSocket;
    private BufferedReader responseBuffer;
    private PrintWriter writer;
+   private Set<Server> servers;
 
    private List<Integer> cards;
 
@@ -35,13 +37,8 @@ public class Player {
     * @param adress 
     */
    public Player(String adress) {
-      cards = new ArrayList<Integer>();
-      
-      try {
-         connect(adress);
-      } catch (IOException e) {
-         System.out.println(e.toString());
-      }
+      cards = new ArrayList<>();
+      servers = new HashSet<>();
    }
 
    public void getServers() {
@@ -56,7 +53,9 @@ public class Player {
                try {
                    socket.receive(datagram);
                    String msg = new String(datagram.getData());
-                   Server server = JSON.from(msg);
+                   Gson gson = new Gson();
+                   Type type = new TypeToken<Server>() {}.getType();
+                   servers.add((Server)gson.fromJson(msg, type));
                    if(!msg.equals("")) {
                       messageRed = true;
                    }
@@ -173,9 +172,10 @@ public class Player {
     * @param adress
     * @throws IOException 
     */
-   public void connect(String adress) throws IOException {
+   public void connect(int no) throws IOException {
       if (!isConnected()) {
-         clientSocket = new Socket(adress, ProtocolV1.PORT);
+         Server server = (Server)servers.toArray()[no];
+         clientSocket = new Socket(server.getIpAddress(), ProtocolV1.PORT);
 
          responseBuffer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
          writer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
@@ -275,10 +275,10 @@ public class Player {
       return positionChoice;
    }
    
-   public static void main(String... args) {
-      Player player = new Player(args[0]);
-      player.getServer();
-   }
+//   public static void main(String... args) {
+//      Player player = new Player(args[0]);
+//      player.getServer();
+//   }
    
    public static void main(String... args) {
       Player player = new Player(args[0]);
