@@ -12,6 +12,8 @@ import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -19,6 +21,7 @@ import java.util.*;
 public class Player {
    
    private final int HAND_CARDS_NUMBER = 3;
+   private final long refreshDelay = 2000;
    
    private final String ENCODING_ALGORITHM = "SHA-256";
    private final String FORMAT_TEXT = "UTF-8";
@@ -47,7 +50,9 @@ public class Player {
          try {
             DatagramSocket socket = new DatagramSocket(ProtocolV1.MULTICAST_PORT);
             boolean messageRed = false;
-            while (true) {
+            long start = new Date().getTime();
+            long now = new Date().getTime();
+            while (now - start < refreshDelay) {
                byte[] buffer = new byte[2048];
                DatagramPacket datagram = new DatagramPacket(buffer, buffer.length);
                try {
@@ -60,8 +65,9 @@ public class Player {
                       messageRed = true;
                    }
                } catch (IOException ex) {
-                  System.out.println("lecture broadcast fail");
+                  System.out.println("read broadcast fail");
                }
+               now = new Date().getTime();
             }
          } catch (SocketException ex) {
             System.out.println("socket creation fail");
@@ -94,6 +100,12 @@ public class Player {
          } catch (IOException e) {
             System.out.println(e.getMessage());
          }
+      }
+   }
+   
+   public void showServers() {
+      for(Server s : servers) {
+         System.out.println(s.toString());
       }
    }
    
@@ -282,6 +294,47 @@ public class Player {
    
    public static void main(String... args) {
       Player player = new Player(args[0]);
-      player.createServer("plop", "NADIRPUTE");
+      boolean entryOk = false;
+      while(!entryOk) {
+         entryOk = true;
+         System.out.println("souhaitez-vous creer ou rejoindre un server ? (c/r)");
+         Scanner in = new Scanner(System.in);
+         String answer = in.next();
+         String answerNameServer = "";
+         if(answer.equals("c")) {
+            boolean nameNotRedondant = false;
+            while(!nameNotRedondant) {
+               nameNotRedondant = true;
+               player.getServers();
+               System.out.println("quel est le nom du serveur ?");
+               answerNameServer = in.next();
+               for(Server server : player.servers) {
+                  if(server.getName().equals(answerNameServer)) {
+                     nameNotRedondant = false;
+                  }
+               }
+            }
+            System.out.println("quel est le mot de passe ?");
+            String answerPassword = in.next();
+            player.createServer(answerNameServer, answerPassword);
+         } else if (answer.equals("r")) {
+            int answerNum = -2;
+            while(answerNum != -1) {
+               player.getServers();
+               player.showServers();
+               System.out.println("quel est le numero du serveur que vous souhaitez ? (-1 pour terminer)");
+               answerNum = in.nextInt();
+               try {
+                  player.connect(answerNum);
+               } catch (IOException ex) {
+                  answerNum = -2;
+                  System.out.println("le numero n'est pas valide");
+               }
+            }
+         } else {
+            entryOk = false;
+            System.out.println("fausse commande");
+         }
+      }
    }
 }
