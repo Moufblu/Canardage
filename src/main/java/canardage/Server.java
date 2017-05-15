@@ -30,6 +30,38 @@ public class Server implements Serializable {
       this.ipAddress = ipAddress;
       this.port = port;
    }
+
+   public String getIpAddress() {
+      return ipAddress;
+   }
+
+   public String getName() {
+      return name;
+   }
+
+   public int getPort() {
+      return port;
+   }
+
+   public UUID getUuid() {
+      return uuid;
+   }
+
+   public void setIpAddress(String ipAddress) {
+      this.ipAddress = ipAddress;
+   }
+
+   public void setName(String name) {
+      this.name = name;
+   }
+
+   public void setPort(int port) {
+      this.port = port;
+   }
+
+   public void setUuid(UUID uuid) {
+      this.uuid = uuid;
+   }
    
    /**
     * Affichage des attributs du serveur
