@@ -3,7 +3,12 @@ package canardage;
 import java.net.Socket;
 import Protocol.ProtocolV1;
 import java.io.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -34,6 +39,45 @@ public class Player {
       }
    }
 
+   public void getServer() {
+      boolean socketInitOk = false;
+      while(!socketInitOk) {
+         try {
+            DatagramSocket socket = new DatagramSocket(ProtocolV1.MULTICAST_PORT);
+            boolean messageRed = false;
+            while (true) {
+               byte[] buffer = new byte[2048];
+               DatagramPacket datagram = new DatagramPacket(buffer, buffer.length);
+               try {
+                   socket.receive(datagram);
+                   String msg = new String(datagram.getData());
+                   String[] msgs = msg.split(" ");
+                   if(!msg.equals("")) {
+                      messageRed = true;
+                   }
+               } catch (IOException ex) {
+                  System.out.println("lecture broadcast fail");
+               }
+            }
+         } catch (SocketException ex) {
+            System.out.println("socket creation fail");
+         }
+      }
+
+      
+   }
+   
+   public void createServer(String name, String password) {
+      ServerManager server = new ServerManager(name, password);
+      if (!server.isRunning()) {
+         try {
+            server.startServer();
+         } catch (IOException e) {
+            System.out.println(e.getMessage());
+         }
+      }
+   }
+   
    /**
     * 
     * @throws IllegalStateException 
@@ -213,6 +257,11 @@ public class Player {
    
    public static void main(String... args) {
       Player player = new Player(args[0]);
-      player.startGame();
+      player.getServer();
+   }
+   
+   public static void main(String... args) {
+      Player player = new Player(args[0]);
+      player.createServer("plop", "NADIRPUTE");
    }
 }
