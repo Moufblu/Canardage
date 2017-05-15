@@ -31,34 +31,66 @@ public class Server implements Serializable {
       this.port = port;
    }
 
+   /**
+    * Méthode pour retourner l'adresse IP du serveur
+    * @return L'adresse IP du serveur
+    */
    public String getIpAddress() {
       return ipAddress;
    }
 
+   /**
+    * Méthode pour retourner le nom du serveur
+    * @return Le nom du serveur
+    */
    public String getName() {
       return name;
    }
 
+   /**
+    * Méthode pour retourner le port du serveur
+    * @return Le port du serveur
+    */
    public int getPort() {
       return port;
    }
 
+   /**
+    * Méthode pour retourner l'UUID du serveur
+    * @return L'UUID du serveur
+    */
    public UUID getUuid() {
       return uuid;
    }
 
+   /**
+    * Méthode pour attribuer l'adresse IP du serveur
+    * @param ipAddress L'adresser IP donnée au serveur
+    */
    public void setIpAddress(String ipAddress) {
       this.ipAddress = ipAddress;
    }
 
+   /**
+    * Méthode pour attribuer le nom du serveur
+    * @param name Le nom donné au serveur
+    */
    public void setName(String name) {
       this.name = name;
    }
 
+   /**
+    * Méthode pour attribuer le port du serveur
+    * @param port Le port donné au serveur
+    */
    public void setPort(int port) {
       this.port = port;
    }
 
+   /**
+    * Méthode pour attribuer l'UUID du serveur
+    * @param uuid L'UUID donné au serveur
+    */
    public void setUuid(UUID uuid) {
       this.uuid = uuid;
    }

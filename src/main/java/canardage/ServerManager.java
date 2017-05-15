@@ -26,21 +26,26 @@ import java.util.UUID;
  */
 public class ServerManager {
 
-   private byte[] hash;
-   private Thread thread;
-   private Server server;
+   private byte[] hash;    // Tableau pour stocker les hash des mots de passe
+   private Thread thread;  // Threads pour les serveurs
+   private Server server;  // Le serveur en lui-même
 
-   private final static int MAX_NB_PLAYERS = 6;
-   private final static int NB_ACTION_CARDS = 10;
-   private ServerSocket serverSocket;
+   private final static int MAX_NB_PLAYERS = 6;    // Nombre maximum de joueur
+   private final static int NB_ACTION_CARDS = 10;  // Nombre de cartes action
+   private ServerSocket serverSocket;              // Le Socket du serveur
 
-   private List<Integer> deck;
-   private List<List<Integer>> playerCards;
+   private List<Integer> deck;               // La pile de cartes
+   private List<List<Integer>> playerCards;  // Les listes des cartes des joueurs
 
-   private int nbPlayers;
+   private int nbPlayers;  // Nombre de joueurs dans la partie
 
-   private List<Client> playersSockets;
+   private List<Client> playersSockets;   // Liste des Sockets des joueurs
 
+   /**
+    * Constructeur de la classe ServerManager
+    * @param name Le nom du serveur
+    * @param hash Le tableau avec les hash
+    */
    public ServerManager(String name, byte[] hash) {
       deck = new ArrayList<>(NB_ACTION_CARDS);
       playerCards = new ArrayList<>();
@@ -49,13 +54,20 @@ public class ServerManager {
 
       this.hash = hash;
       try {
-         server = new Server(UUID.randomUUID(), name, InetAddress.getLocalHost().getHostAddress(), ProtocolV1.PORT);
+         server = new Server(UUID.randomUUID(),
+                              name,
+                              InetAddress.getLocalHost().getHostAddress(),
+                              ProtocolV1.PORT);
       } catch (UnknownHostException ex) {
+         System.out.println("Impossible de trouver l'adresse IP du host.");
          System.out.println("impossible to find the ip address of the host");
       }
       sendInfo();
    }
 
+   /**
+    * Méthode qui envoie des informations comme réponse au client
+    */
    public void sendInfo() {
       thread = new Thread(new Runnable() {
          @Override
@@ -68,9 +80,9 @@ public class ServerManager {
                socket.setBroadcast(true);
                byte[] payload = msg.getBytes();
                final DatagramPacket datagram = new DatagramPacket(payload,
-                       payload.length,
-                       InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS),
-                       ProtocolV1.MULTICAST_PORT);
+                                 payload.length,
+                                 InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS),
+                                                       ProtocolV1.MULTICAST_PORT);
 
                new Timer().scheduleAtFixedRate(new TimerTask() {
 
@@ -85,22 +97,28 @@ public class ServerManager {
 
                }, 1000, 0);
             } catch (SocketException ex) {
+               System.out.println(ex + " : n'a pas pu créer le Socket.");
                System.out.println(ex + " : couldn't create socket");
             } catch (UnknownHostException ex) {
+               System.out.println(ex + " : impossible de trouver l'adresse IP du host.");
                System.out.println(ex + " : impossible to find the ip address of the host");
             }
          }
-
       });
-
    }
 
+   /**
+    * Initialisation du serveur
+    * @throws IOException Lancée si plusieurs des essais de créer quelquechose échoue
+    */
    public void startServer() throws IOException {
+      
       if (serverSocket == null || serverSocket.isBound()) {
          serverSocket = new ServerSocket(ProtocolV1.PORT, MAX_NB_PLAYERS);
       }
 
       Thread serverThread = new Thread(new Runnable() {
+         
          @Override
          public void run() {
 
@@ -142,7 +160,7 @@ public class ServerManager {
                            isGood = true;
                         } else {
                            playersSockets.get(i).writeLine(ProtocolV1.ERRORS[0]);
-                           System.out.println("DEGUEU");
+                           System.out.println("DEGUEU"); // With Naddy's voice
                            isGood = false;
                         }
                      } while (!isGood);
@@ -163,7 +181,7 @@ public class ServerManager {
                            isGood = true;
                         } else {
                            playersSockets.get(i).writeLine(ProtocolV1.ERRORS[0]);
-                           System.out.println("DEGUEU");
+                           System.out.println("DEGUEU"); // With Naddy's voice
                            isGood = false;
                         }
                      } while (!isGood);
@@ -171,7 +189,7 @@ public class ServerManager {
 
                   for (int i = 0; i < nbjoueursTest; i++) {
 
-                     System.out.println("Envoi d'une erreur bidon");
+                     System.out.println("Envoi d'une erreur bidon"); // POUTRE (?)
                      playersSockets.get(i).writeLine(ProtocolV1.messageRefuse(1));
 
                      System.out.println("Annonce la fin de partie au joueur " + i);
@@ -189,16 +207,18 @@ public class ServerManager {
             //Uniquement pour itération 3
             try {
                serverSocket.close();
-
             } catch (IOException e) {
                System.out.println(e.getMessage());
             }
-
          }
       });
       serverThread.start();
    }
 
+   /**
+    * Méthode qui vérifie que le serveur est en marche
+    * @return Vrai si il est en marche, faux sinon
+    */
    public boolean isRunning() {
       return serverSocket != null && serverSocket.isBound();
    }

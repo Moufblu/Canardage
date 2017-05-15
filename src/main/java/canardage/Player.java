@@ -21,36 +21,40 @@ import java.util.*;
  */
 public class Player {
    
-   private final int HAND_CARDS_NUMBER = 3;
+   private final int HAND_CARDS_NUMBER = 3;  // Nombre de cartes maximal d'un joueur
    
-   private final String ENCODING_ALGORITHM = "SHA-256";
-   private final String FORMAT_TEXT = "UTF-8";
+   private final String ENCODING_ALGORITHM = "SHA-256";  // Algorithme de hachage
+   private final String FORMAT_TEXT = "UTF-8";  // Format d'encodage du texte
    
-   private Socket clientSocket;
-   private BufferedReader responseBuffer;
-   private PrintWriter writer;
-   private Set<Server> servers;
+   private Socket clientSocket;           // Socket du client
+   private BufferedReader responseBuffer; // Buffer pour le réponse
+   private PrintWriter writer;            // Writer pour les envois d'informations
+   private Set<Server> servers;           // La liste des serveurs
 
-   private List<Integer> cards;
+   private List<Integer> cards;           // Liste des cartes
 
-   boolean connected = false;
+   boolean connected = false;             // Booléen pour connaître la connexion
 
+   // WTF are you doing here? Parmaètre inutile? D: À VÉRIFIER
    /**
-    * 
-    * @param adress 
+    * Constructeur de la classe Player
+    * @param adress L'adresse de la classe Player
     */
    public Player(String adress) {
       cards = new ArrayList<>();
       servers = new HashSet<>();
    }
 
+   /**
+    * Méthode pour obtenir les serveurs disponibles
+    */
    public void getServers() {
       boolean socketInitOk = false;
       while(!socketInitOk) {
          try {
             DatagramSocket socket = new DatagramSocket(ProtocolV1.MULTICAST_PORT);
             boolean messageRed = false;
-            while (true) {
+            while(true) {
                byte[] buffer = new byte[2048];
                DatagramPacket datagram = new DatagramPacket(buffer, buffer.length);
                try {
@@ -62,47 +66,63 @@ public class Player {
                    if(!msg.equals("")) {
                       messageRed = true;
                    }
-               } catch (IOException ex) {
+               } catch(IOException ex) {
+                  System.out.println("Erreur à la lecture du Broadcast.");
                   System.out.println("lecture broadcast fail");
                }
             }
-         } catch (SocketException ex) {
+         } catch(SocketException ex) {
+            System.out.println("Erreur à la création du Socket.");
             System.out.println("socket creation fail");
          }
       }
    }
    
-   private byte[] hash(String password) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+   /**
+    * Méthode de hachage des mots de passe
+    * @param password Mot de passe à faire le hachage
+    * @return Un tableau de byte avec le hash
+    * @throws NoSuchAlgorithmException Erreur en faisant le hash
+    * @throws UnsupportedEncodingException Erreur avec l'encodage
+    */
+   private byte[] hash(String password) throws NoSuchAlgorithmException,
+                                               UnsupportedEncodingException {
       MessageDigest md = MessageDigest.getInstance(ENCODING_ALGORITHM);
       md.update(password.getBytes(FORMAT_TEXT));
       return md.digest();
    }
    
+   /**
+    * Méthode pour la création du serveur
+    * @param name Le nom du serveur si donné
+    * @param password Le mot de passe pour la partie si donné
+    */
    public void createServer(String name, String password) {
       byte[] hash;
       try {
          hash = hash(password);
-      } catch (NoSuchAlgorithmException ex) {
+      } catch(NoSuchAlgorithmException ex) {
          System.out.println("bad choice of hash algorithm");
          return;
-      } catch (UnsupportedEncodingException ex) {
+      } catch(UnsupportedEncodingException ex) {
          System.out.println("bad choice of text format");
          return;
       }
       
       ServerManager server = new ServerManager(name, hash);
-      if (!server.isRunning()) {
+      if(!server.isRunning()) {
          try {
             server.startServer();
-         } catch (IOException e) {
+         } catch(IOException e) {
             System.out.println(e.getMessage());
          }
       }
    }
    
    /**
-    * 
-    * @throws IllegalStateException 
+    * Intialisation de la partie
+    * @throws IllegalStateException Lancée si trop de cartes dans la main du joueur, 
+    * si pas de cartespas de connexion avec le serveur
     */
    private void startGame() throws IllegalStateException {
       if (isConnected()) {
@@ -126,6 +146,7 @@ public class Player {
                   break;
                case ProtocolV1.DISTRIBUTE_CARD:
                   if(cards.size() > 0) {
+                     throw new IllegalStateException("Main du joueurs pleine");
                      throw new IllegalStateException("Action Cards of player full yet");
                   } else {
                      
@@ -134,6 +155,9 @@ public class Player {
                   break;
                case ProtocolV1.DISTRIBUTE_HAND:
                   if(cards.size() > 0) {
+                     // Aucun sense dans le message d'erreur, comprend pas :/
+                     // Vérification inversée? Jimmy shit? Am I a shit?
+                     // Beep beep I'm a sheep, Beepbeep I'm a sheep (8)
                      throw new IllegalStateException("Action cards yet distributed");
                   } else {
                      for(int i = 1; i < ProtocolV1.HAND_SIZE + 1; i++) {
@@ -152,15 +176,16 @@ public class Player {
                   System.out.println(ProtocolV1.ERRORS[Integer.parseInt(splittedCommand[1])]);
                   break;
             }
-         }while(!splittedCommand[0].equals(ProtocolV1.END_GAME));
+         } while(!splittedCommand[0].equals(ProtocolV1.END_GAME));
       } else {
-         throw new IllegalStateException("vous devez vous connecter à un serveur avant de pouvoir commencer une partie");
+         throw new IllegalStateException("Vous devez vous connecter à un serveur "
+                                       + "avant de pouvoir commencer une partie.");
       }
    }
    
    /**
-    * 
-    * @param toShow 
+    * Affichage du plateau de jeu
+    * @param toShow Tableau de String avec ce qu'il faut afficher
     */
    public void showBoard(String[] toShow) {
       System.out.println("Board : ");
@@ -171,12 +196,12 @@ public class Player {
    }
    
    /**
-    * 
-    * @param adress
-    * @throws IOException 
+    * Méthode pour réaliser la connexion
+    * @param no Le numéro du serveur à initialiser
+    * @throws IOException Erreur si on refuse la connexion
     */
    public void connect(int no) throws IOException {
-      if (!isConnected()) {
+      if(!isConnected()) {
          Server server = (Server)servers.toArray()[no];
          clientSocket = new Socket(server.getIpAddress(), ProtocolV1.PORT);
 
@@ -184,36 +209,39 @@ public class Player {
          writer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
 
          //We read the first answer from the server
+         // On lit la première réponse du serveur
          String answer = responseBuffer.readLine();
-
-         if (answer.equals(ProtocolV1.ACCEPT_CONNECTION)) {
+         // Ici ça propose un switch, on transforme en switch? (pas la console, on est pauvre)
+         if(answer.equals(ProtocolV1.ACCEPT_CONNECTION)) {
             connected = true;
-         } else if (answer.equals(ProtocolV1.REFUSE_CONNECTION)) {
+         } else if(answer.equals(ProtocolV1.REFUSE_CONNECTION)) {
+            System.out.println("Connexion refusée.");
             System.out.println("Connection Refusee");
          } else {
-            System.out.println("reponse reçue: " + answer);
+            System.out.println("Réponse reçue: " + answer);
          }
       }
    }
 
    /**
-    * 
-    * @return 
+    * Méthode pour vérifier si on est connecté
+    * @return Vrai si on est connecté, faux sinon
     */
    public boolean isConnected() {
       return connected;
    }
    
    /**
-    * 
-    * @return 
+    * Obtention de la carte choisie par le joueur pour être utilisée
+    * @return Le numéro de la carte à utiliser
     */
    public int getCardChoice() {
       Scanner in = new Scanner(System.in);
       int cardChoice = 0;
 
       // Loop while the user choose a bad move
-      while (true) {
+      // Boucke tant que le joueur ne choisi pas le bon numéro d'une carte
+      while(true) {
          try {
             System.out.println("Veuillez choisir une carte : (1..3)");
             for(Integer i : cards) {
@@ -226,17 +254,18 @@ public class Player {
             cardChoice = cards.get(positionCard - 1);
             break;
          } catch (InputMismatchException e) {
-            System.out.println("entrée non valide");
+            System.out.println("Entrée non valide.");
          }
       }
       return cardChoice;
    }
    
+   // Not sure of what I'm saying :/
    /**
-    * 
-    * @param lineNo
-    * @return
-    * @throws IllegalArgumentException 
+    * Méthode pour la lecture de la carte selectionnée
+    * @param lineNo Le numéro de la carte
+    * @return L'information sur la carte
+    * @throws IllegalArgumentException Lancée si le numéro de la carte est erroné
     */
    public int readLineCardFileInfo(int lineNo) throws IllegalArgumentException {
       try{
@@ -252,27 +281,32 @@ public class Player {
             counter++;
          }
          buff.close(); 
-      } catch (Exception e){
+      } catch (Exception e){ // Pourquoi une exception ici (qui en plus veut rien dire) 
+                             // et qui n'est pas dans le throw? Puis Java propose des erreurs
+                             // Jimmy, Alt + Enter, pls
          System.out.println(e.toString());
       }
+      throw new IllegalArgumentException("Numéro de carte invalide.");
       throw new IllegalArgumentException("card number not valid");
    }
    
    /**
-    * 
-    * @return 
+    * Méthode qui nous donne le choix de position donnée par un joueur
+    * @return La position choisie
     */
    public int getLocationChoice() {
       Scanner in = new Scanner(System.in);
       int positionChoice;
 
-      while (true) {
+      while(true) {
          try {
+            // Pourquoi les positions entre 0 et 5 et pas 1 et 6 comme pour les cartes? :o
+            // Seems legit if 1-6 instead of 0-5 (?)
             System.out.println("Veuillez entrer une position valide : (0..5)");
             positionChoice = in.nextInt();
             break;
-         } catch (InputMismatchException e) {
-            System.out.println("entrée non valide");
+         } catch(InputMismatchException e) {
+            System.out.println("Entrée non valide");
          }
       }
       return positionChoice;
@@ -283,6 +317,11 @@ public class Player {
 //      player.getServer();
 //   }
    
+   /**
+    * Ara ma... mein no comento wa hitsuyou nanda? Soretomo, do demo ii?
+    * Commentaires dans le main nécessaire ou fuck it?
+    * @param args Nani kono kuso mushi?
+    */
    public static void main(String... args) {
       Player player = new Player(args[0]);
       player.createServer("plop", "NADIRPUTE");
