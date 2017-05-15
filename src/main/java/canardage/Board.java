@@ -6,9 +6,8 @@ import java.util.LinkedList;
 import canardage.action.*;
 
 /**
- * Description: Classe principale dans laquelle on implémente le tableau de jeu Date:
- * 19.04.2017
- *
+ * Description: Classe principale dans laquelle on implémente le plateau de jeu
+ * Date: 19.04.2017
  * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
  * @version 0.1
  */

@@ -9,11 +9,12 @@ import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
- *
+ * Description: Classe pour créer et gérer les joueurs d'une partie
+ * Date: 03.05.2017
+ * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
+ * @version 0.1
  */
 public class Player {
    

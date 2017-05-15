@@ -14,9 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-
 /**
- *
+ * Description: Classe pour la partie d'implémentation complète du serveur de la 
+ * connexion client-serveur
+ * Date: 03.05.2017
+ * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
+ * @version 0.1
  */
 public class ServerManager {
 
