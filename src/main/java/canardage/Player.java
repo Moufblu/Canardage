@@ -56,14 +56,14 @@ public class Player {
                byte[] buffer = new byte[2048];
                DatagramPacket datagram = new DatagramPacket(buffer, buffer.length);
                try {
+                   System.out.println("ok");
                    socket.receive(datagram);
+                   System.out.println("ok2");
                    String msg = new String(datagram.getData());
                    Gson gson = new Gson();
                    Type type = new TypeToken<Server>() {}.getType();
                    servers.add((Server)gson.fromJson(msg, type));
-                   if(!msg.equals("")) {
-                      messageRed = true;
-                   }
+                   System.out.println(servers);
                } catch (IOException ex) {
                   System.out.println("read broadcast fail");
                }
@@ -305,7 +305,7 @@ public class Player {
             boolean nameNotRedondant = false;
             while(!nameNotRedondant) {
                nameNotRedondant = true;
-               player.getServers();
+               //player.getServers();
                System.out.println("quel est le nom du serveur ?");
                answerNameServer = in.next();
                for(Server server : player.servers) {

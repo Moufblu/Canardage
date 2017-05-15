@@ -81,7 +81,7 @@ public class ServerManager {
                      }
                   }
 
-               }, 1000, 0);
+               }, 1000, 1);
             } catch (SocketException ex) {
                System.out.println(ex + " : couldn't create socket");
             } catch (UnknownHostException ex) {
@@ -90,7 +90,7 @@ public class ServerManager {
          }
 
       });
-
+      thread.start();
    }
 
    public void startServer() throws IOException {
