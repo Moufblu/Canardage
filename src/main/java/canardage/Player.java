@@ -47,11 +47,12 @@ public class Player {
    }
 
    public void getServers() {
-      MulticastSocket socket;
+      //MulticastSocket socket;
       try {
          servers.clear();
-         socket = new MulticastSocket(ProtocolV1.MULTICAST_PORT);
-         socket.joinGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
+         //socket = new MulticastSocket(ProtocolV1.MULTICAST_PORT);
+         //socket.joinGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
+         DatagramSocket socket = new DatagramSocket(ProtocolV1.MULTICAST_PORT, InetAddress.getByName("0.0.0.0"));
          boolean messageRed = false;
          long start = new Date().getTime();
          while (new Date().getTime() - start < refreshDelay) {
@@ -60,6 +61,7 @@ public class Player {
             DatagramPacket datagram = new DatagramPacket(buffer, buffer.length);
             socket.receive(datagram);
             String msg = new String(datagram.getData());
+            System.out.println(msg);
             msg = msg.substring(0, msg.lastIndexOf('}') + 1);
             Gson gson = new Gson();
             Type type = new TypeToken<Server>() {}.getType();
@@ -67,7 +69,7 @@ public class Player {
                servers.add((Server)gson.fromJson(msg, type));
             }
          }
-         socket.leaveGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
+         //socket.leaveGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
       } catch (SocketException ex) {
          System.out.println("socket creation fail");
       } catch (IOException ex) {
