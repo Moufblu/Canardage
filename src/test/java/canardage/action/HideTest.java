@@ -24,11 +24,12 @@ public class HideTest {
       board = Board.getInstance();
       hide = new Hide();
       
+      board.shuffleAll();
+      
       for (int i = 0; i < board.getNbLocations(); i++)
       {
-         board.setLocation(i, 1);
-         board.setTarget(i, false);
          board.setGuard(i, false);
+         board.setTarget(i, false);
       }
    }
 
@@ -67,7 +68,7 @@ public class HideTest {
    /**
     * Test of isPlayable method, of class Hide.
     */
-   @Ignore
+   @Test
    public void ADuckCanHideIfAdjacentIsADuck() {
       System.out.println("isPlayable");
       
@@ -95,7 +96,7 @@ public class HideTest {
    /**
     * Test of hasEffect method, of class Hide.
     */
-   @Ignore
+   @Test
    public void testHasEffectIfDucksInPlay() {
       System.out.println("hasEffect");
       board.setLocation(0, 2);
@@ -124,13 +125,14 @@ public class HideTest {
       assertFalse(hide.hasEffect());
    }
    
-   @Ignore
+   @Test
    public void testHasNoEffectIfAllPlacesHaveAlreadyAHiddenDuck() {
       System.out.println("hasEffect");
-      for(int i = 0; i < Board.NB_LOCATIONS; i++){
+      for(int i = Board.NB_LOCATIONS - 1; i > 0; i--){
          board.setLocation(i, 2);
-         board.setLocation(i + 1, 2);
-         board.hide(i, true);
+         board.setLocation(i - 1, 2);
+         board.hide(i - 1, true);
+         System.out.println(board);
       }
       
       System.out.println(board);
