@@ -62,8 +62,10 @@ public class Player {
                socket.receive(datagram);
                System.out.println("ok2");
                String msg = new String(datagram.getData());
+               msg = msg.substring(0, msg.lastIndexOf('}') + 1);
                Gson gson = new Gson();
                Type type = new TypeToken<Server>() {}.getType();
+               System.out.println(msg + "#");
                servers.add((Server)gson.fromJson(msg, type));
                now = new Date().getTime();
             }
