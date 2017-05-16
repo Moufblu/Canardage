@@ -27,5 +27,10 @@ Any value defined here will override the pom.xml file value but is only applicab
         <org-netbeans-modules-editor-indent.CodeStyle.project.text-limit-width>85</org-netbeans-modules-editor-indent.CodeStyle.project.text-limit-width>
         <org-netbeans-modules-editor-indent.CodeStyle.project.expand-tabs>true</org-netbeans-modules-editor-indent.CodeStyle.project.expand-tabs>
         <org-netbeans-modules-editor-indent.CodeStyle.usedProfile>project</org-netbeans-modules-editor-indent.CodeStyle.usedProfile>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceBeforeIfParen>false</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceBeforeIfParen>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceBeforeCatchParen>false</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceBeforeCatchParen>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceBeforeSwitchParen>false</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceBeforeSwitchParen>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceBeforeForParen>false</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceBeforeForParen>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceBeforeWhileParen>false</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceBeforeWhileParen>
     </properties>
 </project-shared-configuration>

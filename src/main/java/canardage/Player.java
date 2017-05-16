@@ -158,7 +158,7 @@ public class Player {
                case ProtocolV1.DISTRIBUTE_CARD:
                   if(cards.size() > 0) {
                      throw new IllegalStateException("Main du joueurs pleine");
-                     throw new IllegalStateException("Action Cards of player full yet");
+//                     throw new IllegalStateException("Action Cards of player full yet");
                   } else {
 
                      cards.add(readLineCardFileInfo(Integer.parseInt(splittedCommand[1])));
@@ -298,7 +298,7 @@ public class Player {
          System.out.println(e.toString());
       }
       throw new IllegalArgumentException("Numéro de carte invalide.");
-      throw new IllegalArgumentException("card number not valid");
+//      throw new IllegalArgumentException("card number not valid");
    }
 
    /**
