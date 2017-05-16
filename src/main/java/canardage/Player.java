@@ -58,7 +58,9 @@ public class Player {
             System.out.println(new Date().getTime() - start);
             byte[] buffer = new byte[2048];
             DatagramPacket datagram = new DatagramPacket(buffer, buffer.length);
+            System.out.println("ok");
             socket.receive(datagram);
+            System.out.println("ok2");
             String msg = new String(datagram.getData());
             msg = msg.substring(0, msg.lastIndexOf('}') + 1);
             Gson gson = new Gson();
@@ -188,12 +190,13 @@ public class Player {
       if (!isConnected()) {
          Server server = (Server) servers.toArray()[no];
          clientSocket = new Socket(server.getIpAddress(), ProtocolV1.PORT);
-
+         
          responseBuffer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
          writer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
 
          //We read the first answer from the server
          String answer = responseBuffer.readLine();
+         
 
          if (answer.equals(ProtocolV1.ACCEPT_CONNECTION)) {
             connected = true;
@@ -202,6 +205,9 @@ public class Player {
          } else {
             System.out.println("reponse reçue: " + answer);
          }
+      }
+      else {
+         System.out.println("deja connecte");
       }
    }
 
@@ -316,9 +322,22 @@ public class Player {
             System.out.println("quel est le mot de passe ?");
             String answerPassword = in.next();
             player.createServer(answerNameServer, answerPassword);
+            do {
+               System.out.println("'go' pour commencer!!!");
+               answer = in.next();
+               if(answer.equals("go")) {
+                  try {
+                  //startGame
+                     break;
+                  } catch(Exception e) {
+                     
+                  }
+               }
+            } while(true);
+            
          } else if (answer.equals("r")) {
             int answerNum = -2;
-            while (answerNum != -1) {
+            while (!player.connected) {
                player.getServers();
                player.showServers();
                System.out.println("quel est le numero du serveur que vous souhaitez ? (-1 pour terminer)");
@@ -334,6 +353,8 @@ public class Player {
             entryOk = false;
             System.out.println("fausse commande");
          }
+         
+         player.startGame();
       }
    }
 }

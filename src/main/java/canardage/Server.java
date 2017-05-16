@@ -18,6 +18,7 @@ public class Server implements Serializable {
       this.port = port;
    }
 
+   
    public String getIpAddress() {
       return ipAddress;
    }
@@ -53,5 +54,14 @@ public class Server implements Serializable {
    public String toString() {
       return "name:" + name + "[" + ipAddress + ":" + port + "]";
    }
-   
+
+   @Override
+   public int hashCode() {
+      return uuid.hashCode();
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      return uuid.equals(((Server)obj).uuid);
+   }
 }
