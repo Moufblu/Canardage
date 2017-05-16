@@ -10,6 +10,7 @@ import java.lang.reflect.Type;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.security.MessageDigest;
@@ -48,12 +49,17 @@ public class Player {
    }
 
    public void getServers() {
-      //MulticastSocket socket;
+      MulticastSocket socket;
       try {
+         Socket testSocket = new Socket();
+         testSocket.connect(new InetSocketAddress("google.com", 80));
+         String ipAddress = testSocket.getLocalAddress().getHostAddress();
+         testSocket.close();
          servers.clear();
-         //socket = new MulticastSocket(ProtocolV1.MULTICAST_PORT);
-         //socket.joinGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
-         DatagramSocket socket = new DatagramSocket(ProtocolV1.MULTICAST_PORT, InetAddress.getByName("0.0.0.0"));
+         socket = new MulticastSocket(ProtocolV1.MULTICAST_PORT);
+         socket.setInterface(InetAddress.getByName(ipAddress));
+         socket.joinGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
+         //DatagramSocket socket = new DatagramSocket(ProtocolV1.MULTICAST_PORT, InetAddress.getByName("0.0.0.0"));
          boolean messageRed = false;
          long start = new Date().getTime();
          while (new Date().getTime() - start < refreshDelay) {
@@ -72,7 +78,7 @@ public class Player {
                servers.add((Server)gson.fromJson(msg, type));
             }
          }
-         //socket.leaveGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
+         socket.leaveGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
       } catch (SocketException ex) {
          System.out.println("socket creation fail");
       } catch (IOException ex) {
@@ -200,7 +206,6 @@ public class Player {
          //We read the first answer from the server
          String answer = responseBuffer.readLine();
          
-
          if (answer.equals(ProtocolV1.ACCEPT_CONNECTION)) {
             connected = true;
          } else if (answer.equals(ProtocolV1.REFUSE_CONNECTION)) {
