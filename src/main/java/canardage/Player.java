@@ -100,7 +100,7 @@ public class Player {
       ServerManager server = new ServerManager(name, hash);
       if (!server.isRunning()) {
          try {
-            server.startServer();
+            server.acceptClients();
          } catch (IOException e) {
             System.out.println(e.getMessage());
          }
@@ -199,7 +199,6 @@ public class Player {
          //We read the first answer from the server
          String answer = responseBuffer.readLine();
          
-
          if (answer.equals(ProtocolV1.ACCEPT_CONNECTION)) {
             connected = true;
          } else if (answer.equals(ProtocolV1.REFUSE_CONNECTION)) {

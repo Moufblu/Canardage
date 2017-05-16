@@ -28,6 +28,9 @@ public class ProtocolV1 {
    public final static String ACCEPT_CONNECTION = "Accept";
    public final static String REFUSE_CONNECTION = "Refuse";
    
+   public final static String HASH = "Hash";
+   public final static int HASH_SIZE = 64;
+   
    public final static int HAND_SIZE    = 3;
    public final static int MIN_ID_CARD  = 0;
    public final static int MAX_ID_CARD  = 4;
@@ -86,6 +89,16 @@ public class ProtocolV1 {
       for(int i = 0; i < HAND_SIZE; i++) {
          result += SEPARATOR + idCards[i];
       }
+      return result;
+   }
+   
+   public static String messageHand(String hash) throws IllegalArgumentException{
+      //check si la taille du tableau est bien celle d'une main
+      if (hash.length() != HASH_SIZE) {
+         throw new IllegalArgumentException("hash invalide size: " + hash.length());
+      }
+      
+      String result = HASH + SEPARATOR + hash;
       return result;
    }
    
