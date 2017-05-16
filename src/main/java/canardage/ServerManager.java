@@ -160,7 +160,7 @@ public class ServerManager {
          String expectedAnswer = ProtocolV1.USE_CARD + ProtocolV1.SEPARATOR + 4;
 
          do {
-            System.out.println("Demande d'une carte");
+            System.out.println("Asking for card");
             player.writeLine(ProtocolV1.YOUR_TURN);
             
             try {
@@ -174,7 +174,7 @@ public class ServerManager {
          
          do {
             answer = "";
-            System.out.println("Demande d'une position");
+            System.out.println("Asking for position");
             player.writeLine(ProtocolV1.ASK_FOR_POSITION);
             
             try {
@@ -185,7 +185,13 @@ public class ServerManager {
          } while (!answer.contains(ProtocolV1.ASK_FOR_POSITION));
          
          String[] temp = answer.split(ProtocolV1.SEPARATOR);
-         System.out.println("Player played in the position " + temp[1]);
+         int position = Integer.valueOf(temp[1]);
+         System.out.println("Player played in the position " + position);
+         
+         board.setTarget(position, true);
+         
+         System.out.println("Sending updated board");
+         player.writeLine(ProtocolV1.messageBoardState());
       }
       
       
