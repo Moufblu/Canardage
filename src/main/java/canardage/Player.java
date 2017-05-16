@@ -7,7 +7,8 @@ import com.google.gson.reflect.TypeToken;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -22,6 +23,7 @@ import java.util.*;
 public class Player {
    
    private final int HAND_CARDS_NUMBER = 3;  // Nombre de cartes maximal d'un joueur
+   private final long refreshDelay = 2000;
    
    private final String ENCODING_ALGORITHM = "SHA-256";  // Algorithme de hachage
    private final String FORMAT_TEXT = "UTF-8";  // Format d'encodage du texte
@@ -35,12 +37,10 @@ public class Player {
 
    boolean connected = false;             // Booléen pour connaître la connexion
 
-   // WTF are you doing here? Parmaètre inutile? D: À VÉRIFIER
    /**
     * Constructeur de la classe Player
-    * @param adress L'adresse de la classe Player
     */
-   public Player(String adress) {
+   public Player() {
       cards = new ArrayList<>();
       servers = new HashSet<>();
    }
@@ -50,30 +50,35 @@ public class Player {
     */
    public void getServers() {
       boolean socketInitOk = false;
-      while(!socketInitOk) {
+      while (!socketInitOk) {
+         MulticastSocket socket;
          try {
-            DatagramSocket socket = new DatagramSocket(ProtocolV1.MULTICAST_PORT);
+            socket = new MulticastSocket(ProtocolV1.MULTICAST_PORT);
+            socket.joinGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
             boolean messageRed = false;
-            while(true) {
+            long start = new Date().getTime();
+            long now = new Date().getTime();
+            while (now - start < refreshDelay) {
                byte[] buffer = new byte[2048];
                DatagramPacket datagram = new DatagramPacket(buffer, buffer.length);
-               try {
-                   socket.receive(datagram);
-                   String msg = new String(datagram.getData());
-                   Gson gson = new Gson();
-                   Type type = new TypeToken<Server>() {}.getType();
-                   servers.add((Server)gson.fromJson(msg, type));
-                   if(!msg.equals("")) {
-                      messageRed = true;
-                   }
-               } catch(IOException ex) {
-                  System.out.println("Erreur à la lecture du Broadcast.");
-                  System.out.println("lecture broadcast fail");
-               }
+               System.out.println("ok");
+               socket.receive(datagram);
+               System.out.println("ok2");
+               String msg = new String(datagram.getData());
+               msg = msg.substring(0, msg.lastIndexOf('}') + 1);
+               Gson gson = new Gson();
+               Type type = new TypeToken<Server>() {}.getType();
+               System.out.println(msg + "#");
+               servers.add((Server)gson.fromJson(msg, type));
+               now = new Date().getTime();
             }
+            socket.leaveGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
          } catch(SocketException ex) {
             System.out.println("Erreur à la création du Socket.");
             System.out.println("socket creation fail");
+         } catch(IOException ex) {
+            System.out.println("Erreur à la lecture du Broadcast.");
+            System.out.println("Read broadcast fail");
          }
       }
    }
@@ -108,7 +113,7 @@ public class Player {
          System.out.println("bad choice of text format");
          return;
       }
-      
+
       ServerManager server = new ServerManager(name, hash);
       if(!server.isRunning()) {
          try {
@@ -118,7 +123,13 @@ public class Player {
          }
       }
    }
-   
+
+   public void showServers() {
+      for (Server s : servers) {
+         System.out.println(s.toString());
+      }
+   }
+
    /**
     * Intialisation de la partie
     * @throws IllegalStateException Lancée si trop de cartes dans la main du joueur, 
@@ -126,20 +137,20 @@ public class Player {
     */
    private void startGame() throws IllegalStateException {
       if (isConnected()) {
-         
+
          String inputServer;
          String[] splittedCommand = {""};
-         
+
          do {
             try {
                inputServer = responseBuffer.readLine();
                splittedCommand = inputServer.split(ProtocolV1.SEPARATOR);
-            } catch(IOException e) {
+            } catch (IOException e) {
                System.out.println(e.toString());
                continue;
             }
-            
-            switch (splittedCommand[0]){
+
+            switch (splittedCommand[0]) {
                case ProtocolV1.ASK_FOR_POSITION:
                   writer.println(ProtocolV1.messageAskPosition(getLocationChoice()));
                   writer.flush();
@@ -149,7 +160,7 @@ public class Player {
                      throw new IllegalStateException("Main du joueurs pleine");
                      throw new IllegalStateException("Action Cards of player full yet");
                   } else {
-                     
+
                      cards.add(readLineCardFileInfo(Integer.parseInt(splittedCommand[1])));
                   }
                   break;
@@ -160,7 +171,7 @@ public class Player {
                      // Beep beep I'm a sheep, Beepbeep I'm a sheep (8)
                      throw new IllegalStateException("Action cards yet distributed");
                   } else {
-                     for(int i = 1; i < ProtocolV1.HAND_SIZE + 1; i++) {
+                     for (int i = 1; i < ProtocolV1.HAND_SIZE + 1; i++) {
                         cards.add(readLineCardFileInfo(Integer.parseInt(splittedCommand[i])));
                      }
                   }
@@ -182,19 +193,19 @@ public class Player {
                                        + "avant de pouvoir commencer une partie.");
       }
    }
-   
+
    /**
     * Affichage du plateau de jeu
     * @param toShow Tableau de String avec ce qu'il faut afficher
     */
    public void showBoard(String[] toShow) {
       System.out.println("Board : ");
-      for(int i = 1; i < toShow.length; i++) {
+      for (int i = 1; i < toShow.length; i++) {
          System.out.print(toShow[i] + " ");
       }
       System.out.println("");
    }
-   
+
    /**
     * Méthode pour réaliser la connexion
     * @param no Le numéro du serveur à initialiser
@@ -230,7 +241,7 @@ public class Player {
    public boolean isConnected() {
       return connected;
    }
-   
+
    /**
     * Obtention de la carte choisie par le joueur pour être utilisée
     * @return Le numéro de la carte à utiliser
@@ -244,11 +255,11 @@ public class Player {
       while(true) {
          try {
             System.out.println("Veuillez choisir une carte : (1..3)");
-            for(Integer i : cards) {
+            for (Integer i : cards) {
                readLineCardFileInfo(i);
             }
             int positionCard = in.nextInt();
-            if(positionCard <= 0 || positionCard > ProtocolV1.HAND_SIZE) {
+            if (positionCard <= 0 || positionCard > ProtocolV1.HAND_SIZE) {
                continue;
             }
             cardChoice = cards.get(positionCard - 1);
@@ -268,12 +279,12 @@ public class Player {
     * @throws IllegalArgumentException Lancée si le numéro de la carte est erroné
     */
    public int readLineCardFileInfo(int lineNo) throws IllegalArgumentException {
-      try{
+      try {
          BufferedReader buff = new BufferedReader(new InputStreamReader(new FileInputStream("cards.txt")));
          String line;
          int counter = 0;
-         while ((line = buff.readLine())!=null){
-            if(counter == lineNo) {
+         while ((line = buff.readLine()) != null) {
+            if (counter == lineNo) {
                String[] infosCard = line.split(";");
                System.out.println(infosCard[1]);
                return Integer.parseInt(infosCard[0]);
@@ -289,7 +300,7 @@ public class Player {
       throw new IllegalArgumentException("Numéro de carte invalide.");
       throw new IllegalArgumentException("card number not valid");
    }
-   
+
    /**
     * Méthode qui nous donne le choix de position donnée par un joueur
     * @return La position choisie
@@ -311,7 +322,7 @@ public class Player {
       }
       return positionChoice;
    }
-   
+
 //   public static void main(String... args) {
 //      Player player = new Player(args[0]);
 //      player.getServer();
@@ -323,7 +334,48 @@ public class Player {
     * @param args Nani kono kuso mushi?
     */
    public static void main(String... args) {
-      Player player = new Player(args[0]);
-      player.createServer("plop", "NADIRPUTE");
+      Player player = new Player();
+      boolean entryOk = false;
+      while (!entryOk) {
+         entryOk = true;
+         System.out.println("souhaitez-vous creer ou rejoindre un server ? (c/r)");
+         Scanner in = new Scanner(System.in);
+         String answer = in.next();
+         String answerNameServer = "";
+         if (answer.equals("c")) {
+            boolean nameNotRedondant = false;
+            while (!nameNotRedondant) {
+               nameNotRedondant = true;
+               //player.getServers();
+               System.out.println("quel est le nom du serveur ?");
+               answerNameServer = in.next();
+               for (Server server : player.servers) {
+                  if (server.getName().equals(answerNameServer)) {
+                     nameNotRedondant = false;
+                  }
+               }
+            }
+            System.out.println("quel est le mot de passe ?");
+            String answerPassword = in.next();
+            player.createServer(answerNameServer, answerPassword);
+         } else if (answer.equals("r")) {
+            int answerNum = -2;
+            while (answerNum != -1) {
+               player.getServers();
+               player.showServers();
+               System.out.println("quel est le numero du serveur que vous souhaitez ? (-1 pour terminer)");
+               answerNum = in.nextInt();
+               try {
+                  player.connect(answerNum);
+               } catch (IOException ex) {
+                  answerNum = -2;
+                  System.out.println("le numero n'est pas valide");
+               }
+            }
+         } else {
+            entryOk = false;
+            System.out.println("fausse commande");
+         }
+      }
    }
 }

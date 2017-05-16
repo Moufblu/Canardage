@@ -7,8 +7,10 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.MulticastSocket;
+import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -54,13 +56,17 @@ public class ServerManager {
 
       this.hash = hash;
       try {
+         Socket socket = new Socket();
+         socket.connect(new InetSocketAddress("google.com", 80));
          server = new Server(UUID.randomUUID(),
                               name,
-                              InetAddress.getLocalHost().getHostAddress(),
+                              socket.getLocalAddress().getHostAddress(),
                               ProtocolV1.PORT);
       } catch (UnknownHostException ex) {
          System.out.println("Impossible de trouver l'adresse IP du host.");
          System.out.println("impossible to find the ip address of the host");
+      } catch (IOException ex) {
+         System.out.println("can't create test socket to google");
       }
       sendInfo();
    }
@@ -76,8 +82,8 @@ public class ServerManager {
             Type type = new TypeToken<Server>() {}.getType();
             String msg = gson.toJson(server, type);
             try {
-               final DatagramSocket socket = new DatagramSocket();
-               socket.setBroadcast(true);
+               final MulticastSocket socket = new MulticastSocket();
+               socket.joinGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
                byte[] payload = msg.getBytes();
                final DatagramPacket datagram = new DatagramPacket(payload,
                                  payload.length,
@@ -90,21 +96,25 @@ public class ServerManager {
                   public void run() {
                      try {
                         socket.send(datagram);
+                        System.out.println("sending longueur :" + datagram.getLength() + " port: " + datagram.getPort() + " data: " + datagram.getData());
                      } catch (IOException ex) {
                         System.out.println(ex + " : error sending datagram");
                      }
                   }
 
-               }, 1000, 0);
+               }, 1000, 1);
             } catch (SocketException ex) {
                System.out.println(ex + " : n'a pas pu créer le Socket.");
                System.out.println(ex + " : couldn't create socket");
             } catch (UnknownHostException ex) {
                System.out.println(ex + " : impossible de trouver l'adresse IP du host.");
                System.out.println(ex + " : impossible to find the ip address of the host");
+            } catch (IOException ex) {
+               System.out.println(ex + ": couldn't create socket");
             }
          }
       });
+      thread.start();
    }
 
    /**
