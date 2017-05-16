@@ -70,13 +70,12 @@ public class ServerManager {
             Type type = new TypeToken<Server>() {}.getType();
             String msg = gson.toJson(server, type);
             try {
-               final MulticastSocket socket = new MulticastSocket();
-               socket.joinGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
+               final DatagramSocket socket = new DatagramSocket();
                byte[] payload = msg.getBytes();
                final DatagramPacket datagram = new DatagramPacket(payload,
-                       payload.length,
-                       InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS),
-                       ProtocolV1.MULTICAST_PORT);
+                       payload.length);
+               datagram.setAddress(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
+               datagram.setPort(ProtocolV1.MULTICAST_PORT);
 
                new Timer().scheduleAtFixedRate(new TimerTask() {
 
