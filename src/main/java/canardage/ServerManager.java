@@ -62,6 +62,7 @@ public class ServerManager {
    }
 
    public void sendInfo() {
+           
       thread = new Thread(new Runnable() {
          @Override
          public void run() {
