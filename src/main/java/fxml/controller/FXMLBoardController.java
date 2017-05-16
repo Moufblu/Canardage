@@ -23,6 +23,12 @@ public class FXMLBoardController implements Initializable {
    private Button button;
    @FXML
    private ComboBox<?> menuMap;
+   @FXML
+   private Button button1;
+   @FXML
+   private Button button2;
+   @FXML
+   private Button button3;
 
    @FXML
    private void handleButtonAction(ActionEvent event) {

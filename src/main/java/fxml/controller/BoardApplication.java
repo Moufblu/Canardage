@@ -13,13 +13,13 @@ import javafx.stage.Stage;
  *
  * @author Nathan
  */
-public class BoardFXML extends Application {
+public class BoardApplication extends Application {
 
    @Override
    public void start(Stage stage) throws Exception {
       Parent root;
       try {
-         root = FXMLLoader.load(getClass().getResource("FXMLBoard.fxml"));
+         root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
 
          Scene scene = new Scene(root);
          stage.setTitle("Canardage");
