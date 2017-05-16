@@ -9,6 +9,7 @@ import java.lang.reflect.Type;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -49,7 +50,8 @@ public class Player {
       boolean socketInitOk = false;
       while(!socketInitOk) {
          try {
-            DatagramSocket socket = new DatagramSocket(ProtocolV1.MULTICAST_PORT, InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
+            MulticastSocket socket = new MulticastSocket(ProtocolV1.MULTICAST_PORT);
+            socket.joinGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
             boolean messageRed = false;
             long start = new Date().getTime();
             long now = new Date().getTime();
@@ -65,6 +67,7 @@ public class Player {
                servers.add((Server)gson.fromJson(msg, type));
                now = new Date().getTime();
             }
+            socket.leaveGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
          } catch (SocketException ex) {
             System.out.println("socket creation fail");
          } catch (IOException ex) {

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -62,8 +63,8 @@ public class ServerManager {
             Type type = new TypeToken<Server>() {}.getType();
             String msg = gson.toJson(server, type);
             try {
-               final DatagramSocket socket = new DatagramSocket();
-               socket.setBroadcast(true);
+               final MulticastSocket socket = new MulticastSocket();
+               socket.joinGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
                byte[] payload = msg.getBytes();
                final DatagramPacket datagram = new DatagramPacket(payload,
                        payload.length,
@@ -87,6 +88,8 @@ public class ServerManager {
                System.out.println(ex + " : couldn't create socket");
             } catch (UnknownHostException ex) {
                System.out.println(ex + " : impossible to find the ip address of the host");
+            } catch (IOException ex) {
+               System.out.println(ex + ": couldn't create socket");
             }
          }
 
