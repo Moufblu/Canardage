@@ -21,13 +21,13 @@ import java.util.logging.Logger;
  *
  */
 public class Player {
-   
+
    private final int HAND_CARDS_NUMBER = 3;
    private final long refreshDelay = 2000;
-   
+
    private final String ENCODING_ALGORITHM = "SHA-256";
    private final String FORMAT_TEXT = "UTF-8";
-   
+
    private Socket clientSocket;
    private BufferedReader responseBuffer;
    private PrintWriter writer;
@@ -38,8 +38,8 @@ public class Player {
    boolean connected = false;
 
    /**
-    * 
-    * @param adress 
+    *
+    * @param adress
     */
    public Player(String adress) {
       cards = new ArrayList<>();
@@ -48,9 +48,10 @@ public class Player {
 
    public void getServers() {
       boolean socketInitOk = false;
-      while(!socketInitOk) {
+      while (!socketInitOk) {
+         MulticastSocket socket;
          try {
-            MulticastSocket socket = new MulticastSocket(ProtocolV1.MULTICAST_PORT);
+            socket = new MulticastSocket(ProtocolV1.MULTICAST_PORT);
             socket.joinGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
             boolean messageRed = false;
             long start = new Date().getTime();
@@ -77,13 +78,13 @@ public class Player {
          }
       }
    }
-   
+
    private byte[] hash(String password) throws NoSuchAlgorithmException, UnsupportedEncodingException {
       MessageDigest md = MessageDigest.getInstance(ENCODING_ALGORITHM);
       md.update(password.getBytes(FORMAT_TEXT));
       return md.digest();
    }
-   
+
    public void createServer(String name, String password) {
       byte[] hash;
       try {
@@ -95,7 +96,7 @@ public class Player {
          System.out.println("bad choice of text format");
          return;
       }
-      
+
       ServerManager server = new ServerManager(name, hash);
       if (!server.isRunning()) {
          try {
@@ -105,50 +106,50 @@ public class Player {
          }
       }
    }
-   
+
    public void showServers() {
-      for(Server s : servers) {
+      for (Server s : servers) {
          System.out.println(s.toString());
       }
    }
-   
+
    /**
-    * 
-    * @throws IllegalStateException 
+    *
+    * @throws IllegalStateException
     */
    private void startGame() throws IllegalStateException {
       if (isConnected()) {
-         
+
          String inputServer;
          String[] splittedCommand = {""};
-         
+
          do {
             try {
                inputServer = responseBuffer.readLine();
                splittedCommand = inputServer.split(ProtocolV1.SEPARATOR);
-            } catch(IOException e) {
+            } catch (IOException e) {
                System.out.println(e.toString());
                continue;
             }
-            
-            switch (splittedCommand[0]){
+
+            switch (splittedCommand[0]) {
                case ProtocolV1.ASK_FOR_POSITION:
                   writer.println(ProtocolV1.messageAskPosition(getLocationChoice()));
                   writer.flush();
                   break;
                case ProtocolV1.DISTRIBUTE_CARD:
-                  if(cards.size() > 0) {
+                  if (cards.size() > 0) {
                      throw new IllegalStateException("Action Cards of player full yet");
                   } else {
-                     
+
                      cards.add(readLineCardFileInfo(Integer.parseInt(splittedCommand[1])));
                   }
                   break;
                case ProtocolV1.DISTRIBUTE_HAND:
-                  if(cards.size() > 0) {
+                  if (cards.size() > 0) {
                      throw new IllegalStateException("Action cards yet distributed");
                   } else {
-                     for(int i = 1; i < ProtocolV1.HAND_SIZE + 1; i++) {
+                     for (int i = 1; i < ProtocolV1.HAND_SIZE + 1; i++) {
                         cards.add(readLineCardFileInfo(Integer.parseInt(splittedCommand[i])));
                      }
                   }
@@ -164,32 +165,32 @@ public class Player {
                   System.out.println(ProtocolV1.ERRORS[Integer.parseInt(splittedCommand[1])]);
                   break;
             }
-         }while(!splittedCommand[0].equals(ProtocolV1.END_GAME));
+         } while (!splittedCommand[0].equals(ProtocolV1.END_GAME));
       } else {
          throw new IllegalStateException("vous devez vous connecter à un serveur avant de pouvoir commencer une partie");
       }
    }
-   
+
    /**
-    * 
-    * @param toShow 
+    *
+    * @param toShow
     */
    public void showBoard(String[] toShow) {
       System.out.println("Board : ");
-      for(int i = 1; i < toShow.length; i++) {
+      for (int i = 1; i < toShow.length; i++) {
          System.out.print(toShow[i] + " ");
       }
       System.out.println("");
    }
-   
+
    /**
-    * 
+    *
     * @param adress
-    * @throws IOException 
+    * @throws IOException
     */
    public void connect(int no) throws IOException {
       if (!isConnected()) {
-         Server server = (Server)servers.toArray()[no];
+         Server server = (Server) servers.toArray()[no];
          clientSocket = new Socket(server.getIpAddress(), ProtocolV1.PORT);
 
          responseBuffer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
@@ -209,16 +210,16 @@ public class Player {
    }
 
    /**
-    * 
-    * @return 
+    *
+    * @return
     */
    public boolean isConnected() {
       return connected;
    }
-   
+
    /**
-    * 
-    * @return 
+    *
+    * @return
     */
    public int getCardChoice() {
       Scanner in = new Scanner(System.in);
@@ -228,11 +229,11 @@ public class Player {
       while (true) {
          try {
             System.out.println("Veuillez choisir une carte : (1..3)");
-            for(Integer i : cards) {
+            for (Integer i : cards) {
                readLineCardFileInfo(i);
             }
             int positionCard = in.nextInt();
-            if(positionCard <= 0 || positionCard > ProtocolV1.HAND_SIZE) {
+            if (positionCard <= 0 || positionCard > ProtocolV1.HAND_SIZE) {
                continue;
             }
             cardChoice = cards.get(positionCard - 1);
@@ -243,36 +244,36 @@ public class Player {
       }
       return cardChoice;
    }
-   
+
    /**
-    * 
+    *
     * @param lineNo
     * @return
-    * @throws IllegalArgumentException 
+    * @throws IllegalArgumentException
     */
    public int readLineCardFileInfo(int lineNo) throws IllegalArgumentException {
-      try{
+      try {
          BufferedReader buff = new BufferedReader(new InputStreamReader(new FileInputStream("cards.txt")));
          String line;
          int counter = 0;
-         while ((line = buff.readLine())!=null){
-            if(counter == lineNo) {
+         while ((line = buff.readLine()) != null) {
+            if (counter == lineNo) {
                String[] infosCard = line.split(";");
                System.out.println(infosCard[1]);
                return Integer.parseInt(infosCard[0]);
             }
             counter++;
          }
-         buff.close(); 
-      } catch (Exception e){
+         buff.close();
+      } catch (Exception e) {
          System.out.println(e.toString());
       }
       throw new IllegalArgumentException("card number not valid");
    }
-   
+
    /**
-    * 
-    * @return 
+    *
+    * @return
     */
    public int getLocationChoice() {
       Scanner in = new Scanner(System.in);
@@ -289,30 +290,29 @@ public class Player {
       }
       return positionChoice;
    }
-   
+
 //   public static void main(String... args) {
 //      Player player = new Player(args[0]);
 //      player.getServer();
 //   }
-   
    public static void main(String... args) {
       Player player = new Player(args[0]);
       boolean entryOk = false;
-      while(!entryOk) {
+      while (!entryOk) {
          entryOk = true;
          System.out.println("souhaitez-vous creer ou rejoindre un server ? (c/r)");
          Scanner in = new Scanner(System.in);
          String answer = in.next();
          String answerNameServer = "";
-         if(answer.equals("c")) {
+         if (answer.equals("c")) {
             boolean nameNotRedondant = false;
-            while(!nameNotRedondant) {
+            while (!nameNotRedondant) {
                nameNotRedondant = true;
                //player.getServers();
                System.out.println("quel est le nom du serveur ?");
                answerNameServer = in.next();
-               for(Server server : player.servers) {
-                  if(server.getName().equals(answerNameServer)) {
+               for (Server server : player.servers) {
+                  if (server.getName().equals(answerNameServer)) {
                      nameNotRedondant = false;
                   }
                }
@@ -322,7 +322,7 @@ public class Player {
             player.createServer(answerNameServer, answerPassword);
          } else if (answer.equals("r")) {
             int answerNum = -2;
-            while(answerNum != -1) {
+            while (answerNum != -1) {
                player.getServers();
                player.showServers();
                System.out.println("quel est le numero du serveur que vous souhaitez ? (-1 pour terminer)");
