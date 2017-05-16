@@ -49,6 +49,7 @@ public class Player {
    public void getServers() {
       MulticastSocket socket;
       try {
+         servers.clear();
          socket = new MulticastSocket(ProtocolV1.MULTICAST_PORT);
          socket.joinGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
          boolean messageRed = false;
@@ -57,16 +58,14 @@ public class Player {
             System.out.println(new Date().getTime() - start);
             byte[] buffer = new byte[2048];
             DatagramPacket datagram = new DatagramPacket(buffer, buffer.length);
-            System.out.println("ok");
             socket.receive(datagram);
-            System.out.println("ok2");
             String msg = new String(datagram.getData());
             msg = msg.substring(0, msg.lastIndexOf('}') + 1);
             Gson gson = new Gson();
             Type type = new TypeToken<Server>() {}.getType();
-            System.out.println(msg + "#");
-            servers.clear();
-            servers.add((Server)gson.fromJson(msg, type));
+            if(!servers.contains((Server)gson.fromJson(msg, type))) {
+               servers.add((Server)gson.fromJson(msg, type));
+            }
          }
          socket.leaveGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
       } catch (SocketException ex) {
