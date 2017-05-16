@@ -329,7 +329,7 @@ public class Player {
                   try {
                   //startGame
                      break;
-                  } catch(Exception e) {
+                  } catch(BadGameInitialisation e) {
                      
                   }
                }
