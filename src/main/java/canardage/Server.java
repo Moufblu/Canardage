@@ -1,151 +1,57 @@
 package canardage;
 
-import java.net.ServerSocket;
-import Protocol.ProtocolV1;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
+import java.util.UUID;
 
-/**
- *
- */
-public class Server {
 
-   private final static int MAX_NB_PLAYERS = 6;
-   private final static int NB_ACTION_CARDS = 10;
-   private ServerSocket serverSocket;
-
-   private List<Integer> deck;
-   private List<List<Integer>> playerCards;
-
-   private int nbPlayers;
-
-   private List<Client> playersSockets;
-
-   public Server() {
-      deck = new ArrayList<>(NB_ACTION_CARDS);
-      playerCards = new ArrayList<>();
-      playersSockets = new ArrayList<>();
-      nbPlayers = 0;
+public class Server implements Serializable {
+   
+   private UUID uuid;
+   private String name;
+   private String ipAddress;
+   private int port;
+   
+   public Server(UUID uuid, String name, String ipAddress, int port) {
+      this.uuid = uuid;
+      this.name = name;
+      this.ipAddress = ipAddress;
+      this.port = port;
    }
 
-   public void startServer() throws IOException {
-      if (serverSocket == null || serverSocket.isBound()) {
-         serverSocket = new ServerSocket(ProtocolV1.PORT, MAX_NB_PLAYERS);
-      }
-
-      Thread serverThread = new Thread(new Runnable() {
-         @Override
-         public void run() {
-            
-            Board.registerInstance(3);
-            Board board = Board.getInstance();
-            
-            if (nbPlayers < MAX_NB_PLAYERS) {
-               try {
-                  final int nbjoueursTest = 3;
-                  for (int i = 0; i < nbjoueursTest; i++) {
-                     System.out.println("Attente d'une connexion au joueur " + i);
-                     playersSockets.add(new Client(serverSocket.accept()));
-                     nbPlayers++;
-
-                     System.out.println("Acceptation d'une connexion au joueur " + i);
-                     playersSockets.get(i).writeLine(ProtocolV1.ACCEPT_CONNECTION);
-
-                     System.out.println("Envoi d'une main au joueur " + i);
-                     int[] hand = {1, 2, 3};
-                     playersSockets.get(i).writeLine(ProtocolV1.messageHand(hand));
-                  }
-
-                  for (int i = 0; i < nbjoueursTest; i++) {
-
-                     boolean isGood = false;
-                     do {
-                        
-                        System.out.println("Envoi du Board au joueur " + i);
-                        playersSockets.get(i).writeLine(ProtocolV1.messageBoardState());
-                        
-                        System.out.println("Demande une carte au joueur " + i);
-                        playersSockets.get(i).writeLine(ProtocolV1.YOUR_TURN);
-
-                        System.out.println("Attente d'une carte au joueur " + i);
-                        String answer = playersSockets.get(i).readLine();
-
-                        if (answer.contains(ProtocolV1.USE_CARD)) {
-                           System.out.println("Message reçu : " + answer);
-                           isGood = true;
-                        } else {
-                           playersSockets.get(i).writeLine(ProtocolV1.ERRORS[0]);
-                           System.out.println("DEGUEU");
-                           isGood = false;
-                        }
-                     } while (!isGood);
-                  }
-
-
-                  for (int i = 0; i < nbjoueursTest; i++) {
-
-                     boolean isGood = false;
-                     do {
-                        System.out.println("Demande une position au joueur " + i);
-                        playersSockets.get(i).writeLine(ProtocolV1.ASK_FOR_POSITION);
-
-                        System.out.println("Attente d'une position au joueur " + i);
-                        String answer = playersSockets.get(i).readLine();
-
-                        if (answer.contains(ProtocolV1.ASK_FOR_POSITION)) {
-                           System.out.println("Message reçu : " + answer);
-                           isGood = true;
-                        } else {
-                           playersSockets.get(i).writeLine(ProtocolV1.ERRORS[0]);
-                           System.out.println("DEGUEU");
-                           isGood = false;
-                        }
-                     } while (!isGood);
-                  }
-                  
-                  for (int i = 0; i < nbjoueursTest; i++) {
-                     
-                     System.out.println("Envoi d'une erreur bidon");
-                     playersSockets.get(i).writeLine(ProtocolV1.messageRefuse(1));
-                     
-                     System.out.println("Annonce la fin de partie au joueur " + i);
-                     playersSockets.get(i).writeLine(ProtocolV1.END_GAME);
-
-                     System.out.println("Ferme le client du joueur " + i);
-                     playersSockets.get(i).close();
-                  }
-
-               } catch (IOException e) {
-                  System.out.println(e.getMessage());
-               }
-            }
-
-            //Uniquement pour itération 3
-            try {
-               serverSocket.close();
-
-            } catch (IOException e) {
-               System.out.println(e.getMessage());
-            }
-
-         }
-      });
-      serverThread.start();
+   public String getIpAddress() {
+      return ipAddress;
    }
 
-   public boolean isRunning() {
-      return serverSocket != null && serverSocket.isBound();
+   public String getName() {
+      return name;
    }
 
-   public static void main(String... args) {
-      Server server = new Server();
-      if (!server.isRunning()) {
-         try {
-            server.startServer();
-         } catch (IOException e) {
-            System.out.println(e.getMessage());
-         }
-      }
+   public int getPort() {
+      return port;
    }
+
+   public UUID getUuid() {
+      return uuid;
+   }
+
+   public void setIpAddress(String ipAddress) {
+      this.ipAddress = ipAddress;
+   }
+
+   public void setName(String name) {
+      this.name = name;
+   }
+
+   public void setPort(int port) {
+      this.port = port;
+   }
+
+   public void setUuid(UUID uuid) {
+      this.uuid = uuid;
+   }
+   
+   public String toString() {
+      return "name:" + name + "[" + ipAddress + ":" + port + "]";
+   }
+   
 }
