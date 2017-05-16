@@ -47,35 +47,32 @@ public class Player {
    }
 
    public void getServers() {
-      boolean socketInitOk = false;
-      while (!socketInitOk) {
-         MulticastSocket socket;
-         try {
-            socket = new MulticastSocket(ProtocolV1.MULTICAST_PORT);
-            socket.joinGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
-            boolean messageRed = false;
-            long start = new Date().getTime();
-            long now = new Date().getTime();
-            while (now - start < refreshDelay) {
-               byte[] buffer = new byte[2048];
-               DatagramPacket datagram = new DatagramPacket(buffer, buffer.length);
-               System.out.println("ok");
-               socket.receive(datagram);
-               System.out.println("ok2");
-               String msg = new String(datagram.getData());
-               msg = msg.substring(0, msg.lastIndexOf('}') + 1);
-               Gson gson = new Gson();
-               Type type = new TypeToken<Server>() {}.getType();
-               System.out.println(msg + "#");
-               servers.add((Server)gson.fromJson(msg, type));
-               now = new Date().getTime();
-            }
-            socket.leaveGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
-         } catch (SocketException ex) {
-            System.out.println("socket creation fail");
-         } catch (IOException ex) {
-            System.out.println("read broadcast fail");
+      MulticastSocket socket;
+      try {
+         socket = new MulticastSocket(ProtocolV1.MULTICAST_PORT);
+         socket.joinGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
+         boolean messageRed = false;
+         long start = new Date().getTime();
+         while (new Date().getTime() - start < refreshDelay) {
+            System.out.println(new Date().getTime() - start);
+            byte[] buffer = new byte[2048];
+            DatagramPacket datagram = new DatagramPacket(buffer, buffer.length);
+            System.out.println("ok");
+            socket.receive(datagram);
+            System.out.println("ok2");
+            String msg = new String(datagram.getData());
+            msg = msg.substring(0, msg.lastIndexOf('}') + 1);
+            Gson gson = new Gson();
+            Type type = new TypeToken<Server>() {}.getType();
+            System.out.println(msg + "#");
+            servers.clear();
+            servers.add((Server)gson.fromJson(msg, type));
          }
+         socket.leaveGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
+      } catch (SocketException ex) {
+         System.out.println("socket creation fail");
+      } catch (IOException ex) {
+         System.out.println("read broadcast fail");
       }
    }
 

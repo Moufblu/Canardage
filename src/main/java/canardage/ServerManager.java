@@ -90,7 +90,7 @@ public class ServerManager {
                      }
                   }
 
-               }, 1000, 1);
+               }, 0, 1000);
             } catch (SocketException ex) {
                System.out.println(ex + " : couldn't create socket");
             } catch (UnknownHostException ex) {
