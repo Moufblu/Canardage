@@ -4,6 +4,7 @@ import java.net.Socket;
 import Protocol.ProtocolV1;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import duckException.BadGameInitialisation;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.net.DatagramPacket;
@@ -100,7 +101,7 @@ public class Player {
       ServerManager server = new ServerManager(name, hash);
       if (!server.isRunning()) {
          try {
-            server.startServer();
+            server.acceptClients();
          } catch (IOException e) {
             System.out.println(e.getMessage());
          }
@@ -329,10 +330,10 @@ public class Player {
                answer = in.next();
                if(answer.equals("go")) {
                   try {
-                  //startGame
+                     
                      break;
                   } catch(BadGameInitialisation e) {
-                     
+                     System.out.println(e.getMessage());
                   }
                }
             } while(true);

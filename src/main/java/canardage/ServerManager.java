@@ -2,8 +2,6 @@ package canardage;
 
 import java.net.ServerSocket;
 import Protocol.ProtocolV1;
-import canardage.action.Action;
-import canardage.action.Target;
 import java.lang.reflect.Type;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -13,7 +11,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.MulticastSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -23,8 +20,6 @@ import java.util.Timer;
 import java.util.List;
 import java.util.TimerTask;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
