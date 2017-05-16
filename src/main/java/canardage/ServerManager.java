@@ -76,6 +76,7 @@ public class ServerManager {
                   public void run() {
                      try {
                         socket.send(datagram);
+                        System.out.println("sending longueur :" + datagram.getLength() + " port: " + datagram.getPort() + " data: " + datagram.getData());
                      } catch (IOException ex) {
                         System.out.println(ex + " : error sending datagram");
                      }

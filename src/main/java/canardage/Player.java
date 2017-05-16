@@ -8,6 +8,7 @@ import java.io.*;
 import java.lang.reflect.Type;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -48,29 +49,26 @@ public class Player {
       boolean socketInitOk = false;
       while(!socketInitOk) {
          try {
-            DatagramSocket socket = new DatagramSocket(ProtocolV1.MULTICAST_PORT);
+            DatagramSocket socket = new DatagramSocket(ProtocolV1.MULTICAST_PORT, InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
             boolean messageRed = false;
             long start = new Date().getTime();
             long now = new Date().getTime();
             while (now - start < refreshDelay) {
                byte[] buffer = new byte[2048];
                DatagramPacket datagram = new DatagramPacket(buffer, buffer.length);
-               try {
-                   System.out.println("ok");
-                   socket.receive(datagram);
-                   System.out.println("ok2");
-                   String msg = new String(datagram.getData());
-                   Gson gson = new Gson();
-                   Type type = new TypeToken<Server>() {}.getType();
-                   servers.add((Server)gson.fromJson(msg, type));
-                   System.out.println(servers);
-               } catch (IOException ex) {
-                  System.out.println("read broadcast fail");
-               }
+               System.out.println("ok");
+               socket.receive(datagram);
+               System.out.println("ok2");
+               String msg = new String(datagram.getData());
+               Gson gson = new Gson();
+               Type type = new TypeToken<Server>() {}.getType();
+               servers.add((Server)gson.fromJson(msg, type));
                now = new Date().getTime();
             }
          } catch (SocketException ex) {
             System.out.println("socket creation fail");
+         } catch (IOException ex) {
+            System.out.println("read broadcast fail");
          }
       }
    }
