@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
+import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -48,9 +50,13 @@ public class ServerManager {
 
       this.hash = hash;
       try {
-         server = new Server(UUID.randomUUID(), name, InetAddress.getLocalHost().getHostAddress(), ProtocolV1.PORT);
+         Socket socket = new Socket();
+         socket.connect(new InetSocketAddress("google.com", 80));
+         server = new Server(UUID.randomUUID(), name, socket.getLocalAddress().getHostAddress(), ProtocolV1.PORT);
       } catch (UnknownHostException ex) {
          System.out.println("impossible to find the ip address of the host");
+      } catch (IOException ex) {
+         System.out.println("can't create test socket to google");
       }
       sendInfo();
    }
@@ -83,7 +89,7 @@ public class ServerManager {
                      }
                   }
 
-               }, 1, 1000);
+               }, 1000, 1);
             } catch (SocketException ex) {
                System.out.println(ex + " : couldn't create socket");
             } catch (UnknownHostException ex) {
