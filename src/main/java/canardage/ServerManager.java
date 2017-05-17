@@ -17,6 +17,7 @@ import java.net.MulticastSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Timer;
@@ -49,6 +50,13 @@ public class ServerManager {
    private int nbPlayers;
 
    private List<Client> playersSockets;
+   private static String defaultHashedPassword;
+   
+   static {
+      MessageDigest md = MessageDigest.getInstance(ENCODING_ALGORITHM);
+      md.update("".getBytes(FORMAT_TEXT));
+      defaultHashedPassword = md.digest();
+   }
 
    public ServerManager(String name, byte[] hash) {
       deck = new ArrayList<>(NB_ACTION_CARDS);
