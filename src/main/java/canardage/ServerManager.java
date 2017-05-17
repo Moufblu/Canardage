@@ -49,9 +49,9 @@ public class ServerManager {
    private static String defaultHashedPassword;
    
    static {
-      MessageDigest md = MessageDigest.getInstance(ENCODING_ALGORITHM);
-      md.update("".getBytes(FORMAT_TEXT));
-      defaultHashedPassword = md.digest();
+      //MessageDigest md = MessageDigest.getInstance(ENCODING_ALGORITHM);
+      //md.update("".getBytes(FORMAT_TEXT));
+      //defaultHashedPassword = md.digest();
    }
 
    public ServerManager(String name, byte[] hash) {
@@ -125,7 +125,7 @@ public class ServerManager {
          serverSocket = new ServerSocket(ProtocolV1.PORT, MAX_NB_PLAYERS);
       }
 
-      Thread acceptingClients = new Thread(new Runnable() {
+      acceptingClients = new Thread(new Runnable() {
          @Override
          public void run() {
             try {
