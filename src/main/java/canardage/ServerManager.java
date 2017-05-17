@@ -117,7 +117,7 @@ public class ServerManager {
          serverSocket = new ServerSocket(ProtocolV1.PORT, MAX_NB_PLAYERS);
       }
 
-      Thread acceptingClients = new Thread(new Runnable() {
+      acceptingClients = new Thread(new Runnable() {
          @Override
          public void run() {
             try {
