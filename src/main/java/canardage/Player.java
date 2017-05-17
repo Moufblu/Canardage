@@ -92,16 +92,13 @@ public class Player {
       return md.digest();
    }
 
-   public void createServer(String name, String password) {
+   public ServerManager createServer(String name, String password) {
       byte[] hash;
+
       try {
          hash = hash(password);
-      } catch (NoSuchAlgorithmException ex) {
-         System.out.println("bad choice of hash algorithm");
-         return;
-      } catch (UnsupportedEncodingException ex) {
-         System.out.println("bad choice of text format");
-         return;
+      } catch (UnsupportedEncodingException | NoSuchAlgorithmException ex) {
+         throw new RuntimeException(ex.getCause());
       }
 
       ServerManager server = new ServerManager(name, hash);
@@ -112,6 +109,8 @@ public class Player {
             System.out.println(e.getMessage());
          }
       }
+      
+      return server;
    }
 
    public void showServers() {
@@ -312,7 +311,7 @@ public class Player {
          entryOk = true;
          System.out.println("souhaitez-vous creer ou rejoindre un server ? (c/r)");
          Scanner in = new Scanner(System.in);
-         String answer = in.next();
+         String answer = in.nextLine();
          String answerNameServer = "";
          if (answer.equals("c")) {
             boolean nameNotRedondant = false;
@@ -320,7 +319,8 @@ public class Player {
                nameNotRedondant = true;
                //player.getServers();
                System.out.println("quel est le nom du serveur ?");
-               answerNameServer = in.next();
+               in.reset();
+               answerNameServer = in.nextLine();
                for (Server server : player.servers) {
                   if (server.getName().equals(answerNameServer)) {
                      nameNotRedondant = false;
@@ -328,14 +328,15 @@ public class Player {
                }
             }
             System.out.println("quel est le mot de passe ?");
-            String answerPassword = in.next();
-            player.createServer(answerNameServer, answerPassword);
+            in.reset();
+            String answerPassword = in.nextLine();
+            ServerManager server = player.createServer(answerNameServer, answerPassword);
             do {
                System.out.println("'go' pour commencer!!!");
                answer = in.next();
                if(answer.equals("go")) {
                   try {
-                     
+                     server.startGame();
                      break;
                   } catch(BadGameInitialisation e) {
                      System.out.println(e.getMessage());
@@ -344,17 +345,17 @@ public class Player {
             } while(true);
             
          } else if (answer.equals("r")) {
-            int answerNum = -2;
             while (!player.connected) {
                player.getServers();
                player.showServers();
                System.out.println("quel est le numero du serveur que vous souhaitez ? (-1 pour terminer)");
-               answerNum = in.nextInt();
                try {
+                  int answerNum = Integer.parseInt(in.nextLine());
                   player.connect(answerNum);
                } catch (IOException ex) {
-                  answerNum = -2;
-                  System.out.println("le numero n'est pas valide");
+                  System.out.println(ex + ": le numero n'est pas valide");
+               } catch(NumberFormatException NFE) {
+                  System.out.println(NFE + ": le numero n'est pas valide");
                }
             }
          } else {
