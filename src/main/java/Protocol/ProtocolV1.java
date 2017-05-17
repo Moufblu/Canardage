@@ -8,7 +8,7 @@ import canardage.Board;
  */
 public class ProtocolV1 {
    
-   public final static String MULTICAST_ADDRESS = "255.255.255.255";
+   public final static String MULTICAST_ADDRESS = "229.30.30.30";
    public final static int MULTICAST_PORT = 5001;
    
    public final static String USE_CARD        = "Action";
