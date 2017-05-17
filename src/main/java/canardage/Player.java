@@ -80,9 +80,9 @@ public class Player {
          }
          socket.leaveGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
       } catch (SocketException ex) {
-         System.out.println("socket creation fail");
+         System.out.println("socket creation fail : " + ex.getMessage());
       } catch (IOException ex) {
-         System.out.println("read broadcast fail");
+         System.out.println("read broadcast fail : " + ex.getMessage());
       }
    }
 
