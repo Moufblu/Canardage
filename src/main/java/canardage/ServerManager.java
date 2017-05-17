@@ -5,6 +5,7 @@ import Protocol.ProtocolV1;
 import java.lang.reflect.Type;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import duckException.BadGameInitialisation;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -14,6 +15,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Timer;
 import java.util.List;
 import java.util.TimerTask;
@@ -31,13 +33,16 @@ public class ServerManager {
    private byte[] hash;    // Tableau pour stocker les hash des mots de passe
    private Thread thread;  // Threads pour les serveurs
    private Server server;  // Le serveur en lui-même
-
+   private final static int MIN_NB_PLAYERS = 3;
    private final static int MAX_NB_PLAYERS = 6;    // Nombre maximum de joueur
    private final static int NB_ACTION_CARDS = 10;  // Nombre de cartes action
-   private ServerSocket serverSocket;              // Le Socket du serveur
+
+   private ServerSocket serverSocket;  // Le Socket du serveur
+   private Thread acceptingClients;
 
    private List<Integer> deck;               // La pile de cartes
    private List<List<Integer>> playerCards;  // Les listes des cartes des joueurs
+   private Board board;
 
    private int nbPlayers;  // Nombre de joueurs dans la partie
 
@@ -62,34 +67,39 @@ public class ServerManager {
                               name,
                               socket.getLocalAddress().getHostAddress(),
                               ProtocolV1.PORT);
+         sendInfo(socket.getLocalAddress());
       } catch (UnknownHostException ex) {
          System.out.println("Impossible de trouver l'adresse IP du host.");
          System.out.println("impossible to find the ip address of the host");
       } catch (IOException ex) {
          System.out.println("can't create test socket to google");
       }
-      sendInfo();
    }
-
+   
    /**
     * Méthode qui envoie des informations comme réponse au client
+    * @param address
     */
-   public void sendInfo() {
+   public void sendInfo(final InetAddress address) {
       thread = new Thread(new Runnable() {
          @Override
          public void run() {
             Gson gson = new Gson();
-            Type type = new TypeToken<Server>() {}.getType();
+            Type type = new TypeToken<Server>() {
+            }.getType();
             String msg = gson.toJson(server, type);
             try {
-               final MulticastSocket socket = new MulticastSocket();
-               socket.joinGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
                byte[] payload = msg.getBytes();
-               final DatagramPacket datagram = new DatagramPacket(payload,
-                                 payload.length,
-                                 InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS),
-                                                       ProtocolV1.MULTICAST_PORT);
 
+               final MulticastSocket socket = new MulticastSocket(ProtocolV1.MULTICAST_PORT);
+               socket.setInterface(address);
+               socket.setBroadcast(true);
+
+               final DatagramPacket datagram = new DatagramPacket(payload,
+                                                                  payload.length);
+               datagram.setAddress(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
+               datagram.setPort(ProtocolV1.MULTICAST_PORT);
+               
                new Timer().scheduleAtFixedRate(new TimerTask() {
 
                   @Override
@@ -102,7 +112,7 @@ public class ServerManager {
                      }
                   }
 
-               }, 1000, 1);
+               }, 0, 1000);
             } catch (SocketException ex) {
                System.out.println(ex + " : n'a pas pu créer le Socket.");
                System.out.println(ex + " : couldn't create socket");
@@ -116,113 +126,133 @@ public class ServerManager {
       });
       thread.start();
    }
-
+   
    /**
     * Initialisation du serveur
     * @throws IOException Lancée si plusieurs des essais de créer quelquechose échoue
     */
-   public void startServer() throws IOException {
-      
+   public void acceptClients() throws IOException {
       if (serverSocket == null || serverSocket.isBound()) {
          serverSocket = new ServerSocket(ProtocolV1.PORT, MAX_NB_PLAYERS);
       }
-
-      Thread serverThread = new Thread(new Runnable() {
-         
+      
+      acceptingClients = new Thread(new Runnable() {
          @Override
          public void run() {
-
-            Board.registerInstance(3);
-            Board board = Board.getInstance();
-
-            if (nbPlayers < MAX_NB_PLAYERS) {
-               try {
-                  final int nbjoueursTest = 3;
-                  for (int i = 0; i < nbjoueursTest; i++) {
-                     System.out.println("Attente d'une connexion au joueur " + i);
-                     playersSockets.add(new Client(serverSocket.accept()));
-                     nbPlayers++;
-
-                     System.out.println("Acceptation d'une connexion au joueur " + i);
-                     playersSockets.get(i).writeLine(ProtocolV1.ACCEPT_CONNECTION);
-
-                     System.out.println("Envoi d'une main au joueur " + i);
-                     int[] hand = {1, 2, 3};
-                     playersSockets.get(i).writeLine(ProtocolV1.messageHand(hand));
-                  }
-
-                  for (int i = 0; i < nbjoueursTest; i++) {
-
-                     boolean isGood = false;
-                     do {
-
-                        System.out.println("Envoi du Board au joueur " + i);
-                        playersSockets.get(i).writeLine(ProtocolV1.messageBoardState());
-
-                        System.out.println("Demande une carte au joueur " + i);
-                        playersSockets.get(i).writeLine(ProtocolV1.YOUR_TURN);
-
-                        System.out.println("Attente d'une carte au joueur " + i);
-                        String answer = playersSockets.get(i).readLine();
-
-                        if (answer.contains(ProtocolV1.USE_CARD)) {
-                           System.out.println("Message reçu : " + answer);
-                           isGood = true;
-                        } else {
-                           playersSockets.get(i).writeLine(ProtocolV1.ERRORS[0]);
-                           System.out.println("DEGUEU"); // With Naddy's voice
-                           isGood = false;
-                        }
-                     } while (!isGood);
-                  }
-
-                  for (int i = 0; i < nbjoueursTest; i++) {
-
-                     boolean isGood = false;
-                     do {
-                        System.out.println("Demande une position au joueur " + i);
-                        playersSockets.get(i).writeLine(ProtocolV1.ASK_FOR_POSITION);
-
-                        System.out.println("Attente d'une position au joueur " + i);
-                        String answer = playersSockets.get(i).readLine();
-
-                        if (answer.contains(ProtocolV1.ASK_FOR_POSITION)) {
-                           System.out.println("Message reçu : " + answer);
-                           isGood = true;
-                        } else {
-                           playersSockets.get(i).writeLine(ProtocolV1.ERRORS[0]);
-                           System.out.println("DEGUEU"); // With Naddy's voice
-                           isGood = false;
-                        }
-                     } while (!isGood);
-                  }
-
-                  for (int i = 0; i < nbjoueursTest; i++) {
-
-                     System.out.println("Envoi d'une erreur bidon"); // POUTRE (?)
-                     playersSockets.get(i).writeLine(ProtocolV1.messageRefuse(1));
-
-                     System.out.println("Annonce la fin de partie au joueur " + i);
-                     playersSockets.get(i).writeLine(ProtocolV1.END_GAME);
-
-                     System.out.println("Ferme le client du joueur " + i);
-                     playersSockets.get(i).close();
-                  }
-
-               } catch (IOException e) {
-                  System.out.println(e.getMessage());
-               }
-            }
-
-            //Uniquement pour itération 3
             try {
+               for (int i = 0; i < MAX_NB_PLAYERS; i++) {
+                  System.out.println("Attente d'une connexion au joueur " + i);
+                  playersSockets.add(new Client(serverSocket.accept()));
+                  nbPlayers++;
+
+                  System.out.println("Acceptation d'une connexion au joueur " + i);
+                  playersSockets.get(i).writeLine(ProtocolV1.ACCEPT_CONNECTION);
+               }
+
                serverSocket.close();
             } catch (IOException e) {
-               System.out.println(e.getMessage());
+               System.out.println("Couldn't get client socket.");
+            } catch (IllegalArgumentException e) {
+               System.out.println("Hand of cards given is invalid.");
             }
          }
       });
-      serverThread.start();
+      acceptingClients.start();
+   }
+
+   public void startGame() throws BadGameInitialisation {
+      if (nbPlayers < MIN_NB_PLAYERS) {
+         throw new BadGameInitialisation("Number of players must be at least " + MIN_NB_PLAYERS);
+      }
+
+      //Killing the thread accepting clients
+      if (acceptingClients.isAlive()) {
+         try {
+            serverSocket.close();
+            acceptingClients.interrupt();
+            acceptingClients.join();
+         } catch (InterruptedException ex) {
+            System.out.println("Thread accepting clients has been killed by admin.");
+         } catch (IOException e) {
+            System.out.println("Server socket couldn't be closed.");
+         }
+      }
+
+      initialiseGame();
+
+      for (Client player : playersSockets) {
+         String answer = "";
+         String expectedAnswer = ProtocolV1.USE_CARD + ProtocolV1.SEPARATOR + 4;
+
+         do {
+            System.out.println("Asking for card");
+            player.writeLine(ProtocolV1.YOUR_TURN);
+
+            try {
+               answer = player.readLine();
+            } catch (IOException ex) {
+               System.out.println("Couldn't get action card.");
+            }
+         } while (!answer.equals(expectedAnswer));
+
+         System.out.println("Player played the card Target");
+         do {
+            answer = "";
+            System.out.println("Asking for position");
+            player.writeLine(ProtocolV1.ASK_FOR_POSITION);
+
+            try {
+               answer = player.readLine();
+            } catch (IOException ex) {
+               System.out.println("Couldn't get position to play action card.");
+            }
+         } while (!answer.contains(ProtocolV1.ASK_FOR_POSITION));
+
+         String[] temp = answer.split(ProtocolV1.SEPARATOR);
+         int position = Integer.valueOf(temp[1]);
+         System.out.println("Player played in the position " + position);
+         board.setTarget(position, true);
+
+         System.out.println("Sending updated board");
+         player.writeLine(ProtocolV1.messageBoardState());
+      }
+
+   }
+
+   private void initialiseGame() {
+      Board.registerInstance(nbPlayers);
+      board = Board.getInstance();
+      initialiseDeck();
+      for (Client client : playersSockets) {
+         System.out.println("Envoi d'une main");
+         int[] hand = {4, 4, 4};
+         client.writeLine(ProtocolV1.messageHand(hand));
+      }
+   }
+   
+   private void initialiseDeck() {
+      int nbCards = 10;
+      for (int i = 0; i < nbCards; i++) {
+         deck.add(0);
+      }
+
+      for (int i = 0; i < nbCards; i++) {
+         deck.add(1);
+      }
+
+      for (int i = 0; i < nbCards; i++) {
+         deck.add(2);
+      }
+
+      for (int i = 0; i < nbCards; i++) {
+         deck.add(3);
+      }
+
+      for (int i = 0; i < nbCards; i++) {
+         deck.add(4);
+      }
+
+      Collections.shuffle(deck);
    }
 
    /**

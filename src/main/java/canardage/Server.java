@@ -30,7 +30,7 @@ public class Server implements Serializable {
       this.ipAddress = ipAddress;
       this.port = port;
    }
-
+   
    /**
     * Méthode pour retourner l'adresse IP du serveur
     * @return L'adresse IP du serveur
@@ -102,5 +102,15 @@ public class Server implements Serializable {
    @Override
    public String toString() {
       return "name:" + name + "[" + ipAddress + ":" + port + "]";
+   }
+
+   @Override
+   public int hashCode() {
+      return uuid.hashCode();
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      return uuid.equals(((Server)obj).uuid);
    }
 }

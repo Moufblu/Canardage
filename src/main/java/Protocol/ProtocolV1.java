@@ -11,8 +11,8 @@ import canardage.Board;
 public class ProtocolV1 {
    
    // Adresse multicast pour annoncer le serveur
-   public final static String MULTICAST_ADDRESS = "239.255.42.42";
-   public final static int MULTICAST_PORT = 9001; // Port multicast du serveur
+   public final static String MULTICAST_ADDRESS = "255.255.255.255";
+   public final static int MULTICAST_PORT = 5001; // Port multicast du serveur
    
    public final static String USE_CARD        = "Action";  // Utilisation d'une carte
    public final static String DISTRIBUTE_HAND = "Hand";    // Donner les cartes
@@ -31,6 +31,9 @@ public class ProtocolV1 {
    
    public final static String ACCEPT_CONNECTION = "Accept"; // Accepter un requête
    public final static String REFUSE_CONNECTION = "Refuse"; // Refuser un requête
+   
+   public final static String HASH = "Hash";
+   public final static int HASH_SIZE = 64;
    
    public final static int HAND_SIZE    = 3; // Totale de carte pour un joueur
    public final static int MIN_ID_CARD  = 0; // Minimum de l'id d'une carte
@@ -96,6 +99,16 @@ public class ProtocolV1 {
       for(int i = 0; i < HAND_SIZE; i++) {
          result += SEPARATOR + idCards[i];
       }
+      return result;
+   }
+   
+   public static String messageHand(String hash) throws IllegalArgumentException{
+      //check si la taille du tableau est bien celle d'une main
+      if (hash.length() != HASH_SIZE) {
+         throw new IllegalArgumentException("hash invalide size: " + hash.length());
+      }
+      
+      String result = HASH + SEPARATOR + hash;
       return result;
    }
    

@@ -4,10 +4,12 @@ import java.net.Socket;
 import Protocol.ProtocolV1;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import duckException.BadGameInitialisation;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.security.MessageDigest;
@@ -49,37 +51,42 @@ public class Player {
     * Méthode pour obtenir les serveurs disponibles
     */
    public void getServers() {
-      boolean socketInitOk = false;
-      while (!socketInitOk) {
-         MulticastSocket socket;
-         try {
-            socket = new MulticastSocket(ProtocolV1.MULTICAST_PORT);
-            socket.joinGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
-            boolean messageRed = false;
-            long start = new Date().getTime();
-            long now = new Date().getTime();
-            while (now - start < refreshDelay) {
-               byte[] buffer = new byte[2048];
-               DatagramPacket datagram = new DatagramPacket(buffer, buffer.length);
-               System.out.println("ok");
-               socket.receive(datagram);
-               System.out.println("ok2");
-               String msg = new String(datagram.getData());
-               msg = msg.substring(0, msg.lastIndexOf('}') + 1);
-               Gson gson = new Gson();
-               Type type = new TypeToken<Server>() {}.getType();
-               System.out.println(msg + "#");
+      MulticastSocket socket;
+      try {
+         Socket testSocket = new Socket();
+         testSocket.connect(new InetSocketAddress("google.com", 80));
+         InetAddress ipAddress = testSocket.getLocalAddress();
+         testSocket.close();
+         servers.clear();
+         socket = new MulticastSocket(ProtocolV1.MULTICAST_PORT);
+         socket.setInterface(ipAddress);
+         socket.joinGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
+         //DatagramSocket socket = new DatagramSocket(ProtocolV1.MULTICAST_PORT, InetAddress.getByName("0.0.0.0"));
+         boolean messageRed = false;
+         long start = new Date().getTime();
+         while (new Date().getTime() - start < refreshDelay) {
+            System.out.println(new Date().getTime() - start);
+            byte[] buffer = new byte[2048];
+            DatagramPacket datagram = new DatagramPacket(buffer, buffer.length);
+            System.out.println("ok");
+            socket.receive(datagram);
+            System.out.println("ok2");
+            String msg = new String(datagram.getData());
+            System.out.println(msg);
+            msg = msg.substring(0, msg.lastIndexOf('}') + 1);
+            Gson gson = new Gson();
+            Type type = new TypeToken<Server>() {}.getType();
+            if(!servers.contains((Server)gson.fromJson(msg, type))) {
                servers.add((Server)gson.fromJson(msg, type));
-               now = new Date().getTime();
             }
-            socket.leaveGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
-         } catch(SocketException ex) {
-            System.out.println("Erreur à la création du Socket.");
-            System.out.println("socket creation fail");
-         } catch(IOException ex) {
-            System.out.println("Erreur à la lecture du Broadcast.");
-            System.out.println("Read broadcast fail");
          }
+         socket.leaveGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
+      } catch (SocketException ex) {
+            System.out.println("Erreur à la création du Socket.");
+         System.out.println("socket creation fail");
+      } catch (IOException ex) {
+            System.out.println("Erreur à la lecture du Broadcast.");
+         System.out.println("read broadcast fail");
       }
    }
    
@@ -117,8 +124,8 @@ public class Player {
       ServerManager server = new ServerManager(name, hash);
       if(!server.isRunning()) {
          try {
-            server.startServer();
-         } catch(IOException e) {
+            server.acceptClients();
+         } catch (IOException e) {
             System.out.println(e.getMessage());
          }
       }
@@ -215,7 +222,7 @@ public class Player {
       if(!isConnected()) {
          Server server = (Server)servers.toArray()[no];
          clientSocket = new Socket(server.getIpAddress(), ProtocolV1.PORT);
-
+         
          responseBuffer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
          writer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
 
@@ -231,6 +238,9 @@ public class Player {
          } else {
             System.out.println("Réponse reçue: " + answer);
          }
+      }
+      else {
+         System.out.println("deja connecte");
       }
    }
 
@@ -358,9 +368,22 @@ public class Player {
             System.out.println("quel est le mot de passe ?");
             String answerPassword = in.next();
             player.createServer(answerNameServer, answerPassword);
+            do {
+               System.out.println("'go' pour commencer!!!");
+               answer = in.next();
+               if(answer.equals("go")) {
+                  try {
+                     
+                     break;
+                  } catch(BadGameInitialisation e) {
+                     System.out.println(e.getMessage());
+                  }
+               }
+            } while(true);
+            
          } else if (answer.equals("r")) {
             int answerNum = -2;
-            while (answerNum != -1) {
+            while (!player.connected) {
                player.getServers();
                player.showServers();
                System.out.println("quel est le numero du serveur que vous souhaitez ? (-1 pour terminer)");
@@ -376,6 +399,8 @@ public class Player {
             entryOk = false;
             System.out.println("fausse commande");
          }
+         
+         player.startGame();
       }
    }
 }
