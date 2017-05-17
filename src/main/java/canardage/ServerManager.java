@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import duckException.BadGameInitialisation;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -15,20 +16,24 @@ import java.net.MulticastSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Timer;
 import java.util.List;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  */
 public class ServerManager {
 
-   private byte[] hash;
+   private String hash;
    private Thread thread;
    private Server server;
 
@@ -49,9 +54,15 @@ public class ServerManager {
    private static String defaultHashedPassword;
    
    static {
-      //MessageDigest md = MessageDigest.getInstance(ENCODING_ALGORITHM);
-      //md.update("".getBytes(FORMAT_TEXT));
-      //defaultHashedPassword = md.digest();
+      try {
+         MessageDigest md = MessageDigest.getInstance(Global.Security.ENCODING_ALGORITHM);
+         md.update("".getBytes(Global.Text.FORMAT_TEXT));
+         defaultHashedPassword = new String(md.digest(), StandardCharsets.UTF_8);
+      } catch (NoSuchAlgorithmException ex) {
+         System.out.println("Couldn't hash password.");
+      } catch(UnsupportedEncodingException ex) {
+         System.out.println("Encoding of hash not found.");
+      }
    }
 
    public ServerManager(String name, byte[] hash) {
@@ -60,7 +71,7 @@ public class ServerManager {
       playersSockets = new ArrayList<>();
       nbPlayers = 0;
 
-      this.hash = hash;
+      this.hash = new String(hash, StandardCharsets.UTF_8);
       try {
          Socket socket = new Socket();
          socket.connect(new InetSocketAddress("google.com", 80));
@@ -126,17 +137,42 @@ public class ServerManager {
       }
 
       acceptingClients = new Thread(new Runnable() {
+         private final int MAX_TRIES = 3;
+         
          @Override
          public void run() {
             try {
-               for (int i = 0; i < MAX_NB_PLAYERS; i++) {
+               int i = 0;
+               do {
                   System.out.println("Attente d'une connexion au joueur " + i);
                   playersSockets.add(new Client(serverSocket.accept()));
-                  nbPlayers++;
+                  Client client = playersSockets.get(i);
+                  
+                  int tries = 0;
+                  for (tries = 0; tries < MAX_TRIES; tries++) {
+                     System.out.println("Demande du mot de passe au joueur " + i);
+                     playersSockets.get(i).writeLine(ProtocolV1.HASH);
 
-                  System.out.println("Acceptation d'une connexion au joueur " + i);
-                  playersSockets.get(i).writeLine(ProtocolV1.ACCEPT_CONNECTION);
-               }
+                     System.out.println("Attente du mot de passe du joueur " + i);
+                     String givenHash = playersSockets.get(i).readLine();
+                     
+                     if (givenHash.equals(hash)) {
+                        break;
+                     }
+                  }
+
+                  if (tries < MAX_TRIES) {
+                     System.out.println("Acceptation d'une connexion au joueur " + i);
+                     playersSockets.get(i).writeLine(ProtocolV1.ACCEPT_CONNECTION);
+                     nbPlayers++;
+                     i++;
+                  } else {
+                     System.out.println("Refus de la connexion du joueur " + i);
+                     playersSockets.get(i).writeLine(ProtocolV1.REFUSE_CONNECTION);
+                     playersSockets.remove(i);
+                  }
+                  
+               } while (i < MAX_NB_PLAYERS);
 
                serverSocket.close();
             } catch (IOException e) {
