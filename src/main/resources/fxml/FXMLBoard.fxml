@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+
+
+<AnchorPane id="AnchorPane" prefHeight="720.0" prefWidth="1280.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.111" fx:controller="fxml.controller.FXMLBoardController">
+   <children>
+      <Pane fx:id="pane" layoutX="490.0" layoutY="210.0" prefHeight="300.0" prefWidth="300.0" AnchorPane.bottomAnchor="210.0" AnchorPane.leftAnchor="490.0" AnchorPane.rightAnchor="490.0" AnchorPane.topAnchor="210.0" />
+      <Button layoutX="57.0" layoutY="599.0" mnemonicParsing="false" text="Émoticône" />
+      <Button layoutX="148.0" layoutY="599.0" mnemonicParsing="false" text="Émoticône" />
+      <Button layoutX="57.0" layoutY="630.0" mnemonicParsing="false" text="Émoticône" />
+      <Button layoutX="148.0" layoutY="630.0" mnemonicParsing="false" text="Émoticône" />
+      <Label layoutX="589.0" layoutY="134.0" text="Image To Show" />
+   </children>
+</AnchorPane>

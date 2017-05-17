@@ -13,33 +13,30 @@ import javafx.stage.Stage;
  *
  * @author Nathan
  */
-public class BoardApplication extends Application {
+public class BoardView extends Application {
 
    @Override
-   public void start(Stage stage) throws Exception {
+   public void start(Stage primaryStage) throws Exception {
       Parent root;
       try {
-         root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
+         root = FXMLLoader.load(getClass().getResource("/fxml/FXMLBoard.fxml"));
 
          Scene scene = new Scene(root);
-         stage.setTitle("Canardage");
-         stage.setScene(scene);
+         primaryStage.setTitle("Canardage");
+         primaryStage.setScene(scene);
 
-         stage.setMinHeight(767);
-         stage.setMinWidth(1300);
-         stage.setMaxHeight(767);
-         stage.setMaxWidth(1300);
+         primaryStage.setMinHeight(767);
+         primaryStage.setMinWidth(1310);
+         primaryStage.setMaxHeight(767);
+         primaryStage.setMaxWidth(1310);
 
-         stage.show();
+         primaryStage.show();
       } catch(IOException e) {
          Logger logger = Logger.getLogger(getClass().getName());
-         logger.log(Level.SEVERE, "Failed to create new Window.", e);
+         logger.log(Level.SEVERE, "Erreur à la création d'une nouvelle fenêtre.", e);
       }
    }
 
-   /**
-    * @param args the command line arguments
-    */
    public static void main(String[] args) {
       launch(args);
    }

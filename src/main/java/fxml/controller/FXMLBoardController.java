@@ -12,35 +12,27 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.layout.Pane;
 
 /**
+ * FXML Controller class
  *
  * @author Nathan
  */
 public class FXMLBoardController implements Initializable {
 
    @FXML
-   private Button button;
-   @FXML
-   private ComboBox<?> menuMap;
-   @FXML
-   private Button button1;
-   @FXML
-   private Button button2;
-   @FXML
-   private Button button3;
+   private Pane pane;
 
-   @FXML
-   private void handleButtonAction(ActionEvent event) {
-   }
-
-   @FXML
-   private void selectionMenuMap(ActionEvent event) {
-   }
-
+   /**
+    * Initializes the controller class.
+    * @param url
+    * @param rb
+    */
    @Override
-   public void initialize(URL location, ResourceBundle resources) {
+   public void initialize(URL url, ResourceBundle rb) {
       // TODO
-   }
+   }   
 
+   
 }
