@@ -238,6 +238,10 @@ public class ServerManager {
       Collections.shuffle(deck);
    }
 
+   public Server getServer() {
+      return server;
+   }
+   
    public boolean isRunning() {
       return serverSocket != null && serverSocket.isBound();
    }
