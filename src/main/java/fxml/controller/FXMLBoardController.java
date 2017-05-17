@@ -7,11 +7,9 @@ package fxml.controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -34,10 +32,10 @@ public class FXMLBoardController implements Initializable {
    @FXML
    private Button smiley4;
 
-   private final Image image;
+   private Image image;
 
    public FXMLBoardController() {
-      this.image = new Image(getClass().getResourceAsStream("/src/images/canardBleuCopie.png")); 
+//      this.image = new Image(getClass().getResourceAsStream("/images/canardBleuCopie.png")); 
    }
    
    /**
@@ -47,7 +45,7 @@ public class FXMLBoardController implements Initializable {
     */
    @Override
    public void initialize(URL url, ResourceBundle rb) {
-//      final ImageView duck = new ImageView(image);
+//      ImageView duck = new ImageView(image);
 //      pane.getChildren().add(duck);
    }
 

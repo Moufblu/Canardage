@@ -7,6 +7,9 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
@@ -14,17 +17,19 @@ import javafx.stage.Stage;
  * @author Nathan
  */
 public class BoardView extends Application {
-
+   
+   private Pane pane;
    @Override
    public void start(Stage primaryStage) throws Exception {
       Parent root;
       try {
          root = FXMLLoader.load(getClass().getResource("/fxml/FXMLBoard.fxml"));
-
+         
+         ImageView duck = new ImageView(new Image(getClass().getResourceAsStream("/images/canardBleuCopie.png")));
          Scene scene = new Scene(root);
          primaryStage.setTitle("Canardage");
          primaryStage.setScene(scene);
-
+         pane.getChildren().add(duck);
          primaryStage.setMinHeight(767);
          primaryStage.setMinWidth(1310);
          primaryStage.setMaxHeight(767);
