@@ -335,10 +335,10 @@ public class Player {
                answer = in.next();
                if(answer.equals("go")) {
                   try {
-                  //startGame
+                     
                      break;
                   } catch(BadGameInitialisation e) {
-                     
+                     System.out.println(e.getMessage());
                   }
                }
             } while(true);

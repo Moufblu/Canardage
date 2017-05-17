@@ -2,8 +2,6 @@ package canardage;
 
 import java.net.ServerSocket;
 import Protocol.ProtocolV1;
-import canardage.action.Action;
-import canardage.action.Target;
 import java.lang.reflect.Type;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -24,8 +22,6 @@ import java.util.Timer;
 import java.util.List;
 import java.util.TimerTask;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -39,7 +35,7 @@ public class ServerManager {
    private final static int MIN_NB_PLAYERS = 3;
    private final static int MAX_NB_PLAYERS = 6;
    private final static int NB_ACTION_CARDS = 10;
-   
+
    private ServerSocket serverSocket;
    private Thread acceptingClients;
 
@@ -69,25 +65,30 @@ public class ServerManager {
          Socket socket = new Socket();
          socket.connect(new InetSocketAddress("google.com", 80));
          server = new Server(UUID.randomUUID(), name, socket.getLocalAddress().getHostAddress(), ProtocolV1.PORT);
+         sendInfo(socket.getLocalAddress());
       } catch (UnknownHostException ex) {
          System.out.println("impossible to find the ip address of the host");
       } catch (IOException ex) {
          System.out.println("can't create test socket to google");
       }
-      sendInfo();
    }
 
-   public void sendInfo() {
-           
+   private void sendInfo(final InetAddress address) {
+
       thread = new Thread(new Runnable() {
          @Override
          public void run() {
             Gson gson = new Gson();
-            Type type = new TypeToken<Server>() {}.getType();
+            Type type = new TypeToken<Server>() {
+            }.getType();
             String msg = gson.toJson(server, type);
             try {
-               final DatagramSocket socket = new DatagramSocket();
                byte[] payload = msg.getBytes();
+
+               final MulticastSocket socket = new MulticastSocket(ProtocolV1.MULTICAST_PORT);
+               socket.setInterface(address);
+               socket.setBroadcast(true);
+
                final DatagramPacket datagram = new DatagramPacket(payload,
                        payload.length);
                datagram.setAddress(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
@@ -136,110 +137,112 @@ public class ServerManager {
                   System.out.println("Acceptation d'une connexion au joueur " + i);
                   playersSockets.get(i).writeLine(ProtocolV1.ACCEPT_CONNECTION);
                }
-               
+
                serverSocket.close();
-            }catch(IOException e) {
+            } catch (IOException e) {
                System.out.println("Couldn't get client socket.");
-            }catch(IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                System.out.println("Hand of cards given is invalid.");
             }
-         }         
+         }
       });
       acceptingClients.start();
    }
-   
+
    public void startGame() throws BadGameInitialisation {
-      if (nbPlayers < MIN_NB_PLAYERS)
+      if (nbPlayers < MIN_NB_PLAYERS) {
          throw new BadGameInitialisation("Number of players must be at least " + MIN_NB_PLAYERS);
-      
+      }
+
       //Killing the thread accepting clients
-      if (acceptingClients.isAlive())
-      {
+      if (acceptingClients.isAlive()) {
          try {
             serverSocket.close();
             acceptingClients.interrupt();
             acceptingClients.join();
          } catch (InterruptedException ex) {
             System.out.println("Thread accepting clients has been killed by admin.");
-         } catch(IOException e) {
+         } catch (IOException e) {
             System.out.println("Server socket couldn't be closed.");
          }
       }
-      
+
       initialiseGame();
-      
-      for (Client player : playersSockets)
-      {
+
+      for (Client player : playersSockets) {
          String answer = "";
          String expectedAnswer = ProtocolV1.USE_CARD + ProtocolV1.SEPARATOR + 4;
 
          do {
             System.out.println("Asking for card");
             player.writeLine(ProtocolV1.YOUR_TURN);
-            
+
             try {
                answer = player.readLine();
             } catch (IOException ex) {
                System.out.println("Couldn't get action card.");
             }
          } while (!answer.equals(expectedAnswer));
-         
+
          System.out.println("Player played the card Target");
-         
+
          do {
             answer = "";
             System.out.println("Asking for position");
             player.writeLine(ProtocolV1.ASK_FOR_POSITION);
-            
+
             try {
                answer = player.readLine();
             } catch (IOException ex) {
                System.out.println("Couldn't get position to play action card.");
             }
          } while (!answer.contains(ProtocolV1.ASK_FOR_POSITION));
-         
+
          String[] temp = answer.split(ProtocolV1.SEPARATOR);
          int position = Integer.valueOf(temp[1]);
          System.out.println("Player played in the position " + position);
-         
+
          board.setTarget(position, true);
-         
+
          System.out.println("Sending updated board");
          player.writeLine(ProtocolV1.messageBoardState());
       }
-      
-      
+
    }
-   
+
    private void initialiseGame() {
       Board.registerInstance(nbPlayers);
       board = Board.getInstance();
       initialiseDeck();
-      for (Client client : playersSockets)
-      {
+      for (Client client : playersSockets) {
          System.out.println("Envoi d'une main");
          int[] hand = {4, 4, 4};
          client.writeLine(ProtocolV1.messageHand(hand));
       }
    }
-   
+
    private void initialiseDeck() {
       int nbCards = 10;
-      for (int i = 0; i < nbCards; i++)
+      for (int i = 0; i < nbCards; i++) {
          deck.add(0);
-      
-      for (int i = 0; i < nbCards; i++)
+      }
+
+      for (int i = 0; i < nbCards; i++) {
          deck.add(1);
-      
-      for (int i = 0; i < nbCards; i++)
+      }
+
+      for (int i = 0; i < nbCards; i++) {
          deck.add(2);
-      
-      for (int i = 0; i < nbCards; i++)
+      }
+
+      for (int i = 0; i < nbCards; i++) {
          deck.add(3);
-      
-      for (int i = 0; i < nbCards; i++)
+      }
+
+      for (int i = 0; i < nbCards; i++) {
          deck.add(4);
-      
+      }
+
       Collections.shuffle(deck);
    }
 
