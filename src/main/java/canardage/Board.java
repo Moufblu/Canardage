@@ -6,8 +6,8 @@ import java.util.LinkedList;
 import canardage.action.*;
 
 /**
- * Description: Classe principale dans laquelle on implémente le plateau de jeu
- * Date: 19.04.2017
+ * Description: Classe principale dans laquelle on implémente le plateau de jeu Date:
+ * 19.04.2017
  * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
  * @version 0.1
  */
@@ -85,34 +85,34 @@ public class Board {
     */
    private Board(int nbPlayers) throws IllegalArgumentException {
 
-      if (nbPlayers < NB_PLAYERS_MIN || nbPlayers > NB_PLAYERS_MAX) {
+      if(nbPlayers < NB_PLAYERS_MIN || nbPlayers > NB_PLAYERS_MAX) {
          throw new IllegalArgumentException("Invalid number of players ");
       }
 
       ducks = new LinkedList();
       locations = new Location[NB_LOCATIONS];
 
-      for (int i = 0; i < locations.length; i++) {
+      for(int i = 0; i < locations.length; i++) {
          locations[i] = new Location();
       }
 
       /* Calcul du nombre de cartes eau selon le nombre de joueurs */
       int nbCardsWater = 0;
-      if (nbPlayers == 2) {
+      if(nbPlayers == 2) {
          nbCardsWater = 2;
       } else {
          nbCardsWater = nbPlayers - 1;
       }
 
       /* Ajout des cartes eau */
-      for (int i = 0; i < nbCardsWater; i++) {
+      for(int i = 0; i < nbCardsWater; i++) {
          pushBack(WATER_CARD_VALUE);
       }
 
       /* Ajout des cartes canards */
       int cpt = 1;
-      for (int i = 0; i < nbPlayers; i++) {
-         for (int j = 0; j < MAX_DUCK_PER_PLAYER; j++) {
+      for(int i = 0; i < nbPlayers; i++) {
+         for(int j = 0; j < MAX_DUCK_PER_PLAYER; j++) {
             ducks.add(cpt);
          }
          cpt++;
@@ -131,7 +131,7 @@ public class Board {
     * @return Une instance de la classe Board
     */
    public static Board getInstance() throws RuntimeException {
-      if (instance != null) {
+      if(instance != null) {
          return instance;
       } else {
          throw new RuntimeException("Instance not registered !");
@@ -143,7 +143,7 @@ public class Board {
     * @param nbPlayers Nombre de joueur dans la partie
     */
    public static void registerInstance(int nbPlayers) {
-      if (instance == null) {
+      if(instance == null) {
          instance = new Board(nbPlayers);
       }
    }
@@ -173,7 +173,7 @@ public class Board {
     */
    private void placeDucks() {
       //nadir
-      for (int i = 0; i < NB_LOCATIONS; i++) {
+      for(int i = 0; i < NB_LOCATIONS; i++) {
          placeDuck(i);
       }
    }
@@ -197,18 +197,16 @@ public class Board {
     */
    public void swap(int location, boolean left) throws IndexOutOfBoundsException {
       //nadir       
-      if (left) {
-         if (location < NB_LOCATIONS - 1 && location >= 0) {
+      if(left) {
+         if(location < NB_LOCATIONS - 1 && location >= 0) {
             swap(location, location + 1);
          } else {
             throw new IndexOutOfBoundsException("Cannot swap left !");
          }
+      } else if(location < NB_LOCATIONS && location > 0) {
+         swap(location, location - 1);
       } else {
-         if (location < NB_LOCATIONS && location > 0) {
-            swap(location, location - 1);
-         } else {
-            throw new IndexOutOfBoundsException("Cannot swap right !");
-         }
+         throw new IndexOutOfBoundsException("Cannot swap right !");
       }
    }
 
@@ -246,7 +244,7 @@ public class Board {
       validate(location);
       boolean verify = true;
       int locationWish = 0;
-      if (left) {
+      if(left) {
          locationWish = location + 1;
       } else {
          locationWish = location - 1;
@@ -254,23 +252,23 @@ public class Board {
 
       // Vèrifie que les condition d'un hide soient corrects,
       // qu'il n'y a pas de canard caché sous les canards
-      if (locations[locationWish].hiddenDuck != MISSING) {
+      if(locations[locationWish].hiddenDuck != MISSING) {
          verify = false;
       }
-      if (locations[location].hiddenDuck != MISSING) {
+      if(locations[location].hiddenDuck != MISSING) {
          verify = false;
       }
-      if (locations[locationWish].duck == WATER_CARD_VALUE) {
+      if(locations[locationWish].duck == WATER_CARD_VALUE) {
          verify = false;
       }
-      if (locations[location].duck == WATER_CARD_VALUE) {
+      if(locations[location].duck == WATER_CARD_VALUE) {
          verify = false;
       }
       //qu'il y ait des canard sous les positions
-      if (locations[location].duck == MISSING) {
+      if(locations[location].duck == MISSING) {
          verify = false;
       }
-      if (locations[locationWish].duck == MISSING) {
+      if(locations[locationWish].duck == MISSING) {
          verify = false;
       }
       return verify;
@@ -286,13 +284,13 @@ public class Board {
       validate(location);
 
       int locationWish = 0;
-      if (left) {
+      if(left) {
          locationWish = location + 1;
       } else {
          locationWish = location - 1;
       }
       //cache le canard
-      if (possibleHide(location, left)) {
+      if(possibleHide(location, left)) {
          locations[locationWish].hiddenDuck = removeDuck(location);
          advance(location);
       }
@@ -319,10 +317,10 @@ public class Board {
     * Enlève les canards des positions visibles et les places dans la liste ducks
     */
    public void retrieveDucks() {
-      for (int i = 0; i < 2; i++) {
-         for (int j = 0; j < NB_LOCATIONS; j++) {
+      for(int i = 0; i < 2; i++) {
+         for(int j = 0; j < NB_LOCATIONS; j++) {
             int temp = removeDuck(j);
-            if (temp != MISSING) {
+            if(temp != MISSING) {
                ducks.add(temp);
             }
          }
@@ -339,7 +337,7 @@ public class Board {
    public void setTarget(int posDuck, boolean value) throws IndexOutOfBoundsException {
       validate(posDuck);
 
-      if (!value || locations[posDuck].duck > 0) {
+      if(!value || locations[posDuck].duck > 0) {
          locations[posDuck].targetted = value;
       }
    }
@@ -392,7 +390,7 @@ public class Board {
     */
    public void fire(int location) throws IndexOutOfBoundsException {
       validate(location);
-      if (locations[location].targetted) {
+      if(locations[location].targetted) {
          removeDuck(location);
          setTarget(location, false);
          advance(location);
@@ -408,22 +406,22 @@ public class Board {
    public String toString() {
       String display = "[";
 
-      for (int i = locations.length - 1; i >= 0; i--) {
-         if (locations[i].targetted) {
+      for(int i = locations.length - 1; i >= 0; i--) {
+         if(locations[i].targetted) {
             display += "*";
          }
 
-         if (locations[i].guarded) {
+         if(locations[i].guarded) {
             display += "G";
          }
 
          display += locations[i].duck;
 
-         if (locations[i].hiddenDuck != MISSING) {
+         if(locations[i].hiddenDuck != MISSING) {
             display += "~" + locations[i].hiddenDuck + "~";
          }
 
-         if (i != 0) {
+         if(i != 0) {
             display += ", ";
          }
       }
@@ -436,23 +434,23 @@ public class Board {
    public String getBoardState() {
       String display = "";
 
-      for (int i = locations.length - 1; i >= 0; i--) {
+      for(int i = locations.length - 1; i >= 0; i--) {
 
          display += locations[i].duck;
 
-         if (locations[i].hiddenDuck != MISSING) {
+         if(locations[i].hiddenDuck != MISSING) {
             display += locations[i].hiddenDuck;
          }
 
-         if (locations[i].targetted) {
+         if(locations[i].targetted) {
             display += "*";
          }
 
-         if (locations[i].guarded) {
+         if(locations[i].guarded) {
             display += "G";
          }
 
-         if (i != 0) {
+         if(i != 0) {
             display += " ";
          }
       }
@@ -495,15 +493,15 @@ public class Board {
     */
    private void advance(int location) throws IndexOutOfBoundsException {
       validate(location);
-      for (int i = location; i != 0; i--) {
-         if (locations[i].duck == MISSING) {
+      for(int i = location; i != 0; i--) {
+         if(locations[i].duck == MISSING) {
             swap(i, false);
          } else {
             break;
          }
       }
 
-      if (locations[0].duck == MISSING) {
+      if(locations[0].duck == MISSING) {
          placeDuck(0);
       }
    }
@@ -516,7 +514,7 @@ public class Board {
     * positions possibles
     */
    private void validate(int location) throws IndexOutOfBoundsException {
-      if (!(location >= 0 && location < NB_LOCATIONS)) {
+      if(!(location >= 0 && location < NB_LOCATIONS)) {
          throw new IndexOutOfBoundsException("Location out of bounds !");
       }
    }
@@ -542,7 +540,7 @@ public class Board {
    public boolean isMyDuck(int location, int player) throws IndexOutOfBoundsException {
       validate(location);
       currentPlayer = player;
-      if (locations[location].duck == currentPlayer) {
+      if(locations[location].duck == currentPlayer) {
          return true;
       }
       return false;

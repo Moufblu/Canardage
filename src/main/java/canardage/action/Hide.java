@@ -12,23 +12,23 @@ import java.util.Scanner;
 public class Hide extends WithLocation implements IDirection {
 
    private boolean direction = true;   // Direction vers laquelle on veut bouger le 
-                                       // canard; vrai - gauche, faux - droite
-   
+   // canard; vrai - gauche, faux - droite
+
    /**
     * Vérifie si la carte a un effet et réalise l'effet correspondant si possible
     */
    @Override
    public void effect() {
-      if (hasEffect()) {
+      if(hasEffect()) {
          int positionChoice;
          do {
             positionChoice = getLocationChoice();
             direction = getDirectionChoice();
-         } while (!isPlayable(positionChoice));
+         } while(!isPlayable(positionChoice));
          board.hide(positionChoice, direction);
       }
    }
-   
+
    /**
     * Vérifie si la carte pour se cacher derrière un canard peut être jouée
     * @param position La postion sur laquelle on veut jouer la carte
@@ -36,12 +36,12 @@ public class Hide extends WithLocation implements IDirection {
     */
    @Override
    public boolean isPlayable(int position) {
-      if ((position == 0 && !direction)
+      if((position == 0 && !direction)
               || (position == Board.NB_LOCATIONS - 1 && direction)) {
-         
+
          return false;
       }
-      if (board.possibleHide(position, direction)) {
+      if(board.possibleHide(position, direction)) {
          return true;
       }
       return false;

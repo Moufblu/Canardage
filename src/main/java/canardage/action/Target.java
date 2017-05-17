@@ -7,7 +7,7 @@ package canardage.action;
  * @version 0.1
  */
 public class Target extends WithLocation {
-   
+
    /**
     * Vérifie si la carte a un effet et réalise l'effet correspondant si possible
     */
@@ -18,7 +18,7 @@ public class Target extends WithLocation {
          board.setTarget(getLocationChoice(), true);
       }
    }
-   
+
    /**
     * Vérifie si la carte de mettre une cible peut être jouée
     * @param position La postion sur laquelle on veut jouer la carte

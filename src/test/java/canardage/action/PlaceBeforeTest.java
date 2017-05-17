@@ -20,18 +20,18 @@ import org.junit.Ignore;
  */
 @Ignore
 public class PlaceBeforeTest {
-   
+
    private static Board board;
-   
+
    @BeforeClass
    public static void setUpClass() {
       Board.registerInstance(Board.getMaxPlayers());
    }
-   
+
    @Before
    public void setUp() {
       board = Board.getInstance();
-      
+
       board.setTarget(0, false);
       board.setTarget(1, false);
       board.setTarget(2, false);
@@ -39,7 +39,7 @@ public class PlaceBeforeTest {
       board.setTarget(4, false);
       board.setTarget(5, false);
    }
-   
+
    /**
     * Test de isPlayable, de la classe PlaceBefore.
     */
@@ -77,5 +77,5 @@ public class PlaceBeforeTest {
       // TODO review the generated test code and remove the default call to fail.
       fail("The test case is a prototype.");
    }
-   
+
 }

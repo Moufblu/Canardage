@@ -10,24 +10,23 @@ import static org.junit.Assert.*;
 import org.junit.Ignore;
 
 public class HideTest {
-   
+
    private Board board;
    private Hide hide;
-   
+
    @BeforeClass
    public static void setUpClass() {
       Board.registerInstance(Board.getMaxPlayers());
    }
-   
+
    @Before
    public void setUp() {
       board = Board.getInstance();
       hide = new Hide();
-      
+
       board.shuffleAll();
-      
-      for (int i = 0; i < board.getNbLocations(); i++)
-      {
+
+      for(int i = 0; i < board.getNbLocations(); i++) {
          board.setGuard(i, false);
          board.setTarget(i, false);
       }
@@ -42,10 +41,10 @@ public class HideTest {
       board.setLocation(2, 0);
       board.setLocation(3, 3);
       board.setLocation(4, 0);
-            
+
       assertFalse(hide.isPlayable(3));
    }
-   
+
    /**
     * Test of isPlayable method, of class Hide.
     */
@@ -58,24 +57,24 @@ public class HideTest {
       board.setLocation(3, 2);
       board.setLocation(4, 2);
       board.setLocation(5, 2);
-      
+
       board.hide(1, true);
       board.hide(2, false);
-      
+
       assertFalse(hide.isPlayable(1));
    }
-   
+
    /**
     * Test of isPlayable method, of class Hide.
     */
    @Test
    public void ADuckCanHideIfAdjacentIsADuck() {
       System.out.println("isPlayable");
-      
+
       board.setLocation(0, 2);
       board.setLocation(1, 2);
       board.setLocation(2, 2);
-      
+
       assertTrue(hide.isPlayable(1));
    }
 
@@ -85,14 +84,14 @@ public class HideTest {
    @Test
    public void ADuckCannotHideIfDuckBehindHim() {
       System.out.println("isPlayable");
-      
+
       board.setLocation(0, 2);
       board.setLocation(1, 2);
       board.hide(0, true);
-      
+
       assertFalse(hide.isPlayable(0));
    }
-   
+
    /**
     * Test of hasEffect method, of class Hide.
     */
@@ -105,10 +104,10 @@ public class HideTest {
       board.setLocation(3, 2);
       board.setLocation(4, 2);
       board.setLocation(5, 2);
-      
+
       assertTrue(hide.hasEffect());
    }
-   
+
    /**
     * Test of hasEffect method, of class Hide.
     */
@@ -121,22 +120,22 @@ public class HideTest {
       board.setLocation(3, 0);
       board.setLocation(4, 2);
       board.setLocation(5, 0);
-      
+
       assertFalse(hide.hasEffect());
    }
-   
+
    @Test
    public void testHasNoEffectIfAllPlacesHaveAlreadyAHiddenDuck() {
       System.out.println("hasEffect");
-      for(int i = Board.NB_LOCATIONS - 1; i > 0; i--){
+      for(int i = Board.NB_LOCATIONS - 1; i > 0; i--) {
          board.setLocation(i, 2);
          board.setLocation(i - 1, 2);
          board.hide(i - 1, true);
          System.out.println(board);
       }
-      
+
       System.out.println(board);
-      
+
       assertFalse(hide.hasEffect());
    }
 

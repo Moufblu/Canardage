@@ -8,8 +8,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 /**
- * Description: Classe pour la partie client de la connexion client-serveur
- * Date: 03.05.2017
+ * Description: Classe pour la partie client de la connexion client-serveur Date:
+ * 03.05.2017
  * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
  * @version 0.1
  */
@@ -22,7 +22,7 @@ public class Client {
    /**
     * Constructeur de la classe Client
     * @param clientSocket Socket du client
-    * @throws IOException Lance une exception si on arrive pas à créer le Buffer ou 
+    * @throws IOException Lance une exception si on arrive pas à créer le Buffer ou
     * le Writer pour le client
     */
    public Client(Socket clientSocket) throws IOException {
@@ -48,12 +48,12 @@ public class Client {
    String readLine() throws IOException {
       return reader.readLine();
    }
-   
+
    /**
-    * Fermeture du  socket du client
+    * Fermeture du socket du client
     * @throws IOException Erreur si on a pas réussi à fermer la connexion
     */
-   void close() throws IOException{
+   void close() throws IOException {
       clientSocket.close();
    }
 
