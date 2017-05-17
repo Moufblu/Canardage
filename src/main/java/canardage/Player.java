@@ -8,7 +8,6 @@ import duckException.BadGameInitialisation;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
@@ -16,8 +15,6 @@ import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -25,7 +22,7 @@ import java.util.logging.Logger;
 public class Player {
 
    private final int HAND_CARDS_NUMBER = 3;
-   private final long refreshDelay = 2000;
+   private final long REFRESH_DELAY = 2000;
 
    private final String ENCODING_ALGORITHM = "SHA-256";
    private final String FORMAT_TEXT = "UTF-8";
@@ -51,26 +48,26 @@ public class Player {
    public void getServers() {
       MulticastSocket socket;
       try {
+         
          Socket testSocket = new Socket();
          testSocket.connect(new InetSocketAddress("google.com", 80));
          InetAddress ipAddress = testSocket.getLocalAddress();
          testSocket.close();
+         
          servers.clear();
+         
          socket = new MulticastSocket(ProtocolV1.MULTICAST_PORT);
          socket.setInterface(ipAddress);
          socket.joinGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
-         //DatagramSocket socket = new DatagramSocket(ProtocolV1.MULTICAST_PORT, InetAddress.getByName("0.0.0.0"));
-         boolean messageRed = false;
+         socket.setSoTimeout((int)REFRESH_DELAY);
+         
          long start = new Date().getTime();
-         while (new Date().getTime() - start < refreshDelay) {
-            System.out.println(new Date().getTime() - start);
+         while (new Date().getTime() - start < REFRESH_DELAY) {
             byte[] buffer = new byte[2048];
             DatagramPacket datagram = new DatagramPacket(buffer, buffer.length);
-            System.out.println("ok");
             socket.receive(datagram);
-            System.out.println("ok2");
+            System.out.println("received datagram");
             String msg = new String(datagram.getData());
-            System.out.println(msg);
             msg = msg.substring(0, msg.lastIndexOf('}') + 1);
             Gson gson = new Gson();
             Type type = new TypeToken<Server>() {}.getType();
@@ -105,6 +102,7 @@ public class Player {
       if (!server.isRunning()) {
          try {
             server.acceptClients();
+            connect(server.getServer());
          } catch (IOException e) {
             System.out.println(e.getMessage());
          }
@@ -189,14 +187,19 @@ public class Player {
       System.out.println("");
    }
 
+   public void connect(int no) throws IOException{
+      Server server = (Server) servers.toArray()[no];
+      
+      connect(server);
+   }
+   
    /**
     *
-    * @param adress
+    * @param server
     * @throws IOException
     */
-   public void connect(int no) throws IOException {
+   public void connect(Server server) throws IOException {
       if (!isConnected()) {
-         Server server = (Server) servers.toArray()[no];
          clientSocket = new Socket(server.getIpAddress(), ProtocolV1.PORT);
          
          responseBuffer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
@@ -205,12 +208,16 @@ public class Player {
          //We read the first answer from the server
          String answer = responseBuffer.readLine();
          
-         if (answer.equals(ProtocolV1.ACCEPT_CONNECTION)) {
-            connected = true;
-         } else if (answer.equals(ProtocolV1.REFUSE_CONNECTION)) {
-            System.out.println("Connection Refusee");
-         } else {
-            System.out.println("reponse reçue: " + answer);
+         switch (answer) {
+            case ProtocolV1.ACCEPT_CONNECTION:
+               connected = true;
+               break;
+            case ProtocolV1.REFUSE_CONNECTION:
+               System.out.println("Connection Refusee");
+               break;
+            default:
+               System.out.println("reponse reçue: " + answer);
+               break;
          }
       }
       else {
@@ -274,7 +281,7 @@ public class Player {
             counter++;
          }
          buff.close();
-      } catch (Exception e) {
+      } catch (IOException | NumberFormatException e) {
          System.out.println(e.toString());
       }
       throw new IllegalArgumentException("card number not valid");
@@ -317,7 +324,7 @@ public class Player {
             boolean nameNotRedondant = false;
             while (!nameNotRedondant) {
                nameNotRedondant = true;
-               //player.getServers();
+               player.getServers();
                System.out.println("quel est le nom du serveur ?");
                in.reset();
                answerNameServer = in.nextLine();
