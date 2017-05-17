@@ -53,11 +53,11 @@ public class Player {
       try {
          Socket testSocket = new Socket();
          testSocket.connect(new InetSocketAddress("google.com", 80));
-         String ipAddress = testSocket.getLocalAddress().getHostAddress();
+         InetAddress ipAddress = testSocket.getLocalAddress();
          testSocket.close();
          servers.clear();
          socket = new MulticastSocket(ProtocolV1.MULTICAST_PORT);
-         socket.setInterface(InetAddress.getByName(ipAddress));
+         socket.setInterface(ipAddress);
          socket.joinGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
          //DatagramSocket socket = new DatagramSocket(ProtocolV1.MULTICAST_PORT, InetAddress.getByName("0.0.0.0"));
          boolean messageRed = false;
