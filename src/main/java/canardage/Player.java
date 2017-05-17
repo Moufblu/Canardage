@@ -8,7 +8,6 @@ import duckException.BadGameInitialisation;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
@@ -16,8 +15,6 @@ import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -190,14 +187,19 @@ public class Player {
       System.out.println("");
    }
 
+   public void connect(int no) throws IOException{
+      Server server = (Server) servers.toArray()[no];
+      
+      connect(server);
+   }
+   
    /**
     *
-    * @param adress
+    * @param server
     * @throws IOException
     */
-   public void connect(int no) throws IOException {
+   public void connect(Server server) throws IOException {
       if (!isConnected()) {
-         Server server = (Server) servers.toArray()[no];
          clientSocket = new Socket(server.getIpAddress(), ProtocolV1.PORT);
          
          responseBuffer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
@@ -206,12 +208,16 @@ public class Player {
          //We read the first answer from the server
          String answer = responseBuffer.readLine();
          
-         if (answer.equals(ProtocolV1.ACCEPT_CONNECTION)) {
-            connected = true;
-         } else if (answer.equals(ProtocolV1.REFUSE_CONNECTION)) {
-            System.out.println("Connection Refusee");
-         } else {
-            System.out.println("reponse reçue: " + answer);
+         switch (answer) {
+            case ProtocolV1.ACCEPT_CONNECTION:
+               connected = true;
+               break;
+            case ProtocolV1.REFUSE_CONNECTION:
+               System.out.println("Connection Refusee");
+               break;
+            default:
+               System.out.println("reponse reçue: " + answer);
+               break;
          }
       }
       else {
@@ -275,7 +281,7 @@ public class Player {
             counter++;
          }
          buff.close();
-      } catch (Exception e) {
+      } catch (IOException | NumberFormatException e) {
          System.out.println(e.toString());
       }
       throw new IllegalArgumentException("card number not valid");
