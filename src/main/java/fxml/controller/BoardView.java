@@ -18,22 +18,31 @@ import javafx.stage.Stage;
  */
 public class BoardView extends Application {
    
-   private Pane pane;
+//   private Pane pane;
    @Override
    public void start(Stage primaryStage) throws Exception {
       Parent root;
       try {
          root = FXMLLoader.load(getClass().getResource("/fxml/FXMLBoard.fxml"));
-         
-         ImageView duck = new ImageView(new Image(getClass().getResourceAsStream("/images/canardBleuCopie.png")));
+//         Image value = new Image(getClass().getResourceAsStream("/images/canardBleuCopie.png"));
+//         ImageView duck = new ImageView(value);
+//         duck.setImage(value);
+//         duck.setLayoutX(300);
+//         duck.setLayoutY(200);
+//         duck.fitHeightProperty().add(100);
+//         duck.fitWidthProperty().add(100);
+//         duck.setVisible(true);
          Scene scene = new Scene(root);
+         
          primaryStage.setTitle("Canardage");
-         primaryStage.setScene(scene);
-         pane.getChildren().add(duck);
+//         pane = new Pane();
+//         pane.getChildren().add(duck);
+         scene.getStylesheets().add("/styles/Styles.css");
          primaryStage.setMinHeight(767);
          primaryStage.setMinWidth(1310);
          primaryStage.setMaxHeight(767);
          primaryStage.setMaxWidth(1310);
+         primaryStage.setScene(scene);
 
          primaryStage.show();
       } catch(IOException e) {
