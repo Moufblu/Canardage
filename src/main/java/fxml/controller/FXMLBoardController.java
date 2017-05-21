@@ -48,19 +48,17 @@ public class FXMLBoardController implements Initializable {
    @Override
    public void initialize(URL url, ResourceBundle rb) {
       
-      Image value = new Image(getClass().getResourceAsStream("/images/canardBleuCopie.png"));
-      duck = new ImageView(value);
-      duck.setImage(value);
-      duck.setLayoutX(300);
-      duck.setLayoutY(200);
-      duck.fitHeightProperty().add(100);
-      duck.fitWidthProperty().add(100);
-      duck.setVisible(true);
-      
       smiley1.setOnAction(new EventHandler<ActionEvent>() {
          @Override
          public void handle(ActionEvent e) {
              duck.setImage(new Image(getClass().getResourceAsStream("/images/canardVert.png")));
+         }
+      });
+      
+      smiley2.setOnAction(new EventHandler<ActionEvent>() {
+         @Override
+         public void handle(ActionEvent e) {
+             duck.setImage(new Image(getClass().getResourceAsStream("/images/canardBleuCopie.png")));
          }
       });
    }

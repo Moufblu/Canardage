@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
@@ -10,7 +11,11 @@
     <children>
         <Pane fx:id="pane" layoutX="490.0" layoutY="210.0" maxHeight="0.0" prefHeight="300.0" prefWidth="300.0" style="-fx-border-color: #000000;" AnchorPane.bottomAnchor="210.0" AnchorPane.leftAnchor="490.0" AnchorPane.rightAnchor="490.0" AnchorPane.topAnchor="210.0">
          <children>
-            <ImageView fx:id="duck" fitHeight="150.0" fitWidth="135.0" layoutX="83.0" layoutY="75.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="duck" fitHeight="150.0" fitWidth="135.0" layoutX="103.0" layoutY="75.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/canardBleuCopie.png" />
+               </image>
+            </ImageView>
          </children>
         </Pane>
         <Button fx:id="smiley1" layoutX="57.0" layoutY="599.0" mnemonicParsing="false" text="Émoticône1" />
