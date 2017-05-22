@@ -13,33 +13,33 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-
 public class GuardTest {
-   
+
    private Board board;
    private Guard guard;
-   
+
    public GuardTest() {
    }
-   
+
    @BeforeClass
    public static void setUpClass() {
       Board.registerInstance(Board.getMaxPlayers());
    }
-   
+
    @AfterClass
    public static void tearDownClass() {
    }
-   
+
    @Before
    public void setUp() {
       board = Board.getInstance();
       guard = new Guard();
-      
-      for (int i = 0; i < board.getNbLocations(); i++)
+
+      for(int i = 0; i < board.getNbLocations(); i++) {
          board.setGuard(i, false);
+      }
    }
-   
+
    @After
    public void tearDown() {
    }
@@ -53,7 +53,7 @@ public class GuardTest {
       board.setGuard(0, true);
       assertFalse(guard.isPlayable(0));
    }
-   
+
    /**
     * Test of isPlayable method, of class Guard.
     */
@@ -64,7 +64,7 @@ public class GuardTest {
       board.setGuard(0, false);
       assertTrue(guard.isPlayable(0));
    }
-   
+
    /**
     * Test of isPlayable method, of class Guard.
     */
@@ -74,9 +74,8 @@ public class GuardTest {
       board.setLocation(0, 0);
       board.setGuard(0, false);
       assertTrue(guard.isPlayable(0));
-   }  
+   }
 
-   
    /**
     * Test of isPlayable method, of class Guard.
     */
@@ -86,7 +85,7 @@ public class GuardTest {
       board.setGuard(0, false);
       assertTrue(guard.hasEffect());
    }
-   
+
    /**
     * Test of isPlayable method, of class Guard.
     */

@@ -17,27 +17,29 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 /**
- *
+ * Description: Classe pour créer et gérer les joueurs d'une partie
+ * Date: 03.05.2017
+ * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
+ * @version 0.1
  */
 public class Player {
-
-   private final int HAND_CARDS_NUMBER = 3;
+   private final int HAND_CARDS_NUMBER = 3;  // Nombre de cartes maximal d'un joueur
    private final long REFRESH_DELAY = 2000;
 
-   private final String ENCODING_ALGORITHM = "SHA-256";
-   private final String FORMAT_TEXT = "UTF-8";
+   private final String ENCODING_ALGORITHM = "SHA-256";  // Algorithme de hachage
+   private final String FORMAT_TEXT = "UTF-8";  // Format d'encodage du texte
+   
+   private Socket clientSocket;           // Socket du client
+   private BufferedReader responseBuffer; // Buffer pour le réponse
+   private PrintWriter writer;            // Writer pour les envois d'informations
+   private Set<Server> servers;           // La liste des serveurs
 
-   private Socket clientSocket;
-   private BufferedReader responseBuffer;
-   private PrintWriter writer;
-   private Set<Server> servers;
+   private List<Integer> cards;           // Liste des cartes
 
-   private List<Integer> cards;
-
-   boolean connected = false;
+   boolean connected = false;             // Booléen pour connaître la connexion
 
    /**
-    *
+    * Constructeur de la classe Player
     * @param adress
     */
    public Player(String adress) {
@@ -45,6 +47,9 @@ public class Player {
       servers = new HashSet<>();
    }
 
+   /**
+    * Méthode pour obtenir les serveurs disponibles
+    */
    public void getServers() {
       MulticastSocket socket;
       try {
@@ -82,16 +87,28 @@ public class Player {
          System.out.println("read broadcast fail : " + ex.getMessage());
       }
    }
-
-   private byte[] hash(String password) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+   
+   /**
+    * Méthode de hachage des mots de passe
+    * @param password Mot de passe à faire le hachage
+    * @return Un tableau de byte avec le hash
+    * @throws NoSuchAlgorithmException Erreur en faisant le hash
+    * @throws UnsupportedEncodingException Erreur avec l'encodage
+    */
+   private byte[] hash(String password) throws NoSuchAlgorithmException,
+                                               UnsupportedEncodingException {
       MessageDigest md = MessageDigest.getInstance(ENCODING_ALGORITHM);
       md.update(password.getBytes(FORMAT_TEXT));
       return md.digest();
    }
-
+   
+   /**
+    * Méthode pour la création du serveur
+    * @param name Le nom du serveur si donné
+    * @param password Le mot de passe pour la partie si donné
+    */
    public ServerManager createServer(String name, String password) {
       byte[] hash;
-
       try {
          hash = hash(password);
       } catch (UnsupportedEncodingException | NoSuchAlgorithmException ex) {
@@ -99,7 +116,7 @@ public class Player {
       }
 
       ServerManager server = new ServerManager(name, hash);
-      if (!server.isRunning()) {
+      if(!server.isRunning()) {
          try {
             server.acceptClients();
             connect(server.getServer());
@@ -118,8 +135,9 @@ public class Player {
    }
 
    /**
-    *
-    * @throws IllegalStateException
+    * Intialisation de la partie
+    * @throws IllegalStateException Lancée si trop de cartes dans la main du joueur, 
+    * si pas de cartes pas de connexion avec le serveur
     */
    private void startGame() throws IllegalStateException {
       if (isConnected()) {
@@ -142,15 +160,18 @@ public class Player {
                   writer.flush();
                   break;
                case ProtocolV1.DISTRIBUTE_CARD:
-                  if (cards.size() > 0) {
-                     throw new IllegalStateException("Action Cards of player full yet");
+                  if(cards.size() > 0) {
+                     throw new IllegalStateException("Main du joueurs pleine");
                   } else {
 
                      cards.add(readLineCardFileInfo(Integer.parseInt(splittedCommand[1])));
                   }
                   break;
                case ProtocolV1.DISTRIBUTE_HAND:
-                  if (cards.size() > 0) {
+                  if(cards.size() > 0) {
+                     // Aucun sense dans le message d'erreur, comprend pas :/
+                     // Vérification inversée? Jimmy shit? Am I a shit?
+                     // Beep beep I'm a sheep, Beepbeep I'm a sheep (8)
                      throw new IllegalStateException("Action cards yet distributed");
                   } else {
                      for (int i = 1; i < ProtocolV1.HAND_SIZE + 1; i++) {
@@ -169,15 +190,16 @@ public class Player {
                   System.out.println(ProtocolV1.ERRORS[Integer.parseInt(splittedCommand[1])]);
                   break;
             }
-         } while (!splittedCommand[0].equals(ProtocolV1.END_GAME));
+         } while(!splittedCommand[0].equals(ProtocolV1.END_GAME));
       } else {
-         throw new IllegalStateException("vous devez vous connecter à un serveur avant de pouvoir commencer une partie");
+         throw new IllegalStateException("Vous devez vous connecter à un serveur "
+                                       + "avant de pouvoir commencer une partie.");
       }
    }
 
    /**
-    *
-    * @param toShow
+    * Affichage du plateau de jeu
+    * @param toShow Tableau de String avec ce qu'il faut afficher
     */
    public void showBoard(String[] toShow) {
       System.out.println("Board : ");
@@ -194,9 +216,9 @@ public class Player {
    }
    
    /**
-    *
-    * @param server
-    * @throws IOException
+    * Méthode pour réaliser la connexion
+    * @param no Le serveur à initialiser
+    * @throws IOException Erreur si on refuse la connexion
     */
    public void connect(Server server) throws IOException {
       if (!isConnected()) {
@@ -206,6 +228,7 @@ public class Player {
          writer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
 
          //We read the first answer from the server
+         // On lit la première réponse du serveur
          String answer = responseBuffer.readLine();
          
          switch (answer) {
@@ -226,23 +249,24 @@ public class Player {
    }
 
    /**
-    *
-    * @return
+    * Méthode pour vérifier si on est connecté
+    * @return Vrai si on est connecté, faux sinon
     */
    public boolean isConnected() {
       return connected;
    }
 
    /**
-    *
-    * @return
+    * Obtention de la carte choisie par le joueur pour être utilisée
+    * @return Le numéro de la carte à utiliser
     */
    public int getCardChoice() {
       Scanner in = new Scanner(System.in);
       int cardChoice = 0;
 
-      // Loop while the user choose a bad move
-      while (true) {
+
+      // Boucle tant que le joueur ne choisi pas le bon numéro d'une carte
+      while(true) {
          try {
             System.out.println("Veuillez choisir une carte : (1..3)");
             for (Integer i : cards) {
@@ -255,17 +279,17 @@ public class Player {
             cardChoice = cards.get(positionCard - 1);
             break;
          } catch (InputMismatchException e) {
-            System.out.println("entrée non valide");
+            System.out.println("Entrée non valide.");
          }
       }
       return cardChoice;
    }
 
    /**
-    *
-    * @param lineNo
-    * @return
-    * @throws IllegalArgumentException
+    * Méthode pour la lecture de la carte selectionnée
+    * @param lineNo Le numéro de la carte
+    * @return L'information sur la carte
+    * @throws IllegalArgumentException Lancée si le numéro de la carte est erroné
     */
    public int readLineCardFileInfo(int lineNo) throws IllegalArgumentException {
       try {
@@ -284,12 +308,12 @@ public class Player {
       } catch (IOException | NumberFormatException e) {
          System.out.println(e.toString());
       }
-      throw new IllegalArgumentException("card number not valid");
+      throw new IllegalArgumentException("Numéro de carte invalide.");
    }
 
    /**
-    *
-    * @return
+    * Méthode qui nous donne le choix de position donnée par un joueur
+    * @return La position choisie
     */
    public int getLocationChoice() {
       Scanner in = new Scanner(System.in);
@@ -300,8 +324,8 @@ public class Player {
             System.out.println("Veuillez entrer une position valide : (0..5)");
             positionChoice = in.nextInt();
             break;
-         } catch (InputMismatchException e) {
-            System.out.println("entrée non valide");
+         } catch(InputMismatchException e) {
+            System.out.println("Entrée non valide");
          }
       }
       return positionChoice;

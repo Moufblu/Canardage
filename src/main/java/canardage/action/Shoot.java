@@ -1,8 +1,8 @@
 package canardage.action;
 
 /**
- * Description: Classe pour implémenter la carte de tirer sur un canard ciblé
- * Date: 03.05.2017
+ * Description: Classe pour implémenter la carte de tirer sur un canard ciblé Date:
+ * 03.05.2017
  * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
  * @version 0.1
  */
@@ -18,7 +18,7 @@ public class Shoot extends WithLocation {
          board.fire(positionChoice);
       }
    }
-   
+
    /**
     * Vérifie si la carte de tir peut être jouée
     * @param position La postion sur laquelle on veut jouer la carte

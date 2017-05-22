@@ -18,25 +18,24 @@ import static org.junit.Assert.*;
  * @author Nathan
  */
 public class ShootTest {
-   
+
    private Board board;
-   
+
    @BeforeClass
    public static void setUpClass() {
       Board.registerInstance(Board.getMaxPlayers());
    }
-   
+
    @Before
    public void setUp() {
       board = Board.getInstance();
-      
-      for (int i = 0; i < board.getNbLocations(); i++)
-      {
+
+      for(int i = 0; i < board.getNbLocations(); i++) {
          board.setLocation(i, 1);
          board.setTarget(i, false);
       }
    }
-   
+
    @Test
    public void cannotShootIfNotTargeted() {
       System.out.println("isPlayable");
@@ -44,7 +43,7 @@ public class ShootTest {
       board.setTarget(3, false);
       assertFalse(sh.isPlayable(3));
    }
-   
+
    @Test
    public void canShootIfTargeted() {
       System.out.println("isPlayable");
@@ -52,7 +51,7 @@ public class ShootTest {
       board.setTarget(0, true);
       assertTrue(sh.isPlayable(0));
    }
-   
+
    @Test
    public void canShootAtOnePlaceOnBoard() {
       System.out.println("hasEffect");
@@ -63,12 +62,12 @@ public class ShootTest {
       board.setTarget(5, true);
       assertTrue(sh.hasEffect());
    }
-   
+
    @Test
    public void cannotShootAtOnePlaceOnBoard() {
       System.out.println("hasEffect");
       Shoot sh = new Shoot();
-      
+
       // There aren't targets
       assertFalse(sh.hasEffect());
    }
