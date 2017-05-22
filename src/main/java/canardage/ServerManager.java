@@ -8,7 +8,6 @@ import com.google.gson.reflect.TypeToken;
 import duckException.BadGameInitialisation;
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
@@ -31,7 +30,7 @@ public class ServerManager {
    private Thread thread;
    private Server server;
 
-   private final static int MIN_NB_PLAYERS = 3;
+   private final static int MIN_NB_PLAYERS = 2;
    private final static int MAX_NB_PLAYERS = 6;
    private final static int NB_ACTION_CARDS = 10;
 
@@ -130,7 +129,7 @@ public class ServerManager {
                   playersSockets.get(i).writeLine(ProtocolV1.ACCEPT_CONNECTION);
                }
 
-               serverSocket.close();
+               //serverSocket.close();
             } catch (IOException e) {
                System.out.println("Couldn't get client socket.");
             } catch (IllegalArgumentException e) {
