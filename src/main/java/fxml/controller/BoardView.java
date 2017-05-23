@@ -29,10 +29,6 @@ public class BoardView extends Application {
          Image value = new Image(getClass().getResourceAsStream("/images/canardBleuCopie.png"));
          ImageView duck = new ImageView(value);
          duck.setImage(value);
-//         duck.setLayoutX(300);
-//         duck.setLayoutY(200);
-//         duck.fitHeightProperty().add(100);
-//         duck.fitWidthProperty().add(100);
          duck.setVisible(true);
          Scene scene = new Scene(root);
          
@@ -44,8 +40,6 @@ public class BoardView extends Application {
          Rectangle maximumWindowBounds=graphicsEnvironment.getMaximumWindowBounds();
          primaryStage.setMinHeight(maximumWindowBounds.height/2);
          primaryStage.setMinWidth(maximumWindowBounds.width/2);
-//         primaryStage.setMaxHeight(767);
-//         primaryStage.setMaxWidth(1310);
          primaryStage.setScene(scene);
 
          primaryStage.show();
