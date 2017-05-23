@@ -7,7 +7,10 @@ package fxml.controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 
 /**
  * FXML Controller class
@@ -15,6 +18,12 @@ import javafx.fxml.Initializable;
  * @author Miguel-Portable
  */
 public class FXMLMenuController implements Initializable {
+   @FXML
+   private Button joinGameBtn;
+   @FXML
+   private Button createServerBtn;
+   @FXML
+   private Button quitBtn;
 
    /**
     * Initializes the controller class.
@@ -23,5 +32,17 @@ public class FXMLMenuController implements Initializable {
    public void initialize(URL url, ResourceBundle rb) {
       // TODO
    }   
+
+   @FXML
+   private void onJoinGame(ActionEvent event) {
+   }
+
+   @FXML
+   private void onCreateServer(ActionEvent event) {
+   }
+
+   @FXML
+   private void onQuit(ActionEvent event) {
+   }
    
 }
