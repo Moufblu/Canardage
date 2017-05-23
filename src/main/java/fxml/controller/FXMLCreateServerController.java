@@ -7,7 +7,11 @@ package fxml.controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 
 /**
  * FXML Controller class
@@ -15,6 +19,15 @@ import javafx.fxml.Initializable;
  * @author Miguel-Portable
  */
 public class FXMLCreateServerController implements Initializable {
+
+   @FXML
+   private Button createServer;
+   @FXML
+   private GridPane gridPane;
+   @FXML
+   private TextField serverNameField;
+   @FXML
+   private TextField passwordField;
 
    /**
     * Initializes the controller class.

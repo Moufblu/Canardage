@@ -6,9 +6,13 @@ package fxml.controller;
  * and open the template in the editor.
  */
 
+import canardage.Server;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 
 /**
  * FXML Controller class
@@ -16,6 +20,13 @@ import javafx.fxml.Initializable;
  * @author Miguel-Portable
  */
 public class FXMLLobbyController implements Initializable {
+
+   @FXML
+   private Button joinServerBtn;
+   @FXML
+   private Button refreshBtn;
+   @FXML
+   private ListView<Server> serverList;
 
    /**
     * Initializes the controller class.
