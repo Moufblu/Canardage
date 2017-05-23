@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.111" fx:controller="fxml.controller.FXMLCanardageController">
+   <children>
+      <VBox prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Pane prefHeight="200.0" prefWidth="200.0" />
+            <Pane prefHeight="240.0" prefWidth="600.0">
+               <children>
+                  <ImageView fitHeight="160.0" fitWidth="600.0" pickOnBounds="true">
+                     <image>
+                        <Image url="@../images/plateau.jpg" />
+                     </image>
+                  </ImageView>
+                  <Pane layoutX="20.0" layoutY="51.0" prefHeight="105.0" prefWidth="63.0">
+                     <children>
+                        <ImageView fitHeight="105.0" fitWidth="63.0" pickOnBounds="true">
+                           <image>
+                              <Image url="@../images/canardVert.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </Pane>
+               </children>
+            </Pane>
+            <Pane prefHeight="200.0" prefWidth="200.0" />
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
