@@ -13,6 +13,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -127,7 +128,7 @@ public class Player {
     *
     * @throws IllegalStateException
     */
-   private void startGame() throws IllegalStateException {
+   private void startGame() throws IllegalStateException, NoSuchAlgorithmException, UnsupportedEncodingException {
       if (isConnected()) {
 
          String inputServer;
@@ -173,6 +174,13 @@ public class Player {
                   break;
                case ProtocolV1.REFUSE_CARD:
                   System.out.println(ProtocolV1.ERRORS[Integer.parseInt(splittedCommand[1])]);
+                  break;
+               case ProtocolV1.HASH:
+                  Scanner keyboard = new Scanner(System.in);
+                  String password = keyboard.nextLine();
+                  byte[] hashedPassword = hash(password);
+                  MessageDigest md = MessageDigest.getInstance(Global.Security.ENCODING_ALGORITHM);
+                  writer.println(new String(md.digest(), StandardCharsets.UTF_8));
                   break;
             }
          } while (!splittedCommand[0].equals(ProtocolV1.END_GAME));
