@@ -137,42 +137,55 @@ public class ServerManager {
       }
 
       acceptingClients = new Thread(new Runnable() {
-         private final int MAX_TRIES = 3;
-         
          @Override
          public void run() {
             try {
-               int i = 0;
                do {
-                  System.out.println("Attente d'une connexion au joueur " + i);
-                  playersSockets.add(new Client(serverSocket.accept()));
-                  Client client = playersSockets.get(i);
+                  System.out.println("Attente d'une connexion au joueur");
+//                  playersSockets.add(new Client(serverSocket.accept()));
+//                  Client client = playersSockets.get(i);
+                  final Client client = new Client(serverSocket.accept());
                   
-                  int tries = 0;
-                  for (tries = 0; tries < MAX_TRIES; tries++) {
-                     System.out.println("Demande du mot de passe au joueur " + i);
-                     playersSockets.get(i).writeLine(ProtocolV1.HASH);
-
-                     System.out.println("Attente du mot de passe du joueur " + i);
-                     String givenHash = playersSockets.get(i).readLine();
+                  new Thread(new Runnable() {
+                     private final int MAX_TRIES = 3;
                      
-                     if (givenHash.equals(hash)) {
-                        break;
-                     }
-                  }
+                     @Override
+                     public void run() {
+                        int tries = 0;
+                        for (tries = 0; tries < MAX_TRIES; tries++) {
+                           System.out.println("Demande du mot de passe au joueur");
+                           client.writeLine(ProtocolV1.HASH);
 
-                  if (tries < MAX_TRIES) {
-                     System.out.println("Acceptation d'une connexion au joueur " + i);
-                     playersSockets.get(i).writeLine(ProtocolV1.ACCEPT_CONNECTION);
-                     nbPlayers++;
-                     i++;
-                  } else {
-                     System.out.println("Refus de la connexion du joueur " + i);
-                     playersSockets.get(i).writeLine(ProtocolV1.REFUSE_CONNECTION);
-                     playersSockets.remove(i);
-                  }
+                           System.out.println("Attente du mot de passe du joueur");
+                           String givenHash = "";
+                           try {
+                              givenHash = client.readLine();
+                           } catch (IOException ex) {
+                              System.out.println("Couldn't get password from client. " + 
+                                      "Setting it to default password. " + ex.getMessage());
+                              client.writeLine(ProtocolV1.messageRefuse(1)); //à changer c'est dégueulasse
+                           }
+
+                           if (givenHash.equals(hash)) {
+                              break;
+                           }
+                        }
+
+                        if (tries < MAX_TRIES) {
+                           System.out.println("Acceptation d'une connexion au joueur");
+                           playersSockets.add(client);
+                           client.writeLine(ProtocolV1.ACCEPT_CONNECTION);
+                           synchronized (this) {
+                              nbPlayers++;
+                           }
+                        } else {
+                           System.out.println("Refus de la connexion du joueur");
+                           client.writeLine(ProtocolV1.REFUSE_CONNECTION);
+                        }
+                     }
+                  }).start();
                   
-               } while (i < MAX_NB_PLAYERS);
+               } while (nbPlayers < MAX_NB_PLAYERS);
 
                serverSocket.close();
             } catch (IOException e) {

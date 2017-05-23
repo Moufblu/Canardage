@@ -38,6 +38,9 @@ public class Player {
    private List<Integer> cards;
 
    boolean connected = false;
+   
+   private final static String defaultServerName = "Canardage";
+   private final static String defaultPassword = "";
 
    /**
     *
@@ -312,15 +315,16 @@ public class Player {
          entryOk = true;
          System.out.println("souhaitez-vous creer ou rejoindre un server ? (c/r)");
          Scanner in = new Scanner(System.in);
-         String answer = in.next();
-         String answerNameServer = "";
+         String answer = in.nextLine();
+         String answerNameServer = defaultServerName;
          if (answer.equals("c")) {
             boolean nameNotRedondant = false;
             while (!nameNotRedondant) {
                nameNotRedondant = true;
                //player.getServers();
                System.out.println("quel est le nom du serveur ?");
-               answerNameServer = in.next();
+               answerNameServer = in.nextLine();
+               answerNameServer = answerNameServer.equals("") ? defaultServerName : answerNameServer;
                for (Server server : player.servers) {
                   if (server.getName().equals(answerNameServer)) {
                      nameNotRedondant = false;
@@ -328,7 +332,9 @@ public class Player {
                }
             }
             System.out.println("quel est le mot de passe ?");
-            String answerPassword = in.next();
+            String answerPassword = in.nextLine();
+            answerPassword = answerPassword.equals("") ? defaultPassword : answerPassword;
+            System.out.println("NOM : " + answerNameServer + ", MDP : " + answerPassword);
             player.createServer(answerNameServer, answerPassword);
             do {
                System.out.println("'go' pour commencer!!!");
