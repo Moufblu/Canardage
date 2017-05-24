@@ -145,6 +145,15 @@ public class ServerManager {
 //                  Client client = playersSockets.get(i);
                   final Client client = new Client(serverSocket.accept());
                   
+                  if (nbPlayers == 0)
+                  {
+                     System.out.println("Acceptation d'une connexion au joueur");
+                     playersSockets.add(client);
+                     client.writeLine(ProtocolV1.ACCEPT_CONNECTION);
+                     nbPlayers++;
+                     continue;
+                  }
+                  
                   new Thread(new Runnable() {
                      private final int MAX_TRIES = 3;
                      

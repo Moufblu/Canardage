@@ -224,6 +224,7 @@ public class Player {
                System.out.println("Connection Refusee");
                break;
             case ProtocolV1.HASH:
+               System.out.println("Please enter the password : ");
                Scanner keyboard = new Scanner(System.in);
                String password = keyboard.nextLine();
                byte[] hashedPassword = hash(password);               
