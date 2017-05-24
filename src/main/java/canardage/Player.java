@@ -212,28 +212,32 @@ public class Player {
          
          responseBuffer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
          writer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
-
-         //We read the first answer from the server
-         String answer = responseBuffer.readLine();
          
-         switch (answer) {
-            case ProtocolV1.ACCEPT_CONNECTION:
-               connected = true;
-               break;
-            case ProtocolV1.REFUSE_CONNECTION:
-               System.out.println("Connection Refusee");
-               break;
-            case ProtocolV1.HASH:
-               System.out.println("Please enter the password : ");
-               Scanner keyboard = new Scanner(System.in);
-               String password = keyboard.nextLine();
-               byte[] hashedPassword = hash(password);               
-               writer.println(new String(hashedPassword, StandardCharsets.UTF_8));
-               break;
-            default:
-               System.out.println("reponse reçue: " + answer);
-               break;
-         }
+         String answer;
+         do {
+            //We read the first answer from the server
+             answer = responseBuffer.readLine();
+
+            switch (answer) {
+               case ProtocolV1.ACCEPT_CONNECTION:
+                  connected = true;
+                  break;
+               case ProtocolV1.REFUSE_CONNECTION:
+                  System.out.println("Connection Refusee");
+                  break;
+               case ProtocolV1.HASH:
+                  System.out.println("Please enter the password : ");
+                  Scanner keyboard = new Scanner(System.in);
+                  String password = keyboard.nextLine();
+                  byte[] hashedPassword = hash(password);               
+                  writer.println(new String(hashedPassword, StandardCharsets.UTF_8));
+                  break;
+               default:
+                  System.out.println("reponse reçue: " + answer);
+                  break;
+            }
+         } while (!(answer.equals(ProtocolV1.ACCEPT_CONNECTION) || 
+                    answer.equals(ProtocolV1.REFUSE_CONNECTION)));
       }
       else {
          System.out.println("deja connecte");
