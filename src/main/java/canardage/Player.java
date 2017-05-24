@@ -16,6 +16,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -109,6 +111,8 @@ public class Player {
             connect(server.getServer());
          } catch (IOException e) {
             System.out.println(e.getMessage());
+         } catch (NoSuchAlgorithmException ex) {
+            throw new RuntimeException(ex.getCause());
          }
       }
       
@@ -191,7 +195,7 @@ public class Player {
       System.out.println("");
    }
 
-   public void connect(int no) throws IOException{
+   public void connect(int no) throws IOException, NoSuchAlgorithmException{
       Server server = (Server) servers.toArray()[no];
       
       connect(server);
@@ -336,9 +340,9 @@ public class Player {
                nameNotRedondant = true;
                player.getServers();
                System.out.println("quel est le nom du serveur ?");
+               in.reset();
                answerNameServer = in.nextLine();
                answerNameServer = answerNameServer.equals("") ? defaultServerName : answerNameServer;
-               in.reset();
 
                for (Server server : player.servers) {
                   if (server.getName().equals(answerNameServer)) {
@@ -347,10 +351,10 @@ public class Player {
                }
             }
             System.out.println("quel est le mot de passe ?");
+            in.reset();
             String answerPassword = in.nextLine();
             answerPassword = answerPassword.equals("") ? defaultPassword : answerPassword;
             System.out.println("NOM : " + answerNameServer + ", MDP : " + answerPassword);
-            in.reset();
             ServerManager server = player.createServer(answerNameServer, answerPassword);
             do {
                System.out.println("'go' pour commencer!!!");
@@ -377,6 +381,8 @@ public class Player {
                   System.out.println(ex + ": le numero n'est pas valide");
                } catch(NumberFormatException NFE) {
                   System.out.println(NFE + ": le numero n'est pas valide");
+               } catch (NoSuchAlgorithmException ex) {
+                  System.out.println("Algorithme de hash invalide : " + ex.getMessage());
                }
             }
          } else {
