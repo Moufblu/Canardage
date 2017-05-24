@@ -32,6 +32,7 @@ public class Player {
 
    private Socket clientSocket;
    private BufferedReader responseBuffer;
+   private OutputStream byteWriter;
    private PrintWriter writer;
    private Set<Server> servers;
 
@@ -211,7 +212,8 @@ public class Player {
          clientSocket = new Socket(server.getIpAddress(), ProtocolV1.PORT);
          
          responseBuffer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
-         writer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
+         byteWriter = clientSocket.getOutputStream();
+         writer = new PrintWriter(new OutputStreamWriter(byteWriter, "UTF-8"));
          
          String answer;
          do {
@@ -230,7 +232,10 @@ public class Player {
                   Scanner keyboard = new Scanner(System.in);
                   String password = keyboard.nextLine();
                   byte[] hashedPassword = hash(password);               
-                  writer.println(new String(hashedPassword, StandardCharsets.UTF_8));
+                  writer.println(ProtocolV1.HASH);
+                  writer.flush();
+                  byteWriter.write(hashedPassword);
+                  byteWriter.flush();
                   break;
                default:
                   System.out.println("reponse reçue: " + answer);

@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Timer;
 import java.util.List;
@@ -32,7 +33,7 @@ import java.util.logging.Logger;
  */
 public class ServerManager {
 
-   private String hash;
+   private byte[] hash;
    private Thread thread;
    private Server server;
 
@@ -51,7 +52,7 @@ public class ServerManager {
 
    private List<Client> playersSockets;
    private static String defaultHashedPassword;
-   
+
    static {
       try {
          MessageDigest md = MessageDigest.getInstance(Global.Security.ENCODING_ALGORITHM);
@@ -59,7 +60,7 @@ public class ServerManager {
          defaultHashedPassword = new String(md.digest(), StandardCharsets.UTF_8);
       } catch (NoSuchAlgorithmException ex) {
          System.out.println("Couldn't hash password.");
-      } catch(UnsupportedEncodingException ex) {
+      } catch (UnsupportedEncodingException ex) {
          System.out.println("Encoding of hash not found.");
       }
    }
@@ -70,7 +71,7 @@ public class ServerManager {
       playersSockets = new ArrayList<>();
       nbPlayers = 0;
 
-      this.hash = new String(hash, StandardCharsets.UTF_8);
+      this.hash = hash;
       try {
          Socket socket = new Socket();
          socket.connect(new InetSocketAddress("google.com", 80));
@@ -110,7 +111,7 @@ public class ServerManager {
                   public void run() {
                      try {
                         socket.send(datagram);
-                        System.out.println("sending longueur :" + datagram.getLength() + " port: " + datagram.getPort() + " data: " + datagram.getData());
+                        //System.out.println("sending longueur :" + datagram.getLength() + " port: " + datagram.getPort() + " data: " + datagram.getData());
                      } catch (IOException ex) {
                         System.out.println(ex + " : error sending datagram");
                      }
@@ -144,19 +145,18 @@ public class ServerManager {
 //                  playersSockets.add(new Client(serverSocket.accept()));
 //                  Client client = playersSockets.get(i);
                   final Client client = new Client(serverSocket.accept());
-                  
-                  if (nbPlayers == 0)
-                  {
+
+                  if (nbPlayers == 0) {
                      System.out.println("Acceptation d'une connexion au joueur");
                      playersSockets.add(client);
                      client.writeLine(ProtocolV1.ACCEPT_CONNECTION);
                      nbPlayers++;
                      continue;
                   }
-                  
+
                   new Thread(new Runnable() {
                      private final int MAX_TRIES = 3;
-                     
+
                      @Override
                      public void run() {
                         int tries = 0;
@@ -165,17 +165,24 @@ public class ServerManager {
                            client.writeLine(ProtocolV1.HASH);
 
                            System.out.println("Attente du mot de passe du joueur");
-                           String givenHash = "";
+                           String messageResponse = "";
                            try {
-                              givenHash = client.readLine();
+                              messageResponse = client.readLine();
                            } catch (IOException ex) {
-                              System.out.println("Couldn't get password from client. " + 
-                                      "Setting it to default password. " + ex.getMessage());
+                              System.out.println("Couldn't get password from client. "
+                                      + "Setting it to default password. " + ex.getMessage());
                               client.writeLine(ProtocolV1.messageRefuse(1)); //à changer c'est dégueulasse
                            }
 
-                           if (givenHash.equals(hash)) {
-                              break;
+                           if(messageResponse.equals(ProtocolV1.HASH)){
+                              try {
+                                 byte[] givenHash = client.readBytes();
+                                 if(Arrays.equals(givenHash, hash)){
+                                    break;
+                                 }
+                              } catch (IOException ex) {
+                                 Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE, null, ex);
+                              }
                            }
                         }
 
@@ -192,7 +199,7 @@ public class ServerManager {
                         }
                      }
                   }).start();
-                  
+
                } while (nbPlayers < MAX_NB_PLAYERS);
 
                //serverSocket.close();
@@ -306,7 +313,7 @@ public class ServerManager {
    public Server getServer() {
       return server;
    }
-   
+
    public boolean isRunning() {
       return serverSocket != null && serverSocket.isBound();
    }

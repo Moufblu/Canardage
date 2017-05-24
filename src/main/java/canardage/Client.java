@@ -7,6 +7,7 @@ package canardage;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -20,11 +21,13 @@ public class Client {
 
    private Socket clientSocket;
    private BufferedReader reader;
+   private InputStream byteReader;
    private PrintWriter writer;
 
    public Client(Socket clientSocket) throws IOException {
       this.clientSocket = clientSocket;
-      reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+      byteReader = clientSocket.getInputStream();
+      reader = new BufferedReader(new InputStreamReader(byteReader));
       writer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
    }
 
@@ -33,6 +36,14 @@ public class Client {
       writer.flush();
    }
 
+   byte[] readBytes() throws IOException{
+      byte[] message = null;
+      
+      byteReader.read(message);
+      
+      return message;
+   }
+   
    String readLine() throws IOException {
       return reader.readLine();
    }
