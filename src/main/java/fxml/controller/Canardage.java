@@ -1,7 +1,5 @@
 package fxml.controller;
 
-import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,15 +8,16 @@ import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
  *
  */
-public class Canardage extends Application{
+public class Canardage extends Application {
+   
+   private final String MENU_PATH = "/fxml/FXMLMenu.fxml";
+   private final String MENU_NAME = "Canardage";
 
    private Pane pane;
 
@@ -26,10 +25,10 @@ public class Canardage extends Application{
    public void start(Stage primaryStage) {
       Parent root;
       try {
-         root = FXMLLoader.load(getClass().getResource("/fxml/FXMLMenu.fxml"));
+         root = FXMLLoader.load(getClass().getResource(MENU_PATH));
          Scene scene = new Scene(root);
 
-         primaryStage.setTitle("Canardage");
+         primaryStage.setTitle(MENU_NAME);
          primaryStage.resizableProperty().set(false);
          primaryStage.setScene(scene);
 

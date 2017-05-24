@@ -26,7 +26,12 @@ import javafx.stage.Stage;
  * @author Miguel-Portable
  */
 public class FXMLMenuController implements Initializable {
-
+   
+   private final String JOIN_GAME_PATH = "/fxml/FXMLLobby.fxml";
+   private final String GAME_WINDOW_NAME = "Create Server";
+   private final String CREATE_SERVER_PATH = "/fxml/FXMLCreateServer.fxml";
+   private final String SERVER_WINDOW_NAME = "Join Game";
+   
    @FXML
    private Button joinGameBtn;
    @FXML
@@ -39,41 +44,35 @@ public class FXMLMenuController implements Initializable {
     */
    @Override
    public void initialize(URL url, ResourceBundle rb) {
-      // TODO
+      // TODO OR NOT e.e
    }
 
    @FXML
-   private void onJoinGame(ActionEvent event) {
-      Parent root;
-      try {
-         root = FXMLLoader.load(getClass().getResource("/fxml/FXMLLobby.fxml"));
-         Stage joinStage = new Stage();
-         Scene scene = new Scene(root);
-
-         joinStage.setTitle("Join Game");
-         joinStage.resizableProperty().set(false);
-         joinStage.setScene(scene);
-
-         ((Node) (event.getSource())).getScene().getWindow().hide();
-         joinStage.show();
-      } catch(IOException e) {
-         Logger logger = Logger.getLogger(getClass().getName());
-         logger.log(Level.SEVERE, "Erreur à la création d'une nouvelle fenêtre.", e);
-      }
+   public void onJoinGame(ActionEvent event) {
+      createWindow(JOIN_GAME_PATH, GAME_WINDOW_NAME, event);
    }
 
    @FXML
-   private void onCreateServer(ActionEvent event) {
-      Parent root;
+   public void onCreateServer(ActionEvent event) {
+      createWindow(CREATE_SERVER_PATH, SERVER_WINDOW_NAME, event);
+   }
+
+   @FXML
+   public void onQuit(ActionEvent event) {
+      ((Node) (event.getSource())).getScene().getWindow().hide();
+   }
+   
+   // PUT THIS ON GLOBAL STATIQUE CLASS FOR SEVERAL USES IN OTHER CLASSES
+   private void createWindow(String path, String name, ActionEvent event) {
       try {
-         root = FXMLLoader.load(getClass().getResource("/fxml/FXMLCreateServer.fxml"));
+         Parent root = FXMLLoader.load(getClass().getResource(path));
          Stage serverStage = new Stage();
          Scene scene = new Scene(root);
 
-         serverStage.setTitle("Create Server");
+         serverStage.setTitle(name);
          serverStage.resizableProperty().set(false);
          serverStage.setScene(scene);
-
+         
          ((Node) (event.getSource())).getScene().getWindow().hide();
          serverStage.show();
       } catch(IOException e) {
@@ -81,10 +80,4 @@ public class FXMLMenuController implements Initializable {
          logger.log(Level.SEVERE, "Erreur à la création d'une nouvelle fenêtre.", e);
       }
    }
-
-   @FXML
-   private void onQuit(ActionEvent event) {
-      ((Node) (event.getSource())).getScene().getWindow().hide();
-   }
-
 }

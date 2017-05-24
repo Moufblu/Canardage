@@ -21,12 +21,12 @@
          <bottom>
             <HBox alignment="CENTER" prefHeight="36.0" prefWidth="339.0" BorderPane.alignment="CENTER">
                <children>
-                  <Button fx:id="joinServerBtn" alignment="CENTER" mnemonicParsing="false" text="Rejoindre serveur" textAlignment="CENTER">
+                  <Button fx:id="joinServerBtn" alignment="CENTER" mnemonicParsing="false" onAction="#joinGame" text="Rejoindre serveur" textAlignment="CENTER">
                      <HBox.margin>
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="refreshBtn" alignment="CENTER" mnemonicParsing="false" text="Actualiser serveurs" textAlignment="CENTER">
+                  <Button fx:id="refreshBtn" alignment="CENTER" mnemonicParsing="false" onAction="#refreshServerList" text="Actualiser serveurs" textAlignment="CENTER">
                      <HBox.margin>
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
