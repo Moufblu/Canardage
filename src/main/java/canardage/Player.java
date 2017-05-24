@@ -8,7 +8,6 @@ import duckException.BadGameInitialisation;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
@@ -17,8 +16,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -26,7 +23,7 @@ import java.util.logging.Logger;
 public class Player {
 
    private final int HAND_CARDS_NUMBER = 3;
-   private final long refreshDelay = 2000;
+   private final long REFRESH_DELAY = 2000;
 
    private final String ENCODING_ALGORITHM = "SHA-256";
    private final String FORMAT_TEXT = "UTF-8";
@@ -55,26 +52,26 @@ public class Player {
    public void getServers() {
       MulticastSocket socket;
       try {
+         
          Socket testSocket = new Socket();
          testSocket.connect(new InetSocketAddress("google.com", 80));
          InetAddress ipAddress = testSocket.getLocalAddress();
          testSocket.close();
+         
          servers.clear();
+         
          socket = new MulticastSocket(ProtocolV1.MULTICAST_PORT);
          socket.setInterface(ipAddress);
          socket.joinGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
-         //DatagramSocket socket = new DatagramSocket(ProtocolV1.MULTICAST_PORT, InetAddress.getByName("0.0.0.0"));
-         boolean messageRed = false;
+         socket.setSoTimeout((int)REFRESH_DELAY);
+         
          long start = new Date().getTime();
-         while (new Date().getTime() - start < refreshDelay) {
-            System.out.println(new Date().getTime() - start);
+         while (new Date().getTime() - start < REFRESH_DELAY) {
             byte[] buffer = new byte[2048];
             DatagramPacket datagram = new DatagramPacket(buffer, buffer.length);
-            System.out.println("ok");
             socket.receive(datagram);
-            System.out.println("ok2");
+            System.out.println("received datagram");
             String msg = new String(datagram.getData());
-            System.out.println(msg);
             msg = msg.substring(0, msg.lastIndexOf('}') + 1);
             Gson gson = new Gson();
             Type type = new TypeToken<Server>() {}.getType();
@@ -96,26 +93,26 @@ public class Player {
       return md.digest();
    }
 
-   public void createServer(String name, String password) {
+   public ServerManager createServer(String name, String password) {
       byte[] hash;
+
       try {
          hash = hash(password);
-      } catch (NoSuchAlgorithmException ex) {
-         System.out.println("bad choice of hash algorithm");
-         return;
-      } catch (UnsupportedEncodingException ex) {
-         System.out.println("bad choice of text format");
-         return;
+      } catch (UnsupportedEncodingException | NoSuchAlgorithmException ex) {
+         throw new RuntimeException(ex.getCause());
       }
 
       ServerManager server = new ServerManager(name, hash);
       if (!server.isRunning()) {
          try {
             server.acceptClients();
+            connect(server.getServer());
          } catch (IOException e) {
             System.out.println(e.getMessage());
          }
       }
+      
+      return server;
    }
 
    public void showServers() {
@@ -128,7 +125,7 @@ public class Player {
     *
     * @throws IllegalStateException
     */
-   private void startGame() throws IllegalStateException, NoSuchAlgorithmException, UnsupportedEncodingException {
+   private void startGame() throws IllegalStateException {
       if (isConnected()) {
 
          String inputServer;
@@ -175,13 +172,6 @@ public class Player {
                case ProtocolV1.REFUSE_CARD:
                   System.out.println(ProtocolV1.ERRORS[Integer.parseInt(splittedCommand[1])]);
                   break;
-               case ProtocolV1.HASH:
-                  Scanner keyboard = new Scanner(System.in);
-                  String password = keyboard.nextLine();
-                  byte[] hashedPassword = hash(password);
-                  MessageDigest md = MessageDigest.getInstance(Global.Security.ENCODING_ALGORITHM);
-                  writer.println(new String(md.digest(), StandardCharsets.UTF_8));
-                  break;
             }
          } while (!splittedCommand[0].equals(ProtocolV1.END_GAME));
       } else {
@@ -201,14 +191,19 @@ public class Player {
       System.out.println("");
    }
 
+   public void connect(int no) throws IOException{
+      Server server = (Server) servers.toArray()[no];
+      
+      connect(server);
+   }
+   
    /**
     *
-    * @param adress
+    * @param server
     * @throws IOException
     */
-   public void connect(int no) throws IOException {
+   public void connect(Server server) throws IOException, NoSuchAlgorithmException {
       if (!isConnected()) {
-         Server server = (Server) servers.toArray()[no];
          clientSocket = new Socket(server.getIpAddress(), ProtocolV1.PORT);
          
          responseBuffer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
@@ -217,12 +212,22 @@ public class Player {
          //We read the first answer from the server
          String answer = responseBuffer.readLine();
          
-         if (answer.equals(ProtocolV1.ACCEPT_CONNECTION)) {
-            connected = true;
-         } else if (answer.equals(ProtocolV1.REFUSE_CONNECTION)) {
-            System.out.println("Connection Refusee");
-         } else {
-            System.out.println("reponse reçue: " + answer);
+         switch (answer) {
+            case ProtocolV1.ACCEPT_CONNECTION:
+               connected = true;
+               break;
+            case ProtocolV1.REFUSE_CONNECTION:
+               System.out.println("Connection Refusee");
+               break;
+            case ProtocolV1.HASH:
+               Scanner keyboard = new Scanner(System.in);
+               String password = keyboard.nextLine();
+               byte[] hashedPassword = hash(password);               
+               writer.println(new String(hashedPassword, StandardCharsets.UTF_8));
+               break;
+            default:
+               System.out.println("reponse reçue: " + answer);
+               break;
          }
       }
       else {
@@ -286,7 +291,7 @@ public class Player {
             counter++;
          }
          buff.close();
-      } catch (Exception e) {
+      } catch (IOException | NumberFormatException e) {
          System.out.println(e.toString());
       }
       throw new IllegalArgumentException("card number not valid");
@@ -329,10 +334,12 @@ public class Player {
             boolean nameNotRedondant = false;
             while (!nameNotRedondant) {
                nameNotRedondant = true;
-               //player.getServers();
+               player.getServers();
                System.out.println("quel est le nom du serveur ?");
                answerNameServer = in.nextLine();
                answerNameServer = answerNameServer.equals("") ? defaultServerName : answerNameServer;
+               in.reset();
+
                for (Server server : player.servers) {
                   if (server.getName().equals(answerNameServer)) {
                      nameNotRedondant = false;
@@ -343,13 +350,14 @@ public class Player {
             String answerPassword = in.nextLine();
             answerPassword = answerPassword.equals("") ? defaultPassword : answerPassword;
             System.out.println("NOM : " + answerNameServer + ", MDP : " + answerPassword);
-            player.createServer(answerNameServer, answerPassword);
+            in.reset();
+            ServerManager server = player.createServer(answerNameServer, answerPassword);
             do {
                System.out.println("'go' pour commencer!!!");
                answer = in.next();
                if(answer.equals("go")) {
                   try {
-                     
+                     server.startGame();
                      break;
                   } catch(BadGameInitialisation e) {
                      System.out.println(e.getMessage());
@@ -358,17 +366,17 @@ public class Player {
             } while(true);
             
          } else if (answer.equals("r")) {
-            int answerNum = -2;
             while (!player.connected) {
                player.getServers();
                player.showServers();
                System.out.println("quel est le numero du serveur que vous souhaitez ? (-1 pour terminer)");
-               answerNum = in.nextInt();
                try {
+                  int answerNum = Integer.parseInt(in.nextLine());
                   player.connect(answerNum);
                } catch (IOException ex) {
-                  answerNum = -2;
-                  System.out.println("le numero n'est pas valide");
+                  System.out.println(ex + ": le numero n'est pas valide");
+               } catch(NumberFormatException NFE) {
+                  System.out.println(NFE + ": le numero n'est pas valide");
                }
             }
          } else {

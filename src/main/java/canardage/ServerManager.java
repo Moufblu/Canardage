@@ -9,7 +9,6 @@ import duckException.BadGameInitialisation;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
@@ -37,7 +36,7 @@ public class ServerManager {
    private Thread thread;
    private Server server;
 
-   private final static int MIN_NB_PLAYERS = 3;
+   private final static int MIN_NB_PLAYERS = 2;
    private final static int MAX_NB_PLAYERS = 6;
    private final static int NB_ACTION_CARDS = 10;
 
@@ -187,7 +186,7 @@ public class ServerManager {
                   
                } while (nbPlayers < MAX_NB_PLAYERS);
 
-               serverSocket.close();
+               //serverSocket.close();
             } catch (IOException e) {
                System.out.println("Couldn't get client socket.");
             } catch (IllegalArgumentException e) {
@@ -295,6 +294,10 @@ public class ServerManager {
       Collections.shuffle(deck);
    }
 
+   public Server getServer() {
+      return server;
+   }
+   
    public boolean isRunning() {
       return serverSocket != null && serverSocket.isBound();
    }
