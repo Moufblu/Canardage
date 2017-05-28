@@ -2,6 +2,7 @@ package fxml.controller;
 
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,6 +13,8 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
 /**
@@ -35,11 +38,12 @@ public class BoardView extends Application {
          primaryStage.setTitle("Canardage");
          pane = new Pane();
          pane.getChildren().add(duck);
+         
          primaryStage.centerOnScreen();
-         GraphicsEnvironment graphicsEnvironment=GraphicsEnvironment.getLocalGraphicsEnvironment();
-         Rectangle maximumWindowBounds=graphicsEnvironment.getMaximumWindowBounds();
-         primaryStage.setMinHeight(maximumWindowBounds.height/2);
-         primaryStage.setMinWidth(maximumWindowBounds.width/2);
+         GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+         Rectangle maximumWindowBounds = graphicsEnvironment.getMaximumWindowBounds();
+         primaryStage.setMinHeight(maximumWindowBounds.height / 2);
+         primaryStage.setMinWidth(maximumWindowBounds.width / 2);
          primaryStage.setScene(scene);
 
          primaryStage.show();
@@ -53,3 +57,11 @@ public class BoardView extends Application {
       launch(args);
    }
 }
+
+
+//      String musicFile = "explosion.wav";     // For example
+//
+//      Media sound = new Media(new File(musicFile).toURI().toString());
+//      MediaPlayer mediaPlayer = new MediaPlayer(sound);
+//      mediaPlayer.play();
+        

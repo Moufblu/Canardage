@@ -9,6 +9,8 @@ package fxml.controller;
 import canardage.Server;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,7 +23,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 /**
@@ -36,7 +37,10 @@ public class FXMLLobbyController implements Initializable {
    @FXML
    private Button refreshBtn;
    @FXML
-   private ListView<Server> serverList;
+   private ListView<String> serverList; // Juste pour afficher, faudra changer
+//   private ListView<Server> serverList;
+   private List<String> servers; // Juste pour afficher, faudra changer
+//   private List<Server> servers;
    
    private boolean thereIsPassword = true; // Mettre à false quand on fera les liens
    
@@ -46,6 +50,13 @@ public class FXMLLobbyController implements Initializable {
    @Override
    public void initialize(URL url, ResourceBundle rb) {
       // TODO OR NOT :3
+      servers = new ArrayList<>();
+      servers.add("Server 1");
+      servers.add("Server 2");
+      servers.add("Server 3");
+      
+      serverList = new ListView<>();
+      serverList.getItems().addAll(servers);
    }
    
    @FXML

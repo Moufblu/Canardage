@@ -58,7 +58,7 @@ public class FXMLCreateServerController implements Initializable {
    
    @FXML
    public void showGameName(ActionEvent event) {
-      // A CREER
+      // A CREER POUR VERIFIER LE NOMBRE DE JOUEURS QUI ONT REJOINT LA PARTIE
 //      enoughPlayers = Server.methodEnoughPlayers();
       if(!enoughPlayers) {
          gameName = serverNameField.getText();
