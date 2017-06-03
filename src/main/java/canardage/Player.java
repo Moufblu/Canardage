@@ -44,20 +44,29 @@ public class Player {
    
    private final static String defaultServerName = "Canardage";
    private final static String defaultPassword = "";
+   
+   private static Player instance;
 
    /**
     * Constructeur de la classe Player
     * @param adress
     */
-   public Player(String adress) {
+   private Player() {
       cards = new ArrayList<>();
       servers = new HashSet<>();
    }
-
+   
+   public static Player getInstance() throws RuntimeException {
+      if(instance != null) {
+         instance = new Player();
+      } 
+      return instance;
+   }
+   
    /**
     * Méthode pour obtenir les serveurs disponibles
     */
-   public void getServers() {
+   public Set<Server> getServers() {
       MulticastSocket socket;
       try {
          
@@ -93,6 +102,7 @@ public class Player {
       } catch (IOException ex) {
          System.out.println("read broadcast fail : " + ex.getMessage());
       }
+      return servers;
    }
    
    /**
@@ -113,6 +123,7 @@ public class Player {
     * Méthode pour la création du serveur
     * @param name Le nom du serveur si donné
     * @param password Le mot de passe pour la partie si donné
+    * @return le serveur créé
     */
    public ServerManager createServer(String name, String password) {
       byte[] hash;
@@ -122,8 +133,8 @@ public class Player {
       } catch (UnsupportedEncodingException | NoSuchAlgorithmException ex) {
          throw new RuntimeException(ex.getCause());
       }
-
-      ServerManager server = new ServerManager(name, hash);
+      ServerManager.registerInstance(name, hash);
+      ServerManager server = ServerManager.getInstance();
       if(!server.isRunning()) {
          try {
             server.acceptClients();
@@ -355,12 +366,48 @@ public class Player {
       return positionChoice;
    }
 
+   /*public void createServer() {
+      boolean nameNotRedondant = false;
+      while (!nameNotRedondant) {
+         nameNotRedondant = true;
+         player.getServers();
+         System.out.println("quel est le nom du serveur ?");
+         in.reset();
+         answerNameServer = in.nextLine();
+         answerNameServer = answerNameServer.equals("") ? defaultServerName : answerNameServer;
+
+         for (Server server : player.servers) {
+            if (server.getName().equals(answerNameServer)) {
+               nameNotRedondant = false;
+            }
+         }
+      }
+      System.out.println("quel est le mot de passe ?");
+      in.reset();
+      String answerPassword = in.nextLine();
+      answerPassword = answerPassword.equals("") ? defaultPassword : answerPassword;
+      System.out.println("NOM : " + answerNameServer + ", MDP : " + answerPassword);
+      ServerManager server = player.createServer(answerNameServer, answerPassword);
+      do {
+         System.out.println("'go' pour commencer!!!");
+         answer = in.next();
+         if(answer.equals("go")) {
+            try {
+               server.startGame();
+               break;
+            } catch(BadGameInitialisation e) {
+               System.out.println(e.getMessage());
+            }
+         }
+      } while(true);
+   }*/
+   
 //   public static void main(String... args) {
 //      Player player = new Player(args[0]);
 //      player.getServer();
 //   }
    public static void main(String... args) {
-      Player player = new Player(args[0]);
+      Player player = new Player();
       boolean entryOk = false;
       while (!entryOk) {
          entryOk = true;

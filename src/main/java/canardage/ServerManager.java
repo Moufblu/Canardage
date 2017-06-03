@@ -56,6 +56,8 @@ public class ServerManager {
 
    private List<Client> playersSockets;   // Liste des Sockets des joueurs
    private static String defaultHashedPassword;
+   
+   private static ServerManager instance;
 
    static {
       try {
@@ -74,7 +76,7 @@ public class ServerManager {
     * @param name Le nom du serveur
     * @param hash Le tableau avec les hash
     */
-   public ServerManager(String name, byte[] hash) {
+   private ServerManager(String name, byte[] hash) {
       deck = new ArrayList<>(NB_ACTION_CARDS);
       playerCards = new ArrayList<>();
       playersSockets = new ArrayList<>();
@@ -93,6 +95,20 @@ public class ServerManager {
          System.out.println("Impossible de trouver l'adresse IP du host.");
       } catch (IOException ex) {
          System.out.println("can't create test socket to google");
+      }
+   }
+   
+   public static ServerManager getInstance() throws RuntimeException {
+      if(instance != null) {
+         return instance;
+      } else {
+         throw new RuntimeException("Instance not registered !");
+      }
+   }
+   
+   public static void registerInstance(String name, byte[] hash) {
+      if(instance == null) {
+         instance = new ServerManager(name, hash);
       }
    }
    
