@@ -102,7 +102,7 @@ public class ProtocolV1 {
       return result;
    }
    
-   public static String messageHand(String hash) throws IllegalArgumentException{
+   public static String messageHash(String hash) throws IllegalArgumentException{
       //check si la taille du tableau est bien celle d'une main
       if (hash.length() != HASH_SIZE) {
          throw new IllegalArgumentException("hash invalide size: " + hash.length());

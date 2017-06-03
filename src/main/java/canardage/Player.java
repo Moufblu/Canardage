@@ -12,9 +12,12 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Description: Classe pour créer et gérer les joueurs d'une partie
@@ -33,10 +36,14 @@ public class Player {
    private BufferedReader responseBuffer; // Buffer pour le réponse
    private PrintWriter writer;            // Writer pour les envois d'informations
    private Set<Server> servers;           // La liste des serveurs
+   private OutputStream byteWriter;
 
    private List<Integer> cards;           // Liste des cartes
 
    boolean connected = false;             // Booléen pour connaître la connexion
+   
+   private final static String defaultServerName = "Canardage";
+   private final static String defaultPassword = "";
 
    /**
     * Constructeur de la classe Player
@@ -109,6 +116,7 @@ public class Player {
     */
    public ServerManager createServer(String name, String password) {
       byte[] hash;
+
       try {
          hash = hash(password);
       } catch (UnsupportedEncodingException | NoSuchAlgorithmException ex) {
@@ -122,6 +130,8 @@ public class Player {
             connect(server.getServer());
          } catch (IOException e) {
             System.out.println(e.getMessage());
+         } catch (NoSuchAlgorithmException ex) {
+            throw new RuntimeException(ex.getCause());
          }
       }
       
@@ -209,7 +219,7 @@ public class Player {
       System.out.println("");
    }
 
-   public void connect(int no) throws IOException{
+   public void connect(int no) throws IOException, NoSuchAlgorithmException{
       Server server = (Server) servers.toArray()[no];
       
       connect(server);
@@ -220,28 +230,42 @@ public class Player {
     * @param no Le serveur à initialiser
     * @throws IOException Erreur si on refuse la connexion
     */
-   public void connect(Server server) throws IOException {
+   public void connect(Server server) throws IOException, NoSuchAlgorithmException {
       if (!isConnected()) {
          clientSocket = new Socket(server.getIpAddress(), ProtocolV1.PORT);
          
          responseBuffer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
-         writer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
-
-         //We read the first answer from the server
-         // On lit la première réponse du serveur
-         String answer = responseBuffer.readLine();
+         byteWriter = clientSocket.getOutputStream();
+         writer = new PrintWriter(new OutputStreamWriter(byteWriter, "UTF-8"));
          
-         switch (answer) {
-            case ProtocolV1.ACCEPT_CONNECTION:
-               connected = true;
-               break;
-            case ProtocolV1.REFUSE_CONNECTION:
-               System.out.println("Connection Refusee");
-               break;
-            default:
-               System.out.println("reponse reçue: " + answer);
-               break;
-         }
+         String answer;
+         do {
+             // On lit la première réponse du serveur
+             answer = responseBuffer.readLine();
+
+            switch (answer) {
+               case ProtocolV1.ACCEPT_CONNECTION:
+                  connected = true;
+                  break;
+               case ProtocolV1.REFUSE_CONNECTION:
+                  System.out.println("Connection Refusee");
+                  break;
+               case ProtocolV1.HASH:
+                  System.out.println("Please enter the password : ");
+                  Scanner keyboard = new Scanner(System.in);
+                  String password = keyboard.nextLine();
+                  byte[] hashedPassword = hash(password);               
+                  writer.println(ProtocolV1.HASH);
+                  writer.flush();
+                  byteWriter.write(hashedPassword);
+                  byteWriter.flush();
+                  break;
+               default:
+                  System.out.println("reponse reçue: " + answer);
+                  break;
+            }
+         } while (!(answer.equals(ProtocolV1.ACCEPT_CONNECTION) || 
+                    answer.equals(ProtocolV1.REFUSE_CONNECTION)));
       }
       else {
          System.out.println("deja connecte");
@@ -343,7 +367,7 @@ public class Player {
          System.out.println("souhaitez-vous creer ou rejoindre un server ? (c/r)");
          Scanner in = new Scanner(System.in);
          String answer = in.nextLine();
-         String answerNameServer = "";
+         String answerNameServer = defaultServerName;
          if (answer.equals("c")) {
             boolean nameNotRedondant = false;
             while (!nameNotRedondant) {
@@ -352,6 +376,8 @@ public class Player {
                System.out.println("quel est le nom du serveur ?");
                in.reset();
                answerNameServer = in.nextLine();
+               answerNameServer = answerNameServer.equals("") ? defaultServerName : answerNameServer;
+
                for (Server server : player.servers) {
                   if (server.getName().equals(answerNameServer)) {
                      nameNotRedondant = false;
@@ -361,6 +387,8 @@ public class Player {
             System.out.println("quel est le mot de passe ?");
             in.reset();
             String answerPassword = in.nextLine();
+            answerPassword = answerPassword.equals("") ? defaultPassword : answerPassword;
+            System.out.println("NOM : " + answerNameServer + ", MDP : " + answerPassword);
             ServerManager server = player.createServer(answerNameServer, answerPassword);
             do {
                System.out.println("'go' pour commencer!!!");
@@ -387,6 +415,8 @@ public class Player {
                   System.out.println(ex + ": le numero n'est pas valide");
                } catch(NumberFormatException NFE) {
                   System.out.println(NFE + ": le numero n'est pas valide");
+               } catch (NoSuchAlgorithmException ex) {
+                  System.out.println("Algorithme de hash invalide : " + ex.getMessage());
                }
             }
          } else {

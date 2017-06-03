@@ -2,6 +2,7 @@ package canardage;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -15,9 +16,10 @@ import java.net.Socket;
  */
 public class Client {
 
-   private Socket clientSocket;     // Socket pour le client
-   private BufferedReader reader;   // Buffer pour la lecture par le client
-   private PrintWriter writer;      // Writer pour écrire depuis le client
+   private Socket clientSocket;
+   private BufferedReader reader;
+   private InputStream byteReader;
+   private PrintWriter writer;
 
    /**
     * Constructeur de la classe Client
@@ -27,7 +29,8 @@ public class Client {
     */
    public Client(Socket clientSocket) throws IOException {
       this.clientSocket = clientSocket;
-      reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+      byteReader = clientSocket.getInputStream();
+      reader = new BufferedReader(new InputStreamReader(byteReader));
       writer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
    }
 
@@ -40,6 +43,14 @@ public class Client {
       writer.flush();
    }
 
+   byte[] readBytes() throws IOException{
+      byte[] message = null;
+      
+      byteReader.read(message);
+      
+      return message;
+   }
+   
    /**
     * Lecture du client de la réponse donnée par le serveur
     * @return La réponse donnée par le serveur
