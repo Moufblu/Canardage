@@ -44,7 +44,7 @@ public class FXMLMenuController implements Initializable {
     */
    @Override
    public void initialize(URL url, ResourceBundle rb) {
-      // TODO OR NOT e.e
+
    }
 
    @FXML
@@ -62,7 +62,6 @@ public class FXMLMenuController implements Initializable {
       ((Node) (event.getSource())).getScene().getWindow().hide();
    }
    
-   // PUT THIS ON GLOBAL STATIQUE CLASS FOR SEVERAL USES IN OTHER CLASSES
    private void createWindow(String path, String name, ActionEvent event) {
       try {
          Parent root = FXMLLoader.load(getClass().getResource(path));

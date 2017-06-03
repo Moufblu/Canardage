@@ -15,4 +15,14 @@ public class AlertPopup {
 
       alert.showAndWait();
    }
+   
+   public static void alert(Exception e){
+      String error = "";
+      
+      for(StackTraceElement stackTrace1 : e.getStackTrace()) {
+         error += stackTrace1 + "\n";
+      }
+      
+      AlertPopup.alert("Fatal Error", e.getMessage(), error, Alert.AlertType.ERROR);
+   }
 }
