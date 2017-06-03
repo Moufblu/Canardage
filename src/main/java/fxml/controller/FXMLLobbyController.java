@@ -5,13 +5,14 @@ package fxml.controller;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
+import canardage.Player;
 import canardage.Server;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
@@ -37,31 +38,26 @@ public class FXMLLobbyController implements Initializable {
    @FXML
    private Button refreshBtn;
    @FXML
-   private ListView<String> serverList; // Juste pour afficher, faudra changer
-//   private ListView<Server> serverList;
-   private List<String> servers; // Juste pour afficher, faudra changer
-//   private List<Server> servers;
-   
+   private ListView<Server> serverList; // Juste pour afficher, faudra changer
+
    private boolean thereIsPassword = true; // Mettre à false quand on fera les liens
-   
+
+   Player player;
+
    /**
     * Initializes the controller class.
     */
    @Override
    public void initialize(URL url, ResourceBundle rb) {
       // TODO OR NOT :3
-      servers = new ArrayList<>();
-      servers.add("Server 1");
-      servers.add("Server 2");
-      servers.add("Server 3");
-      
-      serverList = new ListView<>();
-      serverList.getItems().addAll(servers);
+
+      player = Player.getInstance();
+      refresh();
    }
-   
+
    @FXML
    public void joinGame(ActionEvent event) {
-       // METTRE A FALSE LA VARIABLE ET VERIFIER S'IL Y A UN MOT DE PASSE SELON LA CREATION DE LA PARTIE
+      // METTRE A FALSE LA VARIABLE ET VERIFIER S'IL Y A UN MOT DE PASSE SELON LA CREATION DE LA PARTIE
       if(thereIsPassword) {
          Parent root;
          try {
@@ -84,10 +80,18 @@ public class FXMLLobbyController implements Initializable {
       // (METTRE LES CANARDS GRISÉS ET METTRE EN COULEUR SI UN JOUEUR SE JOIN)
       // (LAISSER LES EMOTICONES POUR QUE LES JOUEURS S'AMUSENT AVANT LE DEBUT)
    }
-   
+
    @FXML
    public void refreshServerList(ActionEvent event) {
       throw new UnsupportedOperationException("DO THAT SHIT BITCH");
       // TODO
    }
+
+   private void refresh() {
+      refreshBtn.setDisable(true);
+      serverList.getItems().clear();
+      serverList.getItems().addAll(player.getServers());
+      refreshBtn.setDisable(false);
+   }
+
 }
