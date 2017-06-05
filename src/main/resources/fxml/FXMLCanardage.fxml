@@ -26,139 +26,12 @@
               <rowConstraints>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
-               <children>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" pickOnBounds="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-                     <image>
-                        <Image url="@../images/DuckGreen.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" pickOnBounds="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-                     <image>
-                        <Image url="@../images/DuckPink.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" pickOnBounds="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-                     <image>
-                        <Image url="@../images/DuckPurple.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" pickOnBounds="true" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-                     <image>
-                        <Image url="@../images/DuckBlue.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" pickOnBounds="true" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-                     <image>
-                        <Image url="@../images/DuckYellow.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" pickOnBounds="true" GridPane.columnIndex="5" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-                     <image>
-                        <Image url="@../images/DuckOrange.jpg" />
-                     </image>
-                  </ImageView>
-               </children>
             </GridPane>
             <Pane prefHeight="240.0" prefWidth="1280.0">
                <children>
                   <ImageView fitHeight="240.0" fitWidth="1080.0" pickOnBounds="true">
                      <image>
                         <Image url="@../images/Board.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="166.0" fitWidth="112.0" layoutX="931.0" layoutY="55.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../images/CardBack.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" layoutX="795.0" layoutY="64.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../images/DuckPink.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" layoutX="777.0" layoutY="54.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../images/DuckPink.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" layoutX="759.0" layoutY="56.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../images/CardACouvert.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" layoutX="643.0" layoutY="64.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../images/DuckPink.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" layoutX="625.0" layoutY="54.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../images/DuckPink.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" layoutX="607.0" layoutY="56.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../images/CardACouvert.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" layoutX="490.0" layoutY="65.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../images/DuckPink.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" layoutX="472.0" layoutY="55.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../images/DuckPink.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" layoutX="454.0" layoutY="57.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../images/CardACouvert.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" layoutX="338.0" layoutY="64.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../images/DuckPink.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" layoutX="320.0" layoutY="54.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../images/DuckPink.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" layoutX="302.0" layoutY="56.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../images/CardACouvert.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" layoutX="187.0" layoutY="65.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../images/DuckPink.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" layoutX="169.0" layoutY="55.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../images/DuckPink.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" layoutX="151.0" layoutY="57.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../images/CardACouvert.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" layoutX="31.0" layoutY="64.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../images/DuckPink.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" layoutX="13.0" layoutY="54.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../images/DuckPink.jpg" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="159.0" fitWidth="102.0" layoutX="-5.0" layoutY="56.0" pickOnBounds="true">
-                     <image>
-                        <Image url="@../images/CardACouvert.jpg" />
                      </image>
                   </ImageView>
                   <GridPane fx:id="targetsGrid" alignment="CENTER" prefHeight="49.0" prefWidth="912.0">
@@ -174,7 +47,7 @@
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                   </GridPane>
-                  <GridPane layoutX="2.0" layoutY="49.0" prefHeight="192.0" prefWidth="1061.0">
+                  <GridPane fx:id="ducksAndProtectionsGrid" layoutX="2.0" layoutY="49.0" prefHeight="192.0" prefWidth="1061.0">
                     <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
