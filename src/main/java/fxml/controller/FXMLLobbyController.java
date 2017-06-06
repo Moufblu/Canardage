@@ -22,6 +22,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
@@ -39,7 +40,7 @@ public class FXMLLobbyController implements Initializable {
    private ListView<Server> serverList; // Juste pour afficher, faudra changer
    @FXML
    private TextField passwordTextField;
-   
+
    Player player;
 
    /**
@@ -83,15 +84,22 @@ public class FXMLLobbyController implements Initializable {
 
                ((Node) (event.getSource())).getScene().getWindow().hide();
                joinStage.show();
+
+               FXMLLoader fxmlLoader = new FXMLLoader();
+               Pane p = fxmlLoader.load(getClass().getResource("/fxml/FXMLCanardage.fxml").openStream());
+               FXMLCanardageController controller = (FXMLCanardageController) fxmlLoader.getController();
+
+               player.startGame(controller);
             } catch(IOException e) {
                Logger logger = Logger.getLogger(getClass().getName());
                logger.log(Level.SEVERE, "Erreur à la création d'une nouvelle fenêtre.", e);
             }
-            player.startGame();
-         }else{
+
+            
+         } else {
             AlertPopup.alert("Info", "mot de passe erroné", "Veuillez indiquer un bon mot de passe", Alert.AlertType.INFORMATION);
          }
-      }else{
+      } else {
          AlertPopup.alert("Info", "Aucune sélection", "Veuillez sélectionner un serveur", Alert.AlertType.INFORMATION);
       }
    }
@@ -100,7 +108,7 @@ public class FXMLLobbyController implements Initializable {
    public void refreshServerList(ActionEvent event) {
       refresh();
    }
-   
+
    private void refresh() {
       refreshBtn.setDisable(true);
       serverList.getItems().clear();

@@ -1,14 +1,17 @@
 package fxml.controller;
 
+import Protocol.AlertPopup;
 import Protocol.ProtocolV1;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -103,16 +106,18 @@ public class FXMLCanardageController implements Initializable {
     * Variables pour les cartes
     */
    
-   Image[] duckImages
+   Image[] duckImages = {
+      new Image("/images/DuckEmpty.jpg"),
+      new Image("/images/DuckGreen.jpg"),
+      new Image("/images/DuckPink.jpg"),
+      new Image("/images/DuckPurple.jpg"),
+      new Image("/images/DuckBlue.jpg"),
+      new Image("/images/DuckYellow.jpg"),
+      new Image("/images/DuckOrange.jpg")
+   };
    
    public FXMLCanardageController() {
       
-      this.imageDuckPlayer1 = new Image("/images/DuckGreen.jpg");
-      this.imageDuckPlayer2 = new Image("/images/DuckPink.jpg");
-      this.imageDuckPlayer3 = new Image("/images/DuckPurple.jpg");
-      this.imageDuckPlayer4 = new Image("/images/DuckBlue.jpg");
-      this.imageDuckPlayer5 = new Image("/images/DuckYellow.jpg");
-      this.imageDuckPlayer6 = new Image("/images/DuckOrange.jpg");
       this.viewDuckPlayer1 = new ImageView(imageDuckPlayer1);
       this.viewDuckPlayer2 = new ImageView(imageDuckPlayer2);
       this.viewDuckPlayer3 = new ImageView(imageDuckPlayer3);
@@ -231,6 +236,7 @@ public class FXMLCanardageController implements Initializable {
       protectionCards();
       
       update();
+      
    }
    
    public void showPlayers(int nbPlayers) {
@@ -286,7 +292,8 @@ public class FXMLCanardageController implements Initializable {
       ducksHidenList.get(position).setVisible(false);
    }
    
-   public void showHidenDucks(int position) {
+   public void showHidenDucks(int position, int duck) {
+      ducksHidenList.get(position).setImage(duckImages[duck]);
       ducksHidenList.get(position).setVisible(true);
    }
    
@@ -324,11 +331,11 @@ public class FXMLCanardageController implements Initializable {
       ducksAndProtectionsGrid.getChildren().addAll(protectionCardsList);
    }
    
-   public void unshowProtectionCard(int position) {
+   public void unshowGuard(int position) {
       protectionCardsList.get(position).setVisible(false);
    }
    
-   public void showProtectionCard(int position) {
+   public void showGuard(int position) {
       protectionCardsList.get(position).setVisible(true);
 //      protectionCardsList.get(position).setStyle(value);
    }
@@ -343,12 +350,78 @@ public class FXMLCanardageController implements Initializable {
       showTargets(2);
       showTargets(5);
       
-      showHidenDucks(0);
-      showHidenDucks(1);
-      showHidenDucks(3);
+      showHidenDucks(0, 2);
+      showHidenDucks(1, 3);
+      showHidenDucks(3, 1);
       
-      showProtectionCard(1);
-      showProtectionCard(4);
+      showGuard(1);
+      showGuard(4);
+   }
+
+   public void updateCards(List<Integer> cards) {
+      // need Database ?
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+   }
+
+   public void updateBoard(String[] splittedCommands) {
+      boolean hasGuard;
+      boolean hasTarget;
+      int hiddenDuck;
+      for(int k = 0; k < splittedCommands.length; k++) {
+         String splittedCommand = splittedCommands[k];
+         Integer.parseInt(splittedCommand.substring(0, 1));
+         
+         hasGuard = false;
+         hasTarget = false;
+         hiddenDuck = 0;
+         
+         for(int i = 1; i < splittedCommand.length(); i++) {
+            char c = splittedCommand.charAt(i); 
+            switch (c){
+               case 'G':
+                  hasGuard = true;
+                  break;
+               case '*':
+                  hasTarget = true;
+                  break;
+               default:
+                  hiddenDuck = Character.getNumericValue(c);
+                  break;
+            }
+            
+            if(hiddenDuck != 0){
+               showHidenDucks(k, hiddenDuck);
+            }else{
+               unshowHidenDucks(k);
+            }
+            
+            if(hasTarget) {
+               showTargets(k);
+            } else {
+               unshowTargets(k);
+            }
+            
+            if(hasGuard) {
+               showGuard(k);
+            }else{
+               unshowGuard(k);
+            }
+         }
+      }
+   }
+
+   public int askCard() {
+      // activer boutons action
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+   }
+
+   public void alert(int parseInt) {
+      AlertPopup.alert("Wrong move", "You cannot do this action", ProtocolV1.messageRefuse(parseInt), Alert.AlertType.INFORMATION);
+   }
+
+   public int askPosition() {
+      // activer cartes position (possible ?)
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
    }
    
 }
