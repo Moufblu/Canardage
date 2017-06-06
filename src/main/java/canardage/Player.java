@@ -5,6 +5,7 @@ import Protocol.ProtocolV1;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import duckException.BadGameInitialisation;
+import fxml.controller.FXMLCanardageController;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.net.DatagramPacket;
@@ -27,6 +28,7 @@ import java.util.logging.Logger;
  */
 public class Player implements Runnable {
 
+   private FXMLCanardageController canardageFxml;
    private final int HAND_CARDS_NUMBER = 3;  // Nombre de cartes maximal d'un joueur
    private final long REFRESH_DELAY = 2000;
 
@@ -161,6 +163,7 @@ public class Player implements Runnable {
    public void run() {
       String inputServer;
       String[] splittedCommand = {""};
+      int locationChoice = 0;
 
       do {
          try {
@@ -173,15 +176,17 @@ public class Player implements Runnable {
 
          switch(splittedCommand[0]) {
             case ProtocolV1.ASK_FOR_POSITION:
-               writer.println(ProtocolV1.messageAskPosition(getLocationChoice()));
+               locationChoice = canardageFxml.askPosition();
+               writer.println(ProtocolV1.messageAskPosition(locationChoice));
                writer.flush();
                break;
             case ProtocolV1.DISTRIBUTE_CARD:
                if(cards.size() > 0) {
                   throw new IllegalStateException("Main du joueurs pleine");
                } else {
-
+                  cards.remove(locationChoice);
                   cards.add(readLineCardFileInfo(Integer.parseInt(splittedCommand[1])));
+                  canardageFxml.updateCards(cards);
                }
                break;
             case ProtocolV1.DISTRIBUTE_HAND:
@@ -194,16 +199,19 @@ public class Player implements Runnable {
                   for(int i = 1; i < ProtocolV1.HAND_SIZE + 1; i++) {
                      cards.add(readLineCardFileInfo(Integer.parseInt(splittedCommand[i])));
                   }
+                  canardageFxml.updateCards(cards);
                }
                break;
             case ProtocolV1.PATCH_BOARD:
-               showBoard(splittedCommand);
+               canardageFxml.updateBoard(splittedCommand);
                break;
             case ProtocolV1.YOUR_TURN:
-               writer.println(ProtocolV1.messageUseCard(getCardChoice()));
+               int cardChoice = canardageFxml.askCard();
+               writer.println(ProtocolV1.messageUseCard(cardChoice));
                writer.flush();
                break;
             case ProtocolV1.REFUSE_CARD:
+               canardageFxml.alert(Integer.parseInt(splittedCommand[1]));
                System.out.println(ProtocolV1.ERRORS[Integer.parseInt(splittedCommand[1])]);
                break;
          }
@@ -212,11 +220,13 @@ public class Player implements Runnable {
 
    /**
     * Intialisation de la partie
+    * @param canardageFxml
     * @throws IllegalStateException Lancée si trop de cartes dans la main du joueur,
     * si pas de cartes pas de connexion avec le serveur
     */
-   public void startGame() throws IllegalStateException {
+   public void startGame(FXMLCanardageController canardageFxml) throws IllegalStateException {
       if(isConnected()) {
+         this.canardageFxml = canardageFxml;
          Thread thread = new Thread(this);
          thread.start();
       } else {
