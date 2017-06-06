@@ -15,7 +15,7 @@
    <children>
       <BorderPane layoutX="188.0" layoutY="88.0" prefHeight="170.0" prefWidth="511.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <bottom>
-            <Button fx:id="createServer" mnemonicParsing="false" onAction="#showGameName" text="Créer serveur" BorderPane.alignment="CENTER">
+            <Button fx:id="createServer" mnemonicParsing="false" onAction="#createServer" text="Créer serveur" BorderPane.alignment="CENTER">
                <BorderPane.margin>
                   <Insets top="10.0" />
                </BorderPane.margin>
