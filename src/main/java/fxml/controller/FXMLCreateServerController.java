@@ -79,7 +79,7 @@ public class FXMLCreateServerController implements Initializable {
          }
       } else {
          AlertPopup.alert("Erreur", "Erreur de création",
-                 "Erreur lors de la connexion au serveur " + serverNameField,
+                 "Erreur lors de la connexion au serveur " + serverNameField.getText(),
                  Alert.AlertType.WARNING);
       }
    }

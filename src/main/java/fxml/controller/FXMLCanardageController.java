@@ -3,9 +3,7 @@ package fxml.controller;
 import Protocol.ProtocolV1;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Observable;
 import java.util.ResourceBundle;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
@@ -15,7 +13,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 
 /**
@@ -101,6 +98,12 @@ public class FXMLCanardageController implements Initializable {
    
    private Image imageBackCard;
    private ImageView viewBackCard;
+   
+   /**
+    * Variables pour les cartes
+    */
+   
+   Image[] duckImages
    
    public FXMLCanardageController() {
       
@@ -298,6 +301,7 @@ public class FXMLCanardageController implements Initializable {
       }
       ducksAndProtectionsGrid.getChildren().addAll(ducksGameList);
    }
+   
    public void showDucksGame() {
       // Les cartes des joueurs, à refaire selon la liste de cartes dans Player, liste aussi à changer pour que ce soit une liste de boutons
       for(int i = 0; i < ProtocolV1.MAX_NO_POS; i++) {
@@ -346,4 +350,5 @@ public class FXMLCanardageController implements Initializable {
       showProtectionCard(1);
       showProtectionCard(4);
    }
+   
 }
