@@ -2,6 +2,7 @@ package canardage;
 
 import java.net.ServerSocket;
 import Protocol.ProtocolV1;
+import chat.ChatMaster;
 import java.lang.reflect.Type;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -56,6 +57,8 @@ public class ServerManager {
 
    private List<Client> playersSockets;   // Liste des Sockets des joueurs
    private static String defaultHashedPassword;
+   
+   private ChatMaster chat;
 
    static {
       try {
@@ -166,7 +169,7 @@ public class ServerManager {
                   if (nbPlayers == 0) {
                      System.out.println("Acceptation d'une connexion au joueur");
                      playersSockets.add(client);
-                     client.writeLine(ProtocolV1.ACCEPT_CONNECTION);
+                     client.writeLine(ProtocolV1.messageAccept(nbPlayers));
                      nbPlayers++;
                      continue;
                   }
@@ -206,7 +209,7 @@ public class ServerManager {
                         if (tries < MAX_TRIES) {
                            System.out.println("Acceptation d'une connexion au joueur");
                            playersSockets.add(client);
-                           client.writeLine(ProtocolV1.ACCEPT_CONNECTION);
+                           client.writeLine(ProtocolV1.messageAccept(nbPlayers));
                            synchronized (this) {
                               nbPlayers++;
                            }
@@ -230,7 +233,7 @@ public class ServerManager {
       acceptingClients.start();
    }
 
-   public void startGame() throws BadGameInitialisation {
+   public void startGame() throws BadGameInitialisation, IOException {
       if (nbPlayers < MIN_NB_PLAYERS) {
          throw new BadGameInitialisation("Number of players must be at least " + MIN_NB_PLAYERS);
       }
@@ -247,7 +250,11 @@ public class ServerManager {
             System.out.println("Server socket couldn't be closed.");
          }
       }
-
+      
+      //Création du chat avec le bon nombre de joueurs
+      chat = new ChatMaster(server.getIpAddress(), nbPlayers);
+      chat.accept();
+      
       initialiseGame();
 
       for (Client player : playersSockets) {

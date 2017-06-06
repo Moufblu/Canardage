@@ -2,6 +2,8 @@ package canardage;
 
 import java.net.Socket;
 import Protocol.ProtocolV1;
+import chat.ChatClient;
+import chat.Emoticon;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import duckException.BadGameInitialisation;
@@ -12,6 +14,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -28,6 +31,7 @@ import java.util.logging.Logger;
 public class Player {
    private final int HAND_CARDS_NUMBER = 3;  // Nombre de cartes maximal d'un joueur
    private final long REFRESH_DELAY = 2000;
+   private static final int TIMEOUT_ANSWER = 0;
 
    private final String ENCODING_ALGORITHM = "SHA-256";  // Algorithme de hachage
    private final String FORMAT_TEXT = "UTF-8";  // Format d'encodage du texte
@@ -37,6 +41,10 @@ public class Player {
    private PrintWriter writer;            // Writer pour les envois d'informations
    private Set<Server> servers;           // La liste des serveurs
    private OutputStream byteWriter;
+   
+   private ChatClient chatClient;
+   
+   private int playerNumber;
 
    private List<Integer> cards;           // Liste des cartes
 
@@ -151,7 +159,7 @@ public class Player {
     */
    private void startGame() throws IllegalStateException {
       if (isConnected()) {
-
+         
          String inputServer;
          String[] splittedCommand = {""};
 
@@ -160,7 +168,7 @@ public class Player {
                inputServer = responseBuffer.readLine();
                splittedCommand = inputServer.split(ProtocolV1.SEPARATOR);
             } catch (IOException e) {
-               System.out.println(e.toString());
+               System.out.println(e.getMessage());
                continue;
             }
 
@@ -227,25 +235,33 @@ public class Player {
    
    /**
     * Méthode pour réaliser la connexion
-    * @param no Le serveur à initialiser
+    * @param server Le serveur à initialiser
     * @throws IOException Erreur si on refuse la connexion
     */
    public void connect(Server server) throws IOException, NoSuchAlgorithmException {
       if (!isConnected()) {
          clientSocket = new Socket(server.getIpAddress(), ProtocolV1.PORT);
+         clientSocket.setSoTimeout(TIMEOUT_ANSWER);
          
          responseBuffer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
          byteWriter = clientSocket.getOutputStream();
          writer = new PrintWriter(new OutputStreamWriter(byteWriter, "UTF-8"));
          
-         String answer;
+         String[] answer;
          do {
              // On lit la première réponse du serveur
-             answer = responseBuffer.readLine();
+             answer = (responseBuffer.readLine()).split(ProtocolV1.SEPARATOR);
 
-            switch (answer) {
+            switch (answer[0]) {
                case ProtocolV1.ACCEPT_CONNECTION:
                   connected = true;
+                  playerNumber = Integer.valueOf(answer[1]);
+                  /* Dés que la partie commence on crée un thread qui écoute les messages
+                     envoyés par le chat.
+                  */
+                  chatClient = new ChatClient(clientSocket.getInetAddress().getHostAddress(),
+                                              playerNumber);
+                  chatClient.listen();
                   break;
                case ProtocolV1.REFUSE_CONNECTION:
                   System.out.println("Connection Refusee");
@@ -264,8 +280,8 @@ public class Player {
                   System.out.println("reponse reçue: " + answer);
                   break;
             }
-         } while (!(answer.equals(ProtocolV1.ACCEPT_CONNECTION) || 
-                    answer.equals(ProtocolV1.REFUSE_CONNECTION)));
+         } while (!(answer[0].equals(ProtocolV1.ACCEPT_CONNECTION) || 
+                    answer[0].equals(ProtocolV1.REFUSE_CONNECTION)));
       }
       else {
          System.out.println("deja connecte");
@@ -354,6 +370,11 @@ public class Player {
       }
       return positionChoice;
    }
+   
+   public void sendEmoticon(Emoticon emoticon)
+   {
+      chatClient.write(emoticon);
+   }
 
 //   public static void main(String... args) {
 //      Player player = new Player(args[0]);
@@ -399,6 +420,10 @@ public class Player {
                      break;
                   } catch(BadGameInitialisation e) {
                      System.out.println(e.getMessage());
+                  }
+                  catch(IOException ex)
+                  {
+                     System.out.println(ex.getMessage());
                   }
                }
             } while(true);
