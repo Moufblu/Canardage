@@ -58,7 +58,7 @@ public class Player {
    }
 
    public static Player getInstance() throws RuntimeException {
-      if(instance != null) {
+      if(instance == null) {
          instance = new Player();
       }
       return instance;
