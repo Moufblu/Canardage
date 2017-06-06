@@ -43,10 +43,10 @@ public class Client {
       writer.flush();
    }
 
-   byte[] readBytes() throws IOException{
-      byte[] message = null;
+   byte[] readBytes(int size) throws IOException{
+      byte[] message = new byte[size];
       
-      byteReader.read(message);
+      byteReader.read(message, 0, size);
       
       return message;
    }

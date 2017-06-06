@@ -178,13 +178,13 @@ public class ServerManager {
                   System.out.println("Attente d'une connexion au joueur");
                   final Client client = new Client(serverSocket.accept());
 
-                  if(nbPlayers == 0) {
-                     System.out.println("Acceptation d'une connexion au joueur");
-                     playersSockets.add(client);
-                     client.writeLine(ProtocolV1.ACCEPT_CONNECTION);
-                     nbPlayers++;
-                     continue;
-                  }
+//                  if(nbPlayers == 0) {
+//                     System.out.println("Acceptation d'une connexion au joueur");
+//                     playersSockets.add(client);
+//                     client.writeLine(ProtocolV1.ACCEPT_CONNECTION);
+//                     nbPlayers++;
+//                     continue;
+//                  }
 
                   new Thread(new Runnable() {
                      private final int MAX_TRIES = 3;
@@ -208,7 +208,7 @@ public class ServerManager {
 
                            if(messageResponse.equals(ProtocolV1.HASH)) {
                               try {
-                                 byte[] givenHash = client.readBytes();
+                                 byte[] givenHash = client.readBytes(hash.length);
                                  if(Arrays.equals(givenHash, hash)) {
                                     System.out.println("Acceptation d'une connexion au joueur");
                                     playersSockets.add(client);

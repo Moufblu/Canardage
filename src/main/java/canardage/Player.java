@@ -252,6 +252,7 @@ public class Player {
 
          System.out.println("Attente du serveur");
          String answer = responseBuffer.readLine();
+         System.out.println(answer);
          if(answer.equals(ProtocolV1.HASH)) {
             byte[] hashedPassword = hash(mdp);
             writer.println(ProtocolV1.HASH);
@@ -259,14 +260,15 @@ public class Player {
             byteWriter.write(hashedPassword);
             byteWriter.flush();
          } else {
-            throw new ProtocolException("erreur dans le protocol");
+            System.out.println("Probleme Hash");
+            throw new ProtocolException("erreur dans le protocole");
          }
          System.out.println("Phase d'acceptation");
          answer = responseBuffer.readLine();
          if(answer.equals(ProtocolV1.ACCEPT_CONNECTION)) {
             connected = true;
          } else if(!answer.equals(ProtocolV1.REFUSE_CONNECTION)) {
-            throw new ProtocolException("erreur dans le protocol");
+            throw new ProtocolException("erreur dans le protocole");
          }
       }
       return connected;
