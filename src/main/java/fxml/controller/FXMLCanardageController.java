@@ -3,6 +3,7 @@ package fxml.controller;
 import Protocol.ProtocolV1;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Observable;
 import java.util.ResourceBundle;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -95,7 +96,7 @@ public class FXMLCanardageController implements Initializable {
    private ArrayList<ImageView> ducksHidenList;
    private Image imageDuckHiden;
    
-   private ArrayList<ImageView> protectionList;
+   private ArrayList<ImageView> protectionCardsList;
    private Image imageProtection;
    
    private Image imageBackCard;
@@ -154,7 +155,7 @@ public class FXMLCanardageController implements Initializable {
       buttonsList.add(smiley2);
       buttonsList.add(smiley3);
       buttonsList.add(smiley4);
-      
+      // A faire dans Player pour avoirr la liste de cartes dans le Player
       this.imageCard1 = new Image("/images/CardOups.jpg");
       this.imageCard2 = new Image("/images/CardCanarchie.jpg");
       this.imageCard3 = new Image("/images/CardPan.jpg");
@@ -185,7 +186,7 @@ public class FXMLCanardageController implements Initializable {
       this.targetsList = new ArrayList(NUMBER_OF_TARGETS);
       
       this.imageProtection = new Image("/images/CardACouvert.jpg");
-      this.protectionList = new ArrayList(NUMBER_OF_PROTECTIONS);
+      this.protectionCardsList = new ArrayList(NUMBER_OF_PROTECTIONS);
       
       this.imageDuckGame = new Image("/images/DuckPink.jpg");
       this.ducksGameList = new ArrayList(ProtocolV1.MAX_NO_POS);
@@ -205,9 +206,6 @@ public class FXMLCanardageController implements Initializable {
     */
    @Override
    public void initialize(URL url, ResourceBundle rb) {
-      
-      showPlayers(4); // Herre the nomber of players that wiill play the game
-      
       // Th buttons for the chat
       for(int i = 0; i < NUMBER_OF_SMILEYS / GRID_POS; i++) {
          for(int j = 0; j < NUMBER_OF_SMILEYS / GRID_POS; j++) {
@@ -216,56 +214,20 @@ public class FXMLCanardageController implements Initializable {
       }
       smileyGrid.getChildren().addAll(buttonsList);
       
-      // Les cartes des joueurs, à refaire selon ce que le joueur reçoit comme cartes
-      for(int i = 0; i < NUMBER_OF_CARDS; i++) {
-         GridPane.setConstraints(cardsList.get(i), i, 0, 1, 1, HPos.CENTER, VPos.CENTER);
-      }
-      playerCardsGrid.getChildren().addAll(cardsList);
-      
-      // Les cibles qui peuvent être posées sur le plateau de jeu
-      for(int i = 0; i < NUMBER_OF_TARGETS; i++) {
-         targetsList.add(new ImageView(imageTarget));
-         targetsList.get(i).setFitHeight(targetsList.get(i).getBoundsInLocal().getHeight() / RESIZE_CARDS);
-         targetsList.get(i).setFitWidth(targetsList.get(i).getBoundsInLocal().getWidth() / RESIZE_CARDS);
-         GridPane.setConstraints(targetsList.get(i), i, 0, 1, 1, HPos.CENTER, VPos.CENTER);
-         targetsList.get(i).setVisible(false); // On cache les cibles tant qu'on les joues pas
-      }
-      targetsGrid.getChildren().addAll(targetsList);
-      
       // La partie arrière d'une carte canard pour la pile de canard
       GridPane.setConstraints(viewBackCard, 6, 0, 1, 1, HPos.CENTER, VPos.CENTER);
       GridPane.setMargin(viewBackCard, new Insets(0, 0, MARGIN_DOWN, 0));
       ducksAndProtectionsGrid.getChildren().add(viewBackCard);
       
-      // BOUCLE POUR LES CANARDS CACHÉS, FAIT JUSTE POUR L'AFFICHAGE, UTILISÉ SI ON VEUT CACHER UN CANARD PLUS TARD
-      for(int i = 0; i < ProtocolV1.MAX_NO_POS; i++) {
-         ducksHidenList.add(new ImageView(imageDuckHiden));
-         ducksHidenList.get(i).setFitHeight(ducksHidenList.get(i).getBoundsInLocal().getHeight() / RESIZE_CARDS);
-         ducksHidenList.get(i).setFitWidth(ducksHidenList.get(i).getBoundsInLocal().getWidth() / RESIZE_CARDS);
-         GridPane.setConstraints(ducksHidenList.get(i), i, 0, 1, 1, HPos.CENTER, VPos.CENTER);
-         GridPane.setMargin(ducksHidenList.get(i), new Insets(0, 0, 0, MARGIN_LEFT));
-      }
-      ducksAndProtectionsGrid.getChildren().addAll(ducksHidenList);
+      targets();
       
-      // BOUCLE POUR LES CANARDS SUR LE PLATEAU, FAIT JUSTE POUR L'AFFICHAGE, UTILISÉ SI ON VEUT AFFICHER UN CANARD DU PLATEAU PLUS TARD
-      for(int i = 0; i < ProtocolV1.MAX_NO_POS; i++) {
-         ducksGameList.add(new ImageView(imageDuckGame));
-         ducksGameList.get(i).setFitHeight(ducksGameList.get(i).getBoundsInLocal().getHeight() / RESIZE_CARDS);
-         ducksGameList.get(i).setFitWidth(ducksGameList.get(i).getBoundsInLocal().getWidth() / RESIZE_CARDS);
-         GridPane.setConstraints(ducksGameList.get(i), i, 0, 1, 1, HPos.LEFT, VPos.CENTER);
-         GridPane.setMargin(ducksGameList.get(i), new Insets(0, 0, MARGIN_DOWN, MARGIN_LEFT));
-      }
-      ducksAndProtectionsGrid.getChildren().addAll(ducksGameList);
+      hidenDucks();
       
-      // BOUCLE POUR LA CARTE À COUVERT, FAIT JUSTE POUR L'AFFICHAGE, UTILISÉ SI ON VEUT UTILISER LA CARTE À COUVERT PLUS TARD
-      for(int i = 0; i < NUMBER_OF_PROTECTIONS; i++) {
-         protectionList.add(new ImageView(imageProtection));
-         protectionList.get(i).setFitHeight(protectionList.get(i).getBoundsInLocal().getHeight() / RESIZE_CARDS);
-         protectionList.get(i).setFitWidth(protectionList.get(i).getBoundsInLocal().getWidth() / RESIZE_CARDS);
-         GridPane.setConstraints(protectionList.get(i), i, 0, 1, 1, HPos.LEFT, VPos.CENTER);
-         GridPane.setMargin(protectionList.get(i), new Insets(0, 0, MARGIN_DOWN, 0));
-      }
-      ducksAndProtectionsGrid.getChildren().addAll(protectionList);
+      ducksGame();
+      
+      protectionCards();
+      
+      update();
    }
    
    public void showPlayers(int nbPlayers) {
@@ -276,11 +238,112 @@ public class FXMLCanardageController implements Initializable {
       }
    }
    
-   public void hideDuck(int position, int currentPlayer) {
-      // Use method to hide ducks from canardage.action
+   public void showPlayerCards() {
+      // Les cartes des joueurs, à refaire selon la liste de cartes dans Player, liste aussi à changer pour que ce soit une liste de boutons
+      for(int i = 0; i < NUMBER_OF_CARDS; i++) {
+         GridPane.setConstraints(cardsList.get(i), i, 0, 1, 1, HPos.CENTER, VPos.CENTER);
+      }
+      playerCardsGrid.getChildren().addAll(cardsList);
    }
    
-   public void putProtectionCard(int position, int currentPlayer) {
-      // Use method to protect a position in the board
+   public void targets() {
+      // Les cibles qui peuvent être posées sur le plateau de jeu
+      for(int i = 0; i < NUMBER_OF_TARGETS; i++) {
+         targetsList.add(new ImageView(imageTarget));
+         targetsList.get(i).setFitHeight(targetsList.get(i).getBoundsInLocal().getHeight() / RESIZE_CARDS);
+         targetsList.get(i).setFitWidth(targetsList.get(i).getBoundsInLocal().getWidth() / RESIZE_CARDS);
+         GridPane.setConstraints(targetsList.get(i), i, 0, 1, 1, HPos.CENTER, VPos.CENTER);
+         targetsList.get(i).setVisible(false); // On cache les cibles tant qu'on les joues pas
+      }
+      targetsGrid.getChildren().addAll(targetsList);
+   }
+   
+   public void unshowTargets(int position) {
+      targetsList.get(position).setVisible(false);
+   }
+   
+   public void showTargets(int position) {
+      targetsList.get(position).setVisible(true);
+   }
+   
+   public void hidenDucks() {
+      // BOUCLE POUR LES CANARDS CACHÉS, FAIT JUSTE POUR L'AFFICHAGE, UTILISÉ SI ON VEUT CACHER UN CANARD PLUS TARD
+      for(int i = 0; i < ProtocolV1.MAX_NO_POS; i++) {
+         ducksHidenList.add(new ImageView(imageDuckHiden));
+         ducksHidenList.get(i).setFitHeight(ducksHidenList.get(i).getBoundsInLocal().getHeight() / RESIZE_CARDS);
+         ducksHidenList.get(i).setFitWidth(ducksHidenList.get(i).getBoundsInLocal().getWidth() / RESIZE_CARDS);
+         GridPane.setConstraints(ducksHidenList.get(i), i, 0, 1, 1, HPos.CENTER, VPos.CENTER);
+         GridPane.setMargin(ducksHidenList.get(i), new Insets(0, 0, 0, MARGIN_LEFT));
+         ducksHidenList.get(i).setVisible(false);
+      }
+      ducksAndProtectionsGrid.getChildren().addAll(ducksHidenList);
+   }
+   
+   public void unshowHidenDucks(int position) {
+      ducksHidenList.get(position).setVisible(false);
+   }
+   
+   public void showHidenDucks(int position) {
+      ducksHidenList.get(position).setVisible(true);
+   }
+   
+   public void ducksGame() {
+      // BOUCLE POUR LES CANARDS SUR LE PLATEAU, FAIT JUSTE POUR L'AFFICHAGE, UTILISÉ SI ON VEUT AFFICHER UN CANARD DU PLATEAU PLUS TARD
+      for(int i = 0; i < ProtocolV1.MAX_NO_POS; i++) {
+         ducksGameList.add(new ImageView(imageDuckGame));
+         ducksGameList.get(i).setFitHeight(ducksGameList.get(i).getBoundsInLocal().getHeight() / RESIZE_CARDS);
+         ducksGameList.get(i).setFitWidth(ducksGameList.get(i).getBoundsInLocal().getWidth() / RESIZE_CARDS);
+         GridPane.setConstraints(ducksGameList.get(i), i, 0, 1, 1, HPos.LEFT, VPos.CENTER);
+         GridPane.setMargin(ducksGameList.get(i), new Insets(0, 0, MARGIN_DOWN, MARGIN_LEFT));
+      }
+      ducksAndProtectionsGrid.getChildren().addAll(ducksGameList);
+   }
+   public void showDucksGame() {
+      // Les cartes des joueurs, à refaire selon la liste de cartes dans Player, liste aussi à changer pour que ce soit une liste de boutons
+      for(int i = 0; i < ProtocolV1.MAX_NO_POS; i++) {
+         GridPane.setConstraints(ducksGameList.get(i), i, 0, 1, 1, HPos.LEFT, VPos.CENTER);
+         GridPane.setMargin(ducksGameList.get(i), new Insets(0, 0, MARGIN_DOWN, MARGIN_LEFT));
+      }
+//      playerCardsGrid.getChildren().addAll(cardsList);
+   }
+   
+   public void protectionCards() {
+      // BOUCLE POUR LA CARTE À COUVERT, FAIT JUSTE POUR L'AFFICHAGE, UTILISÉ SI ON VEUT UTILISER LA CARTE À COUVERT PLUS TARD
+      for(int i = 0; i < NUMBER_OF_PROTECTIONS; i++) {
+         protectionCardsList.add(new ImageView(imageProtection));
+         protectionCardsList.get(i).setFitHeight(protectionCardsList.get(i).getBoundsInLocal().getHeight() / RESIZE_CARDS);
+         protectionCardsList.get(i).setFitWidth(protectionCardsList.get(i).getBoundsInLocal().getWidth() / RESIZE_CARDS);
+         GridPane.setConstraints(protectionCardsList.get(i), i, 0, 1, 1, HPos.LEFT, VPos.CENTER);
+         GridPane.setMargin(protectionCardsList.get(i), new Insets(0, 0, MARGIN_DOWN, 0));
+         protectionCardsList.get(i).setVisible(false);
+      }
+      ducksAndProtectionsGrid.getChildren().addAll(protectionCardsList);
+   }
+   
+   public void unshowProtectionCard(int position) {
+      protectionCardsList.get(position).setVisible(false);
+   }
+   
+   public void showProtectionCard(int position) {
+      protectionCardsList.get(position).setVisible(true);
+//      protectionCardsList.get(position).setStyle(value);
+   }
+   
+   public void update() {
+      showPlayers(4); // Here the number of players that will play the game
+      
+      showPlayerCards();
+      
+      showDucksGame();
+      
+      showTargets(2);
+      showTargets(5);
+      
+      showHidenDucks(0);
+      showHidenDucks(1);
+      showHidenDucks(3);
+      
+      showProtectionCard(1);
+      showProtectionCard(4);
    }
 }
