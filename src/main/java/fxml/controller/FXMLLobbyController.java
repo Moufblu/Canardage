@@ -5,13 +5,17 @@ package fxml.controller;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
+import Protocol.AlertPopup;
+import canardage.Player;
 import canardage.Server;
 import java.io.IOException;
+import java.net.ProtocolException;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
@@ -21,8 +25,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 /**
@@ -37,57 +43,78 @@ public class FXMLLobbyController implements Initializable {
    @FXML
    private Button refreshBtn;
    @FXML
-   private ListView<String> serverList; // Juste pour afficher, faudra changer
-//   private ListView<Server> serverList;
-   private List<String> servers; // Juste pour afficher, faudra changer
-//   private List<Server> servers;
-   
+   private ListView<Server> serverList; // Juste pour afficher, faudra changer
+   @FXML
+   private TextField passwordTextField;
+
    private boolean thereIsPassword = true; // Mettre à false quand on fera les liens
-   
+
+   Player player;
+
    /**
     * Initializes the controller class.
     */
    @Override
    public void initialize(URL url, ResourceBundle rb) {
-      // TODO OR NOT :3
-      servers = new ArrayList<>();
-      servers.add("Server 1");
-      servers.add("Server 2");
-      servers.add("Server 3");
-      
-      serverList = new ListView<>();
-      serverList.getItems().addAll(servers);
+      player = Player.getInstance();
    }
-   
+
    @FXML
    public void joinGame(ActionEvent event) {
-       // METTRE A FALSE LA VARIABLE ET VERIFIER S'IL Y A UN MOT DE PASSE SELON LA CREATION DE LA PARTIE
-      if(thereIsPassword) {
-         Parent root;
+
+      Server server = serverList.getSelectionModel().getSelectedItem();
+      boolean connected = false;
+
+      if(server != null) {
+         System.out.println("Trying to connect to " + server);
          try {
-            root = FXMLLoader.load(getClass().getResource("/fxml/FXMLPassword.fxml"));
-            Stage joinStage = new Stage();
-            Scene scene = new Scene(root);
-
-            joinStage.setTitle("Put Password");
-            joinStage.resizableProperty().set(false);
-            joinStage.setScene(scene);
-
-            ((Node) (event.getSource())).getScene().getWindow().hide();
-            joinStage.show();
+            connected = player.connect(server, passwordTextField.getText());
+         } catch(NoSuchAlgorithmException | ProtocolException ex) {
+            AlertPopup.alert(ex);
          } catch(IOException e) {
-            Logger logger = Logger.getLogger(getClass().getName());
-            logger.log(Level.SEVERE, "Erreur à la création d'une nouvelle fenêtre.", e);
+            AlertPopup.alert("Erreur", "Erreur de connexion",
+                    "Echec lors de la connextion au serveur : " + server,
+                    Alert.AlertType.WARNING);
+            refresh();
          }
+
+         if(connected) {
+            player.startGame();
+
+            Parent root;
+            try {
+               root = FXMLLoader.load(getClass().getResource("/fxml/FXMLCanardage.fxml"));
+               Stage joinStage = new Stage();
+               Scene scene = new Scene(root);
+
+               joinStage.setTitle("CANARDAGE");
+               joinStage.resizableProperty().set(false);
+               joinStage.setScene(scene);
+
+               ((Node) (event.getSource())).getScene().getWindow().hide();
+               joinStage.show();
+            } catch(IOException e) {
+               Logger logger = Logger.getLogger(getClass().getName());
+               logger.log(Level.SEVERE, "Erreur à la création d'une nouvelle fenêtre.", e);
+            }
+         }
+      }else{
+         AlertPopup.alert("Info", "Aucune sélection", "Veuillez sélectionner un serveur", Alert.AlertType.INFORMATION);
       }
-      // SINON ON AFFICHE LE BOARD AVEC LES JOUEURS QUI REJOIGNENT LA PARTIE
-      // (METTRE LES CANARDS GRISÉS ET METTRE EN COULEUR SI UN JOUEUR SE JOIN)
-      // (LAISSER LES EMOTICONES POUR QUE LES JOUEURS S'AMUSENT AVANT LE DEBUT)
    }
-   
+
    @FXML
    public void refreshServerList(ActionEvent event) {
-      throw new UnsupportedOperationException("DO THAT SHIT BITCH");
-      // TODO
+      refresh();
+   }
+
+   private void refresh() {
+      refreshBtn.setDisable(true);
+      serverList.getItems().clear();
+      Set<Server> s = player.getServers();
+      if(!s.isEmpty()) {
+         serverList.getItems().addAll(player.getServers());
+      }
+      refreshBtn.setDisable(false);
    }
 }

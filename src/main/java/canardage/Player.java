@@ -234,17 +234,23 @@ public class Player {
 
    /**
     * Méthode pour réaliser la connexion
-    * @param no Le serveur à initialiser
+    * @param server
+    * @param mdp
+    * @return 
     * @throws IOException Erreur si on refuse la connexion
+    * @throws java.security.NoSuchAlgorithmException
     */
    public boolean connect(Server server, String mdp) throws IOException, NoSuchAlgorithmException {
       if(!connected) {
+         
+         System.out.println("tentative de connection");
          clientSocket = new Socket(server.getIpAddress(), ProtocolV1.PORT);
 
          responseBuffer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
          byteWriter = clientSocket.getOutputStream();
          writer = new PrintWriter(new OutputStreamWriter(byteWriter, "UTF-8"));
 
+         System.out.println("Attente du serveur");
          String answer = responseBuffer.readLine();
          if(answer.equals(ProtocolV1.HASH)) {
             byte[] hashedPassword = hash(mdp);
@@ -255,6 +261,7 @@ public class Player {
          } else {
             throw new ProtocolException("erreur dans le protocol");
          }
+         System.out.println("Phase d'acceptation");
          answer = responseBuffer.readLine();
          if(answer.equals(ProtocolV1.ACCEPT_CONNECTION)) {
             connected = true;

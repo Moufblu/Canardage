@@ -50,21 +50,6 @@ public class FXMLPasswordController implements Initializable {
       password  = passwordField.getText();
       System.out.println(password);
       
-      Parent root;
-      try {
-         root = FXMLLoader.load(getClass().getResource("/fxml/FXMLCanardage.fxml"));
-         Stage joinStage = new Stage();
-         Scene scene = new Scene(root);
-
-         joinStage.setTitle("CANARDAGE");
-         joinStage.resizableProperty().set(false);
-         joinStage.setScene(scene);
-
-         ((Node) (event.getSource())).getScene().getWindow().hide();
-         joinStage.show();
-      } catch(IOException e) {
-         Logger logger = Logger.getLogger(getClass().getName());
-         logger.log(Level.SEVERE, "Erreur à la création d'une nouvelle fenêtre.", e);
-      }
+      
    }
 }
