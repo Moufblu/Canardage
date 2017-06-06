@@ -25,7 +25,7 @@ import java.util.logging.Logger;
  * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
  * @version 0.1
  */
-public class Player {
+public class Player implements Runnable {
 
    private final int HAND_CARDS_NUMBER = 3;  // Nombre de cartes maximal d'un joueur
    private final long REFRESH_DELAY = 2000;
@@ -157,6 +157,59 @@ public class Player {
       }
    }
 
+   @Override
+   public void run() {
+      String inputServer;
+      String[] splittedCommand = {""};
+
+      do {
+         try {
+            inputServer = responseBuffer.readLine();
+            splittedCommand = inputServer.split(ProtocolV1.SEPARATOR);
+         } catch(IOException e) {
+            System.out.println(e.toString());
+            continue;
+         }
+
+         switch(splittedCommand[0]) {
+            case ProtocolV1.ASK_FOR_POSITION:
+               writer.println(ProtocolV1.messageAskPosition(getLocationChoice()));
+               writer.flush();
+               break;
+            case ProtocolV1.DISTRIBUTE_CARD:
+               if(cards.size() > 0) {
+                  throw new IllegalStateException("Main du joueurs pleine");
+               } else {
+
+                  cards.add(readLineCardFileInfo(Integer.parseInt(splittedCommand[1])));
+               }
+               break;
+            case ProtocolV1.DISTRIBUTE_HAND:
+               if(cards.size() > 0) {
+                  // Aucun sense dans le message d'erreur, comprend pas :/
+                  // Vérification inversée? Jimmy shit? Am I a shit?
+                  // Beep beep I'm a sheep, Beepbeep I'm a sheep (8)
+                  throw new IllegalStateException("Action cards yet distributed");
+               } else {
+                  for(int i = 1; i < ProtocolV1.HAND_SIZE + 1; i++) {
+                     cards.add(readLineCardFileInfo(Integer.parseInt(splittedCommand[i])));
+                  }
+               }
+               break;
+            case ProtocolV1.PATCH_BOARD:
+               showBoard(splittedCommand);
+               break;
+            case ProtocolV1.YOUR_TURN:
+               writer.println(ProtocolV1.messageUseCard(getCardChoice()));
+               writer.flush();
+               break;
+            case ProtocolV1.REFUSE_CARD:
+               System.out.println(ProtocolV1.ERRORS[Integer.parseInt(splittedCommand[1])]);
+               break;
+         }
+      } while(!splittedCommand[0].equals(ProtocolV1.END_GAME));
+   }
+
    /**
     * Intialisation de la partie
     * @throws IllegalStateException Lancée si trop de cartes dans la main du joueur,
@@ -164,56 +217,8 @@ public class Player {
     */
    public void startGame() throws IllegalStateException {
       if(isConnected()) {
-
-         String inputServer;
-         String[] splittedCommand = {""};
-
-         do {
-            try {
-               inputServer = responseBuffer.readLine();
-               splittedCommand = inputServer.split(ProtocolV1.SEPARATOR);
-            } catch(IOException e) {
-               System.out.println(e.toString());
-               continue;
-            }
-
-            switch(splittedCommand[0]) {
-               case ProtocolV1.ASK_FOR_POSITION:
-                  writer.println(ProtocolV1.messageAskPosition(getLocationChoice()));
-                  writer.flush();
-                  break;
-               case ProtocolV1.DISTRIBUTE_CARD:
-                  if(cards.size() > 0) {
-                     throw new IllegalStateException("Main du joueurs pleine");
-                  } else {
-
-                     cards.add(readLineCardFileInfo(Integer.parseInt(splittedCommand[1])));
-                  }
-                  break;
-               case ProtocolV1.DISTRIBUTE_HAND:
-                  if(cards.size() > 0) {
-                     // Aucun sense dans le message d'erreur, comprend pas :/
-                     // Vérification inversée? Jimmy shit? Am I a shit?
-                     // Beep beep I'm a sheep, Beepbeep I'm a sheep (8)
-                     throw new IllegalStateException("Action cards yet distributed");
-                  } else {
-                     for(int i = 1; i < ProtocolV1.HAND_SIZE + 1; i++) {
-                        cards.add(readLineCardFileInfo(Integer.parseInt(splittedCommand[i])));
-                     }
-                  }
-                  break;
-               case ProtocolV1.PATCH_BOARD:
-                  showBoard(splittedCommand);
-                  break;
-               case ProtocolV1.YOUR_TURN:
-                  writer.println(ProtocolV1.messageUseCard(getCardChoice()));
-                  writer.flush();
-                  break;
-               case ProtocolV1.REFUSE_CARD:
-                  System.out.println(ProtocolV1.ERRORS[Integer.parseInt(splittedCommand[1])]);
-                  break;
-            }
-         } while(!splittedCommand[0].equals(ProtocolV1.END_GAME));
+         Thread thread = new Thread(this);
+         thread.start();
       } else {
          throw new IllegalStateException("Vous devez vous connecter à un serveur "
                  + "avant de pouvoir commencer une partie.");
@@ -236,13 +241,13 @@ public class Player {
     * Méthode pour réaliser la connexion
     * @param server
     * @param mdp
-    * @return 
+    * @return
     * @throws IOException Erreur si on refuse la connexion
     * @throws java.security.NoSuchAlgorithmException
     */
    public boolean connect(Server server, String mdp) throws IOException, NoSuchAlgorithmException {
       if(!connected) {
-         
+
          System.out.println("tentative de connection");
          clientSocket = new Socket(server.getIpAddress(), ProtocolV1.PORT);
 
@@ -272,6 +277,7 @@ public class Player {
             throw new ProtocolException("erreur dans le protocole");
          }
       }
+      System.out.println("resultat de la tentative de connexion : " + connected);
       return connected;
    }
 
@@ -438,4 +444,5 @@ public class Player {
 
       player.startGame();
    }
+
 }

@@ -77,10 +77,9 @@ public class FXMLLobbyController implements Initializable {
                     Alert.AlertType.WARNING);
             refresh();
          }
-
          if(connected) {
-            player.startGame();
-
+            System.out.println("LANCEMENT");
+            System.out.println("affichage board");
             Parent root;
             try {
                root = FXMLLoader.load(getClass().getResource("/fxml/FXMLCanardage.fxml"));
@@ -97,6 +96,9 @@ public class FXMLLobbyController implements Initializable {
                Logger logger = Logger.getLogger(getClass().getName());
                logger.log(Level.SEVERE, "Erreur à la création d'une nouvelle fenêtre.", e);
             }
+            player.startGame();
+         }else{
+            AlertPopup.alert("Info", "mot de passe erroné", "Veuillez indiquer un bon mot de passe", Alert.AlertType.INFORMATION);
          }
       }else{
          AlertPopup.alert("Info", "Aucune sélection", "Veuillez sélectionner un serveur", Alert.AlertType.INFORMATION);
