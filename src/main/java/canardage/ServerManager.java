@@ -54,6 +54,7 @@ public class ServerManager {
    private int nbPlayers;  // Nombre de joueurs dans la partie
 
    private List<Client> playersSockets;   // Liste des Sockets des joueurs
+   private final static String defaultServerName = "Canardage";
    private static String defaultHashedPassword;
 
    private static ServerManager instance;
@@ -80,6 +81,10 @@ public class ServerManager {
       playerCards = new ArrayList<>();
       playersSockets = new ArrayList<>();
       nbPlayers = 0;
+      
+      if(name == "") {
+         name = defaultServerName;
+      }
 
       this.hash = hash;
       try {
