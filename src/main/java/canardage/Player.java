@@ -163,6 +163,7 @@ public class Player implements Runnable {
    public void run() {
       String inputServer;
       String[] splittedCommand = {""};
+      int locationChoice = 0;
 
       do {
          try {
@@ -175,7 +176,7 @@ public class Player implements Runnable {
 
          switch(splittedCommand[0]) {
             case ProtocolV1.ASK_FOR_POSITION:
-               int locationChoice = canardageFxml.askPosition();
+               locationChoice = canardageFxml.askPosition();
                writer.println(ProtocolV1.messageAskPosition(locationChoice));
                writer.flush();
                break;
@@ -183,7 +184,7 @@ public class Player implements Runnable {
                if(cards.size() > 0) {
                   throw new IllegalStateException("Main du joueurs pleine");
                } else {
-
+                  cards.remove(locationChoice);
                   cards.add(readLineCardFileInfo(Integer.parseInt(splittedCommand[1])));
                   canardageFxml.updateCards(cards);
                }
