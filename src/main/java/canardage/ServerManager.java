@@ -216,6 +216,7 @@ public class ServerManager {
                               } else {
                                  System.out.println("    Refus de la connexion du joueur");
                                  client.writeLine(ProtocolV1.REFUSE_CONNECTION);
+                                 
                               }
                            } catch(IOException ex) {
                               Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE, null, ex);

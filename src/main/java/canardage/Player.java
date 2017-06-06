@@ -66,6 +66,7 @@ public class Player {
 
    /**
     * Méthode pour obtenir les serveurs disponibles
+    * @return 
     */
    public Set<Server> getServers() {
       MulticastSocket socket;

@@ -1,10 +1,5 @@
 package fxml.controller;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 import Protocol.AlertPopup;
 import canardage.Player;
 import canardage.Server;
@@ -12,8 +7,6 @@ import java.io.IOException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.logging.Level;
