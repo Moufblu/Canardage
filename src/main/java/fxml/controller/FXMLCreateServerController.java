@@ -55,7 +55,7 @@ public class FXMLCreateServerController implements Initializable {
    }
 
    @FXML
-   private void createServer(ActionEvent event) {
+   public void createServer(ActionEvent event) {
       gameName = serverNameField.getText();
       password = passwordField.getText();
 
