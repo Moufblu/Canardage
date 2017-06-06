@@ -39,9 +39,7 @@ public class FXMLLobbyController implements Initializable {
    private ListView<Server> serverList; // Juste pour afficher, faudra changer
    @FXML
    private TextField passwordTextField;
-
-   private boolean thereIsPassword = true; // Mettre à false quand on fera les liens
-
+   
    Player player;
 
    /**
@@ -102,7 +100,7 @@ public class FXMLLobbyController implements Initializable {
    public void refreshServerList(ActionEvent event) {
       refresh();
    }
-
+   
    private void refresh() {
       refreshBtn.setDisable(true);
       serverList.getItems().clear();

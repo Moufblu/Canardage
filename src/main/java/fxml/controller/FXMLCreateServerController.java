@@ -5,6 +5,8 @@
  */
 package fxml.controller;
 
+import Protocol.AlertPopup;
+import canardage.Player;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -17,6 +19,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -37,39 +40,26 @@ public class FXMLCreateServerController implements Initializable {
    private TextField serverNameField;
    @FXML
    private TextField passwordField;
-   
+
    private String gameName;
-   private String password = "";
-   private boolean enoughPlayers = false;
-   private int amountPlayers = 0;
-   
-   public FXMLCreateServerController() {
-      this.serverNameField = new TextField();
-   }
+   private String password;
+
+   Player player;
 
    /**
     * Initializes the controller class.
     */
    @Override
    public void initialize(URL url, ResourceBundle rb) {
-      
+      player = Player.getInstance();
    }
-   
-   
+
    @FXML
-   public void showGameName(ActionEvent event) {
-      // A CREER POUR VERIFIER LE NOMBRE DE JOUEURS QUI ONT REJOINT LA PARTIE
-//      enoughPlayers = Server.methodEnoughPlayers();
-      if(!enoughPlayers) {
-         gameName = serverNameField.getText();
-         password  = passwordField.getText();
+   private void createServer(ActionEvent event) {
+      gameName = serverNameField.getText();
+      password = passwordField.getText();
 
-         // HASH PASSWORD
-
-         // CREATE SERVER
-         
-         System.out.println(gameName);
-         System.out.println(password);
+      if(player.createServer(gameName, password)) {
 
          Parent root;
          try {
@@ -77,7 +67,7 @@ public class FXMLCreateServerController implements Initializable {
             Stage joinStage = new Stage();
             Scene scene = new Scene(root);
 
-            joinStage.setTitle("CANARDAGE");
+            joinStage.setTitle(gameName);
             joinStage.resizableProperty().set(false);
             joinStage.setScene(scene);
 
@@ -87,6 +77,10 @@ public class FXMLCreateServerController implements Initializable {
             Logger logger = Logger.getLogger(getClass().getName());
             logger.log(Level.SEVERE, "Erreur à la création d'une nouvelle fenêtre.", e);
          }
+      } else {
+         AlertPopup.alert("Erreur", "Erreur de création",
+                 "Erreur lors de la connexion au serveur " + serverNameField,
+                 Alert.AlertType.WARNING);
       }
    }
 }
