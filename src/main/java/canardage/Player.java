@@ -47,6 +47,7 @@ public class Player implements Runnable {
    private final static String defaultPassword = "";
 
    private static Player instance;
+   private ServerManager server = null;
 
    /**
     * Constructeur de la classe Player
@@ -128,20 +129,21 @@ public class Player implements Runnable {
     * @param password Le mot de passe pour la partie si donné
     * @return le serveur créé
     */
-   public ServerManager createServer(String name, String password) {
+   public boolean createServer(String name, String password) {
       byte[] hash;
-
+      boolean serverCreated = false;
       try {
          hash = hash(password);
       } catch(UnsupportedEncodingException | NoSuchAlgorithmException ex) {
          throw new RuntimeException(ex.getCause());
       }
       ServerManager.registerInstance(name, hash);
-      ServerManager server = ServerManager.getInstance();
+      server = ServerManager.getInstance();
       if(!server.isRunning()) {
          try {
             server.acceptClients();
             connect(server.getServer(), password);
+            serverCreated = true;
          } catch(IOException e) {
             System.out.println(e.getMessage());
          } catch(NoSuchAlgorithmException ex) {
@@ -149,7 +151,7 @@ public class Player implements Runnable {
          }
       }
 
-      return server;
+      return serverCreated;
    }
 
    public void showServers() {
