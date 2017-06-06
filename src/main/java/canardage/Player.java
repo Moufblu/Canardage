@@ -267,6 +267,7 @@ public class Player {
          answer = responseBuffer.readLine();
          if(answer.equals(ProtocolV1.ACCEPT_CONNECTION)) {
             connected = true;
+            System.out.println("Joueur connecté");
          } else if(!answer.equals(ProtocolV1.REFUSE_CONNECTION)) {
             throw new ProtocolException("erreur dans le protocole");
          }

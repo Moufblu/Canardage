@@ -141,7 +141,6 @@ public class ServerManager {
                   public void run() {
                      try {
                         socket.send(datagram);
-                        System.out.println("sending longueur :" + datagram.getLength() + " port: " + datagram.getPort() + " data: " + datagram.getData());
                      } catch(IOException ex) {
                         System.out.println(ex + " : error sending datagram");
                      }
@@ -185,47 +184,45 @@ public class ServerManager {
 //                     nbPlayers++;
 //                     continue;
 //                  }
-
                   new Thread(new Runnable() {
-                     private final int MAX_TRIES = 3;
-
+                     
                      @Override
                      public void run() {
-                        int tries = 0;
-                        for(tries = 0; tries < MAX_TRIES; tries++) {
-                           System.out.println("Demande du mot de passe au joueur");
-                           client.writeLine(ProtocolV1.HASH);
 
-                           System.out.println("Attente du mot de passe du joueur");
-                           String messageResponse = "";
+                        System.out.println("    Demande du mot de passe au joueur");
+                        client.writeLine(ProtocolV1.HASH);
+
+                        System.out.println("    Attente du mot de passe du joueur");
+                        String messageResponse = "";
+                        try {
+                           messageResponse = client.readLine();
+                        } catch(IOException ex) {
+                           System.out.println("    Couldn't get password from client. "
+                                   + "Setting it to default password. " + ex.getMessage());
+                           client.writeLine(ProtocolV1.messageRefuse(1)); //à changer c'est dégueulasse
+                        }
+
+                        System.out.println("    Mot clé Hash reçu par le server");
+                        if(messageResponse.equals(ProtocolV1.HASH)) {
                            try {
-                              messageResponse = client.readLine();
-                           } catch(IOException ex) {
-                              System.out.println("Couldn't get password from client. "
-                                      + "Setting it to default password. " + ex.getMessage());
-                              client.writeLine(ProtocolV1.messageRefuse(1)); //à changer c'est dégueulasse
-                           }
-
-                           if(messageResponse.equals(ProtocolV1.HASH)) {
-                              try {
-                                 byte[] givenHash = client.readBytes(hash.length);
-                                 if(Arrays.equals(givenHash, hash)) {
-                                    System.out.println("Acceptation d'une connexion au joueur");
-                                    playersSockets.add(client);
-                                    client.writeLine(ProtocolV1.ACCEPT_CONNECTION);
-                                    synchronized (this) {
-                                       nbPlayers++;
-                                    }
-                                 } else {
-                                    System.out.println("Refus de la connexion du joueur");
-                                    client.writeLine(ProtocolV1.REFUSE_CONNECTION);
+                              byte[] givenHash = client.readBytes(hash.length);
+                              if(Arrays.equals(givenHash, hash)) {
+                                 System.out.println("    Acceptation d'une connexion au joueur");
+                                 playersSockets.add(client);
+                                 client.writeLine(ProtocolV1.ACCEPT_CONNECTION);
+                                 synchronized (this) {
+                                    nbPlayers++;
                                  }
-                              } catch(IOException ex) {
-                                 Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE, null, ex);
+                              } else {
+                                 System.out.println("    Refus de la connexion du joueur");
+                                 client.writeLine(ProtocolV1.REFUSE_CONNECTION);
                               }
+                           } catch(IOException ex) {
+                              Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE, null, ex);
                            }
                         }
                      }
+
                   }).start();
 
                } while(nbPlayers < MAX_NB_PLAYERS);
