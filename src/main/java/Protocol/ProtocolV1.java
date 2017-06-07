@@ -1,6 +1,7 @@
 package Protocol;
 
 import canardage.Board;
+import chat.Emoticon;
 
 /**
  * Description: Protocol pour la connexion client-serveur
@@ -12,7 +13,10 @@ public class ProtocolV1 {
    
    // Adresse multicast pour annoncer le serveur
    public final static String MULTICAST_ADDRESS = "229.30.30.30";
-   public final static int MULTICAST_PORT = 5001;
+   public final static int MULTICAST_PORT     = 5001;
+   public final static int CHAT_PORT          = 5002;
+   
+   public final static String EMOTICON        = "Emote";
    
    public final static String USE_CARD        = "Action";  // Utilisation d'une carte
    public final static String DISTRIBUTE_HAND = "Hand";    // Donner les cartes
@@ -42,6 +46,16 @@ public class ProtocolV1 {
    public final static int MAX_NO_POS   = 6; // Maximum pour la position d'une carte
 
    public final static int PORT      = 1337; // Port de connexion sur le serveur
+   
+   public static String messageAccept(int playerNumber)
+                           throws IllegalArgumentException {
+      if(playerNumber < MAX_NO_POS || playerNumber > MIN_NO_POS) {
+         throw new IllegalArgumentException("Joueur invalide: " + playerNumber);
+      }
+      
+      String result = ACCEPT_CONNECTION + SEPARATOR + playerNumber;
+      return result;
+   }
    
    /**
     * Indique quel carte on souhaite jouer
@@ -179,6 +193,15 @@ public class ProtocolV1 {
       String result = PATCH_BOARD;
       result += SEPARATOR;
       result += board.getBoardState();
+      return result;
+   }
+   
+   public static String messageChat(int player, Emoticon emote) {
+      if(player < MAX_NO_POS || player > MIN_NO_POS) {
+         throw new IllegalArgumentException("Joueur invalide: " + player);
+      }
+      
+      String result = EMOTICON + SEPARATOR + player + SEPARATOR + emote;
       return result;
    }
 }

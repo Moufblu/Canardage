@@ -2,6 +2,8 @@ package canardage;
 
 import java.net.Socket;
 import Protocol.ProtocolV1;
+import chat.ChatClient;
+import chat.Emoticon;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import duckException.BadGameInitialisation;
@@ -14,6 +16,7 @@ import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.ProtocolException;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -22,7 +25,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Description: Classe pour créer et gérer les joueurs d'une partie Date: 03.05.2017
+ * Description: Classe pour créer et gérer les joueurs d'une partie
+ * Date: 03.05.2017
  * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
  * @version 0.1
  */
@@ -31,15 +35,20 @@ public class Player implements Runnable {
    private FXMLCanardageController canardageFxml;
    private final int HAND_CARDS_NUMBER = 3;  // Nombre de cartes maximal d'un joueur
    private final long REFRESH_DELAY = 2000;
+   private static final int TIMEOUT_ANSWER = 0;
 
    private final String ENCODING_ALGORITHM = "SHA-256";  // Algorithme de hachage
    private final String FORMAT_TEXT = "UTF-8";  // Format d'encodage du texte
-
+   
    private Socket clientSocket;           // Socket du client
    private BufferedReader responseBuffer; // Buffer pour le réponse
    private PrintWriter writer;            // Writer pour les envois d'informations
    private Set<Server> servers;           // La liste des serveurs
    private OutputStream byteWriter;
+   
+   private ChatClient chatClient;
+   
+   private int playerNumber;
 
    private List<Integer> cards;           // Liste des cartes
 
@@ -47,6 +56,9 @@ public class Player implements Runnable {
 
    private static Player instance;
    private ServerManager server = null;
+   
+   private final static String defaultServerName = "Canardage";
+   private final static String defaultPassword = "";
 
    /**
     * Constructeur de la classe Player
@@ -82,10 +94,10 @@ public class Player implements Runnable {
          socket = new MulticastSocket(ProtocolV1.MULTICAST_PORT);
          socket.setInterface(ipAddress);
          socket.joinGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
-         socket.setSoTimeout((int) REFRESH_DELAY);
-
+         socket.setSoTimeout((int)REFRESH_DELAY);
+         
          long start = new Date().getTime();
-         while(new Date().getTime() - start < REFRESH_DELAY) {
+         while (new Date().getTime() - start < REFRESH_DELAY) {
             byte[] buffer = new byte[2048];
             DatagramPacket datagram = new DatagramPacket(buffer, buffer.length);
             socket.receive(datagram);
@@ -93,21 +105,20 @@ public class Player implements Runnable {
             String msg = new String(datagram.getData());
             msg = msg.substring(0, msg.lastIndexOf('}') + 1);
             Gson gson = new Gson();
-            Type type = new TypeToken<Server>() {
-            }.getType();
-            if(!servers.contains((Server) gson.fromJson(msg, type))) {
-               servers.add((Server) gson.fromJson(msg, type));
+            Type type = new TypeToken<Server>() {}.getType();
+            if(!servers.contains((Server)gson.fromJson(msg, type))) {
+               servers.add((Server)gson.fromJson(msg, type));
             }
          }
          socket.leaveGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
-      } catch(SocketException ex) {
+      } catch (SocketException ex) {
          System.out.println("socket creation fail : " + ex.getMessage());
-      } catch(IOException ex) {
+      } catch (IOException ex) {
          System.out.println("read broadcast fail : " + ex.getMessage());
       }
       return servers;
    }
-
+   
    /**
     * Méthode de hachage des mots de passe
     * @param password Mot de passe à faire le hachage
@@ -121,7 +132,7 @@ public class Player implements Runnable {
       md.update(password.getBytes(FORMAT_TEXT));
       return md.digest();
    }
-
+   
    /**
     * Méthode pour la création du serveur
     * @param name Le nom du serveur si donné
@@ -260,15 +271,16 @@ public class Player implements Runnable {
 
          System.out.println("tentative de connection");
          clientSocket = new Socket(server.getIpAddress(), ProtocolV1.PORT);
-
+         clientSocket.setSoTimeout(TIMEOUT_ANSWER);
+         
          responseBuffer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
          byteWriter = clientSocket.getOutputStream();
          writer = new PrintWriter(new OutputStreamWriter(byteWriter, "UTF-8"));
 
          System.out.println("Attente du serveur");
-         String answer = responseBuffer.readLine();
+         String[] answer = (responseBuffer.readLine()).split(ProtocolV1.SEPARATOR);
          System.out.println(answer);
-         if(answer.equals(ProtocolV1.HASH)) {
+         if(answer[0].equals(ProtocolV1.HASH)) {
             byte[] hashedPassword = hash(mdp);
             System.out.println("Envoi de Hash");
             writer.println(ProtocolV1.HASH);
@@ -281,11 +293,18 @@ public class Player implements Runnable {
             throw new ProtocolException("erreur dans le protocole");
          }
          System.out.println("Phase d'acceptation");
-         answer = responseBuffer.readLine();
-         if(answer.equals(ProtocolV1.ACCEPT_CONNECTION)) {
+         answer = (responseBuffer.readLine()).split(ProtocolV1.SEPARATOR);
+         if(answer[0].equals(ProtocolV1.ACCEPT_CONNECTION)) {
             connected = true;
+            playerNumber = Integer.valueOf(answer[1]);
+            /* Dés que la partie commence on crée un thread qui écoute les messages
+             * envoyés par le chat.
+             */
+            chatClient = new ChatClient(clientSocket.getInetAddress().getHostAddress(),
+                                         playerNumber);
+            chatClient.listen();
             System.out.println("Joueur connecté");
-         } else if(!answer.equals(ProtocolV1.REFUSE_CONNECTION)) {
+         } else if(!answer[0].equals(ProtocolV1.REFUSE_CONNECTION)) {
             throw new ProtocolException("erreur dans le protocole");
          }
       }
@@ -308,6 +327,7 @@ public class Player implements Runnable {
    public int getCardChoice() {
       Scanner in = new Scanner(System.in);
       int cardChoice = 0;
+
 
       // Boucle tant que le joueur ne choisi pas le bon numéro d'une carte
       while(true) {
@@ -373,6 +393,11 @@ public class Player implements Runnable {
          }
       }
       return positionChoice;
+   }
+   
+   public void sendEmoticon(Emoticon emoticon)
+   {
+      chatClient.write(emoticon);
    }
 
    /*public void createServer() {

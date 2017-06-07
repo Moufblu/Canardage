@@ -2,6 +2,7 @@ package canardage;
 
 import java.net.ServerSocket;
 import Protocol.ProtocolV1;
+import chat.ChatMaster;
 import java.lang.reflect.Type;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -29,8 +30,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Description: Classe pour la partie d'implémentation complète du serveur de la
- * connexion client-serveur Date: 03.05.2017
+ * Description: Classe pour la partie d'implémentation complète du serveur de la 
+ * connexion client-serveur
+ * Date: 03.05.2017
  * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
  * @version 0.1
  */
@@ -39,7 +41,7 @@ public class ServerManager {
    private byte[] hash;    // Tableau pour stocker les hash des mots de passe
    private Thread thread;  // Threads pour les serveurs
    private Server server;  // Le serveur en lui-même
-
+   
    private final static int MIN_NB_PLAYERS = 3;
    private final static int MAX_NB_PLAYERS = 6;    // Nombre maximum de joueur
    private final static int NB_ACTION_CARDS = 10;  // Nombre de cartes action
@@ -56,6 +58,8 @@ public class ServerManager {
    private List<Client> playersSockets;   // Liste des Sockets des joueurs
    private final static String defaultServerName = "Canardage";
    private static String defaultHashedPassword;
+   
+   private ChatMaster chat;
 
    private static ServerManager instance;
 
@@ -245,8 +249,8 @@ public class ServerManager {
       acceptingClients.start();
    }
 
-   public void startGame() throws BadGameInitialisation {
-      if(nbPlayers < MIN_NB_PLAYERS) {
+   public void startGame() throws BadGameInitialisation, IOException {
+      if (nbPlayers < MIN_NB_PLAYERS) {
          throw new BadGameInitialisation("Number of players must be at least " + MIN_NB_PLAYERS);
       }
 
@@ -262,7 +266,11 @@ public class ServerManager {
             System.out.println("Server socket couldn't be closed.");
          }
       }
-
+      
+      //Création du chat avec le bon nombre de joueurs
+      chat = new ChatMaster(server.getIpAddress(), nbPlayers);
+      chat.accept();
+      
       initialiseGame();
 
       for(Client player : playersSockets) {
