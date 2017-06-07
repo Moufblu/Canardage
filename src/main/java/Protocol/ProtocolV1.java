@@ -49,7 +49,7 @@ public class ProtocolV1 {
    
    public static String messageAccept(int playerNumber)
                            throws IllegalArgumentException {
-      if(playerNumber < MAX_NO_POS || playerNumber > MIN_NO_POS) {
+      if(playerNumber >= MAX_NO_POS || playerNumber < MIN_NO_POS) {
          throw new IllegalArgumentException("Joueur invalide: " + playerNumber);
       }
       

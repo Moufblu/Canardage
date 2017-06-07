@@ -3,6 +3,7 @@ package fxml.controller;
 import Protocol.AlertPopup;
 import Protocol.ProtocolV1;
 import canardage.Player;
+import chat.Emoticon;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -160,13 +161,15 @@ public class FXMLCanardageController implements Initializable {
       // Th buttons for the chat
       for(int i = 0; i < NUMBER_OF_SMILEYS / GRID_POS; i++) {
          for(int j = 0; j < NUMBER_OF_SMILEYS / GRID_POS; j++) {
-            Button b = buttonsList.get(i * GRID_POS + j);
+            final int position = i * GRID_POS + j;
+            Button b = buttonsList.get(position);
             GridPane.setConstraints(b, j, i, 1, 1, HPos.CENTER, VPos.CENTER);
+            
             b.setOnAction(new EventHandler<ActionEvent>() {
-
+               
                @Override
                public void handle(ActionEvent event) {
-                  player.sendEmoticon(Emoticon.values()[i * GRID_POS + j]);
+                  player.sendEmoticon(Emoticon.values()[position]);
                }
             });
             

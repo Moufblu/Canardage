@@ -30,9 +30,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Description: Classe pour la partie d'implémentation complète du serveur de la 
- * connexion client-serveur
- * Date: 03.05.2017
+ * Description: Classe pour la partie d'implémentation complète du serveur de la
+ * connexion client-serveur Date: 03.05.2017
  * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
  * @version 0.1
  */
@@ -41,7 +40,7 @@ public class ServerManager {
    private byte[] hash;    // Tableau pour stocker les hash des mots de passe
    private Thread thread;  // Threads pour les serveurs
    private Server server;  // Le serveur en lui-même
-   
+
    private final static int MIN_NB_PLAYERS = 3;
    private final static int MAX_NB_PLAYERS = 6;    // Nombre maximum de joueur
    private final static int NB_ACTION_CARDS = 10;  // Nombre de cartes action
@@ -58,7 +57,7 @@ public class ServerManager {
    private List<Client> playersSockets;   // Liste des Sockets des joueurs
    private final static String defaultServerName = "Canardage";
    private static String defaultHashedPassword;
-   
+
    private ChatMaster chat;
 
    private static ServerManager instance;
@@ -85,7 +84,7 @@ public class ServerManager {
       playerCards = new ArrayList<>();
       playersSockets = new ArrayList<>();
       nbPlayers = 0;
-      
+
       if(name == "") {
          name = defaultServerName;
       }
@@ -194,43 +193,31 @@ public class ServerManager {
 //                     continue;
 //                  }
                   new Thread(new Runnable() {
-                     
+
                      @Override
                      public void run() {
 
                         System.out.println("    Demande du mot de passe au joueur");
                         client.writeLine(ProtocolV1.HASH);
 
-                        System.out.println("    Attente du mot de passe du joueur");
-                        String messageResponse = "";
+                        System.out.println("    Mot clé Hash reçu par le serveur");
                         try {
-                           messageResponse = client.readLine();
-                        } catch(IOException ex) {
-                           System.out.println("    Couldn't get password from client. "
-                                   + "Setting it to default password. " + ex.getMessage());
-                           client.writeLine(ProtocolV1.messageRefuse(1)); //à changer c'est dégueulasse
-                        }
-
-                        if(messageResponse.equals(ProtocolV1.HASH)) {
-                           System.out.println("    Mot clé Hash reçu par le serveur");
-                           try {
-                              System.out.println("    Réception du Hash : " + hash.length);
-                              byte[] givenHash = client.readBytes(hash.length);
-                              if(Arrays.equals(givenHash, hash)) {
-                                 System.out.println("    Acceptation d'une connexion au joueur");
-                                 playersSockets.add(client);
-                                 client.writeLine(ProtocolV1.ACCEPT_CONNECTION);
-                                 synchronized (this) {
-                                    nbPlayers++;
-                                 }
-                              } else {
-                                 System.out.println("    Refus de la connexion du joueur");
-                                 client.writeLine(ProtocolV1.REFUSE_CONNECTION);
-                                 
+                           System.out.println("    Réception du Hash : " + hash.length);
+                           byte[] givenHash = client.readBytes(hash.length);
+                           if(Arrays.equals(givenHash, hash)) {
+                              System.out.println("    Acceptation d'une connexion au joueur");
+                              playersSockets.add(client);
+                              client.writeLine(ProtocolV1.messageAccept(nbPlayers));
+                              synchronized (this) {
+                                 nbPlayers++;
                               }
-                           } catch(IOException ex) {
-                              Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE, null, ex);
+                           } else {
+                              System.out.println("    Refus de la connexion du joueur");
+                              client.writeLine(ProtocolV1.REFUSE_CONNECTION);
+
                            }
+                        } catch(IOException ex) {
+                           Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE, null, ex);
                         }
                      }
 
@@ -250,7 +237,7 @@ public class ServerManager {
    }
 
    public void startGame() throws BadGameInitialisation, IOException {
-      if (nbPlayers < MIN_NB_PLAYERS) {
+      if(nbPlayers < MIN_NB_PLAYERS) {
          throw new BadGameInitialisation("Number of players must be at least " + MIN_NB_PLAYERS);
       }
 
@@ -266,11 +253,11 @@ public class ServerManager {
             System.out.println("Server socket couldn't be closed.");
          }
       }
-      
+
       //Création du chat avec le bon nombre de joueurs
       chat = new ChatMaster(server.getIpAddress(), nbPlayers);
       chat.accept();
-      
+
       initialiseGame();
 
       for(Client player : playersSockets) {

@@ -279,12 +279,9 @@ public class Player implements Runnable {
 
          System.out.println("Attente du serveur");
          String[] answer = (responseBuffer.readLine()).split(ProtocolV1.SEPARATOR);
-         System.out.println(answer);
+         System.out.println(answer[0]);
          if(answer[0].equals(ProtocolV1.HASH)) {
             byte[] hashedPassword = hash(mdp);
-            System.out.println("Envoi de Hash");
-            writer.println(ProtocolV1.HASH);
-            writer.flush();
             System.out.println("Envoi du mot de passe Hashé : " + hashedPassword.length);
             byteWriter.write(hashedPassword);
             byteWriter.flush();
@@ -294,20 +291,21 @@ public class Player implements Runnable {
          }
          System.out.println("Phase d'acceptation");
          answer = (responseBuffer.readLine()).split(ProtocolV1.SEPARATOR);
+         System.out.println(answer[0]);
          if(answer[0].equals(ProtocolV1.ACCEPT_CONNECTION)) {
+            System.out.println("Joueur connecté");
             connected = true;
             playerNumber = Integer.valueOf(answer[1]);
             /* Dés que la partie commence on crée un thread qui écoute les messages
              * envoyés par le chat.
              */
-            chatClient = new ChatClient(clientSocket.getInetAddress().getHostAddress(),
-                                         playerNumber);
-            chatClient.listen();
-            System.out.println("Joueur connecté");
+            //chatClient = new ChatClient(clientSocket.getInetAddress().getHostAddress(), playerNumber); // erreur ici
+            //chatClient.listen();
          } else if(!answer[0].equals(ProtocolV1.REFUSE_CONNECTION)) {
             throw new ProtocolException("erreur dans le protocole");
          }
       }
+      
       System.out.println("resultat de la tentative de connexion : " + connected);
       return connected;
    }
