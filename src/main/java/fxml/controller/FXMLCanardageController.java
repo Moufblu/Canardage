@@ -2,10 +2,13 @@ package fxml.controller;
 
 import Protocol.AlertPopup;
 import Protocol.ProtocolV1;
+import canardage.Player;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
@@ -36,6 +39,8 @@ public class FXMLCanardageController implements Initializable {
    private final int NUMBER_OF_CARDS   = 3;
    private final int GRID_POS          = 2;
    
+   Player player = Player.getInstance();
+   
    @FXML
    private GridPane playersGrid;
    @FXML
@@ -48,44 +53,19 @@ public class FXMLCanardageController implements Initializable {
    private GridPane ducksAndProtectionsGrid;
    
    private ArrayList<Label> playersChatList;
-   private Label chatPlayer1;
-   private Label chatPlayer2;
-   private Label chatPlayer3;
-   private Label chatPlayer4;
-   private Label chatPlayer5;
-   private Label chatPlayer6;
    
    private ArrayList<ImageView> playersList;
-   private Image imageDuckPlayer1;
-   private Image imageDuckPlayer2;
-   private Image imageDuckPlayer3;
-   private Image imageDuckPlayer4;
-   private Image imageDuckPlayer5;
-   private Image imageDuckPlayer6;
-   private ImageView viewDuckPlayer1;
-   private ImageView viewDuckPlayer2;
-   private ImageView viewDuckPlayer3;
-   private ImageView viewDuckPlayer4;
-   private ImageView viewDuckPlayer5;
-   private ImageView viewDuckPlayer6;
    
    private ArrayList<Button> buttonsList;
-   private Button smiley1;
-   private Button smiley2;
-   private Button smiley3;
-   private Button smiley4;
    
    private ArrayList<Button> cardsList;
-   private Button card1;
-   private Button card2;
-   private Button card3;
    
-   private Image imageCard1;
-   private Image imageCard2;
-   private Image imageCard3;
-   private ImageView viewCard1;
-   private ImageView viewCard2;
-   private ImageView viewCard3;
+   // images pour test à remplacer par BD
+   private Image[] imageCards = {
+      new Image("/images/CardOups.jpg"),
+      new Image("/images/CardCanarchie.jpg"),
+      new Image("/images/CardPan.jpg")
+   };
 
    private ArrayList<ImageView> targetsList;
    private Image imageTarget;
@@ -118,34 +98,17 @@ public class FXMLCanardageController implements Initializable {
    
    public FXMLCanardageController() {
       
-      this.viewDuckPlayer1 = new ImageView(imageDuckPlayer1);
-      this.viewDuckPlayer2 = new ImageView(imageDuckPlayer2);
-      this.viewDuckPlayer3 = new ImageView(imageDuckPlayer3);
-      this.viewDuckPlayer4 = new ImageView(imageDuckPlayer4);
-      this.viewDuckPlayer5 = new ImageView(imageDuckPlayer5);
-      this.viewDuckPlayer6 = new ImageView(imageDuckPlayer6);
-      this.playersList = new ArrayList(ProtocolV1.MAX_NO_POS);
-      playersList.add(viewDuckPlayer1);
-      playersList.add(viewDuckPlayer2);
-      playersList.add(viewDuckPlayer3);
-      playersList.add(viewDuckPlayer4);
-      playersList.add(viewDuckPlayer5);
-      playersList.add(viewDuckPlayer6);
+      // Liste des images des canards en jeu
+      playersList = new ArrayList(ProtocolV1.MAX_NO_POS);
+      for(int i = 0; i < ProtocolV1.MAX_NO_POS; i++) {
+         playersList.add(new ImageView());
+      }
       
-      this.chatPlayer1 = new Label();
-      this.chatPlayer2 = new Label();
-      this.chatPlayer3 = new Label();
-      this.chatPlayer4 = new Label();
-      this.chatPlayer5 = new Label();
-      this.chatPlayer6 = new Label();
-      this.playersChatList = new ArrayList(ProtocolV1.MAX_NO_POS);
-      playersChatList.add(chatPlayer1);
-      playersChatList.add(chatPlayer2);
-      playersChatList.add(chatPlayer3);
-      playersChatList.add(chatPlayer4);
-      playersChatList.add(chatPlayer5);
-      playersChatList.add(chatPlayer6);
-      
+      playersChatList = new ArrayList(ProtocolV1.MAX_NO_POS);
+      for(int i = 0; i < ProtocolV1.MAX_NO_POS; i++) {
+         playersChatList.add(new Label());
+      }
+
       this.playersGrid = new GridPane();
       
       for(int i = 0; i < ProtocolV1.MAX_NO_POS; i++) {
@@ -154,41 +117,22 @@ public class FXMLCanardageController implements Initializable {
          playersList.get(i).setFitWidth(playersList.get(i).getBoundsInLocal().getWidth() / RESIZE_CARDS);
       }
       
-      this.smiley1 = new Button("B1");
-      this.smiley2 = new Button("B2");
-      this.smiley3 = new Button("B3");
-      this.smiley4 = new Button("B4");
       this.buttonsList = new ArrayList(NUMBER_OF_SMILEYS);
-      buttonsList.add(smiley1);
-      buttonsList.add(smiley2);
-      buttonsList.add(smiley3);
-      buttonsList.add(smiley4);
+      
+      for(int i = 0; i < NUMBER_OF_SMILEYS; i++) {
+         buttonsList.add(new Button("B" + i));
+      }
+      
       // A faire dans Player pour avoirr la liste de cartes dans le Player
-      this.imageCard1 = new Image("/images/CardOups.jpg");
-      this.imageCard2 = new Image("/images/CardCanarchie.jpg");
-      this.imageCard3 = new Image("/images/CardPan.jpg");
-      this.viewCard1 = new ImageView(imageCard1);
-      this.viewCard2 = new ImageView(imageCard2);
-      this.viewCard3 = new ImageView(imageCard3);
-      
-      viewCard1.setFitHeight(viewCard1.getBoundsInLocal().getHeight() / RESIZE_CARDS);
-      viewCard1.setFitWidth(viewCard1.getBoundsInLocal().getWidth() / RESIZE_CARDS);
-      viewCard2.setFitHeight(viewCard2.getBoundsInLocal().getHeight() / RESIZE_CARDS);
-      viewCard2.setFitWidth(viewCard2.getBoundsInLocal().getWidth() / RESIZE_CARDS);
-      viewCard3.setFitHeight(viewCard3.getBoundsInLocal().getHeight() / RESIZE_CARDS);
-      viewCard3.setFitWidth(viewCard3.getBoundsInLocal().getWidth() / RESIZE_CARDS);
-      
-      this.card1 = new Button();
-      this.card2 = new Button();
-      this.card3 = new Button();
-      card1.setGraphic(viewCard1);
-      card2.setGraphic(viewCard2);
-      card3.setGraphic(viewCard3);
-      
       this.cardsList = new ArrayList(NUMBER_OF_CARDS);
-      cardsList.add(card1);
-      cardsList.add(card2);
-      cardsList.add(card3);
+      for(int i = 0; i < NUMBER_OF_CARDS; i++) {
+         ImageView imageView = new ImageView(imageCards[i]);
+         imageView.setFitHeight(imageView.getBoundsInLocal().getHeight() / RESIZE_CARDS);
+         imageView.setFitWidth(imageView.getBoundsInLocal().getWidth() / RESIZE_CARDS);
+         Button b = new Button();
+         b.setGraphic(imageView);
+         cardsList.add(b);
+      }
       
       this.imageTarget = new Image("/images/Target.png");
       this.targetsList = new ArrayList(NUMBER_OF_TARGETS);
@@ -196,10 +140,8 @@ public class FXMLCanardageController implements Initializable {
       this.imageProtection = new Image("/images/CardACouvert.jpg");
       this.protectionCardsList = new ArrayList(NUMBER_OF_PROTECTIONS);
       
-      this.imageDuckGame = new Image("/images/DuckPink.jpg");
       this.ducksGameList = new ArrayList(ProtocolV1.MAX_NO_POS);
       
-      this.imageDuckHiden = new Image("/images/DuckGreen.jpg");
       this.ducksHidenList = new ArrayList(ProtocolV1.MAX_NO_POS);
       
       this.imageBackCard = new Image("/images/CardBack.jpg");
@@ -214,12 +156,23 @@ public class FXMLCanardageController implements Initializable {
     */
    @Override
    public void initialize(URL url, ResourceBundle rb) {
+      
       // Th buttons for the chat
       for(int i = 0; i < NUMBER_OF_SMILEYS / GRID_POS; i++) {
          for(int j = 0; j < NUMBER_OF_SMILEYS / GRID_POS; j++) {
-            GridPane.setConstraints(buttonsList.get(i * GRID_POS + j), j, i, 1, 1, HPos.CENTER, VPos.CENTER);
+            Button b = buttonsList.get(i * GRID_POS + j);
+            GridPane.setConstraints(b, j, i, 1, 1, HPos.CENTER, VPos.CENTER);
+            b.setOnAction(new EventHandler<ActionEvent>() {
+
+               @Override
+               public void handle(ActionEvent event) {
+                  player.sendEmoticon(Emoticon.values()[i * GRID_POS + j]);
+               }
+            });
+            
          }
       }
+      
       smileyGrid.getChildren().addAll(buttonsList);
       
       // La partie arrière d'une carte canard pour la pile de canard
@@ -412,6 +365,7 @@ public class FXMLCanardageController implements Initializable {
 
    public int askCard() {
       // activer boutons action
+      
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
    }
 

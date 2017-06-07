@@ -270,8 +270,10 @@ public class Player implements Runnable {
          System.out.println(answer);
          if(answer.equals(ProtocolV1.HASH)) {
             byte[] hashedPassword = hash(mdp);
+            System.out.println("Envoi de Hash");
             writer.println(ProtocolV1.HASH);
             writer.flush();
+            System.out.println("Envoi du mot de passe Hashé : " + hashedPassword.length);
             byteWriter.write(hashedPassword);
             byteWriter.flush();
          } else {

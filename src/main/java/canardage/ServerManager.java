@@ -207,9 +207,10 @@ public class ServerManager {
                            client.writeLine(ProtocolV1.messageRefuse(1)); //à changer c'est dégueulasse
                         }
 
-                        System.out.println("    Mot clé Hash reçu par le server");
                         if(messageResponse.equals(ProtocolV1.HASH)) {
+                           System.out.println("    Mot clé Hash reçu par le serveur");
                            try {
+                              System.out.println("    Réception du Hash : " + hash.length);
                               byte[] givenHash = client.readBytes(hash.length);
                               if(Arrays.equals(givenHash, hash)) {
                                  System.out.println("    Acceptation d'une connexion au joueur");
