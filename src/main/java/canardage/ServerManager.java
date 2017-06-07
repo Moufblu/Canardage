@@ -85,7 +85,7 @@ public class ServerManager {
       playersSockets = new ArrayList<>();
       nbPlayers = 0;
 
-      if(name == "") {
+      if(name.equals("")) {
          name = defaultServerName;
       }
 
@@ -98,6 +98,11 @@ public class ServerManager {
                  socket.getLocalAddress().getHostAddress(),
                  ProtocolV1.PORT);
          sendInfo(socket.getLocalAddress());
+         
+         // TODO alternative au nombre de connexions max ou posssibilité d'interrompre la recherche des clients ?
+         //Création du chat avec le nombre de joueurs max
+         chat = new ChatMaster(server.getIpAddress(), MAX_NB_PLAYERS);
+         chat.accept();
       } catch(UnknownHostException ex) {
          System.out.println("Impossible de trouver l'adresse IP du host.");
       } catch(IOException ex) {
@@ -123,7 +128,7 @@ public class ServerManager {
     * Méthode qui envoie des informations comme réponse au client
     * @param address
     */
-   public void sendInfo(final InetAddress address) {
+   public final void sendInfo(final InetAddress address) {
       thread = new Thread(new Runnable() {
          @Override
          public void run() {
@@ -253,10 +258,6 @@ public class ServerManager {
             System.out.println("Server socket couldn't be closed.");
          }
       }
-
-      //Création du chat avec le bon nombre de joueurs
-      chat = new ChatMaster(server.getIpAddress(), nbPlayers);
-      chat.accept();
 
       initialiseGame();
 

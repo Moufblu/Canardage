@@ -1,5 +1,6 @@
 package canardage;
 
+import Protocol.AlertPopup;
 import java.net.Socket;
 import Protocol.ProtocolV1;
 import chat.ChatClient;
@@ -25,8 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Description: Classe pour créer et gérer les joueurs d'une partie
- * Date: 03.05.2017
+ * Description: Classe pour créer et gérer les joueurs d'une partie Date: 03.05.2017
  * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
  * @version 0.1
  */
@@ -39,15 +39,15 @@ public class Player implements Runnable {
 
    private final String ENCODING_ALGORITHM = "SHA-256";  // Algorithme de hachage
    private final String FORMAT_TEXT = "UTF-8";  // Format d'encodage du texte
-   
+
    private Socket clientSocket;           // Socket du client
    private BufferedReader responseBuffer; // Buffer pour le réponse
    private PrintWriter writer;            // Writer pour les envois d'informations
    private Set<Server> servers;           // La liste des serveurs
    private OutputStream byteWriter;
-   
+
    private ChatClient chatClient;
-   
+
    private int playerNumber;
 
    private List<Integer> cards;           // Liste des cartes
@@ -56,7 +56,7 @@ public class Player implements Runnable {
 
    private static Player instance;
    private ServerManager server = null;
-   
+
    private final static String defaultServerName = "Canardage";
    private final static String defaultPassword = "";
 
@@ -78,7 +78,7 @@ public class Player implements Runnable {
 
    /**
     * Méthode pour obtenir les serveurs disponibles
-    * @return 
+    * @return
     */
    public Set<Server> getServers() {
       MulticastSocket socket;
@@ -94,10 +94,10 @@ public class Player implements Runnable {
          socket = new MulticastSocket(ProtocolV1.MULTICAST_PORT);
          socket.setInterface(ipAddress);
          socket.joinGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
-         socket.setSoTimeout((int)REFRESH_DELAY);
-         
+         socket.setSoTimeout((int) REFRESH_DELAY);
+
          long start = new Date().getTime();
-         while (new Date().getTime() - start < REFRESH_DELAY) {
+         while(new Date().getTime() - start < REFRESH_DELAY) {
             byte[] buffer = new byte[2048];
             DatagramPacket datagram = new DatagramPacket(buffer, buffer.length);
             socket.receive(datagram);
@@ -105,20 +105,21 @@ public class Player implements Runnable {
             String msg = new String(datagram.getData());
             msg = msg.substring(0, msg.lastIndexOf('}') + 1);
             Gson gson = new Gson();
-            Type type = new TypeToken<Server>() {}.getType();
-            if(!servers.contains((Server)gson.fromJson(msg, type))) {
-               servers.add((Server)gson.fromJson(msg, type));
+            Type type = new TypeToken<Server>() {
+            }.getType();
+            if(!servers.contains((Server) gson.fromJson(msg, type))) {
+               servers.add((Server) gson.fromJson(msg, type));
             }
          }
          socket.leaveGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
-      } catch (SocketException ex) {
+      } catch(SocketException ex) {
          System.out.println("socket creation fail : " + ex.getMessage());
-      } catch (IOException ex) {
+      } catch(IOException ex) {
          System.out.println("read broadcast fail : " + ex.getMessage());
       }
       return servers;
    }
-   
+
    /**
     * Méthode de hachage des mots de passe
     * @param password Mot de passe à faire le hachage
@@ -132,7 +133,7 @@ public class Player implements Runnable {
       md.update(password.getBytes(FORMAT_TEXT));
       return md.digest();
    }
-   
+
    /**
     * Méthode pour la création du serveur
     * @param name Le nom du serveur si donné
@@ -272,7 +273,7 @@ public class Player implements Runnable {
          System.out.println("tentative de connection");
          clientSocket = new Socket(server.getIpAddress(), ProtocolV1.PORT);
          clientSocket.setSoTimeout(TIMEOUT_ANSWER);
-         
+
          responseBuffer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
          byteWriter = clientSocket.getOutputStream();
          writer = new PrintWriter(new OutputStreamWriter(byteWriter, "UTF-8"));
@@ -299,13 +300,14 @@ public class Player implements Runnable {
             /* Dés que la partie commence on crée un thread qui écoute les messages
              * envoyés par le chat.
              */
-            //chatClient = new ChatClient(clientSocket.getInetAddress().getHostAddress(), playerNumber); // erreur ici
-            //chatClient.listen();
+            System.out.println("Information chat : " + clientSocket.getInetAddress().getHostAddress() + " - " + playerNumber);
+            chatClient = new ChatClient(clientSocket.getInetAddress().getHostAddress(), playerNumber); // erreur ici
+            chatClient.listen();
          } else if(!answer[0].equals(ProtocolV1.REFUSE_CONNECTION)) {
             throw new ProtocolException("erreur dans le protocole");
          }
       }
-      
+
       System.out.println("resultat de la tentative de connexion : " + connected);
       return connected;
    }
@@ -325,7 +327,6 @@ public class Player implements Runnable {
    public int getCardChoice() {
       Scanner in = new Scanner(System.in);
       int cardChoice = 0;
-
 
       // Boucle tant que le joueur ne choisi pas le bon numéro d'une carte
       while(true) {
@@ -392,47 +393,46 @@ public class Player implements Runnable {
       }
       return positionChoice;
    }
-   
-   public void sendEmoticon(Emoticon emoticon)
-   {
+
+   public void sendEmoticon(Emoticon emoticon) {
       chatClient.write(emoticon);
    }
 
    /*public void createServer() {
-      boolean nameNotRedondant = false;
-      while (!nameNotRedondant) {
-         nameNotRedondant = true;
-         player.getServers();
-         System.out.println("quel est le nom du serveur ?");
-         in.reset();
-         answerNameServer = in.nextLine();
-         answerNameServer = answerNameServer.equals("") ? defaultServerName : answerNameServer;
+    boolean nameNotRedondant = false;
+    while (!nameNotRedondant) {
+    nameNotRedondant = true;
+    player.getServers();
+    System.out.println("quel est le nom du serveur ?");
+    in.reset();
+    answerNameServer = in.nextLine();
+    answerNameServer = answerNameServer.equals("") ? defaultServerName : answerNameServer;
 
-         for (Server server : player.servers) {
-            if (server.getName().equals(answerNameServer)) {
-               nameNotRedondant = false;
-            }
-         }
-      }
-      System.out.println("quel est le mot de passe ?");
-      in.reset();
-      String answerPassword = in.nextLine();
-      answerPassword = answerPassword.equals("") ? defaultPassword : answerPassword;
-      System.out.println("NOM : " + answerNameServer + ", MDP : " + answerPassword);
-      ServerManager server = player.createServer(answerNameServer, answerPassword);
-      do {
-         System.out.println("'go' pour commencer!!!");
-         answer = in.next();
-         if(answer.equals("go")) {
-            try {
-               server.startGame();
-               break;
-            } catch(BadGameInitialisation e) {
-               System.out.println(e.getMessage());
-            }
-         }
-      } while(true);
-   }*/
+    for (Server server : player.servers) {
+    if (server.getName().equals(answerNameServer)) {
+    nameNotRedondant = false;
+    }
+    }
+    }
+    System.out.println("quel est le mot de passe ?");
+    in.reset();
+    String answerPassword = in.nextLine();
+    answerPassword = answerPassword.equals("") ? defaultPassword : answerPassword;
+    System.out.println("NOM : " + answerNameServer + ", MDP : " + answerPassword);
+    ServerManager server = player.createServer(answerNameServer, answerPassword);
+    do {
+    System.out.println("'go' pour commencer!!!");
+    answer = in.next();
+    if(answer.equals("go")) {
+    try {
+    server.startGame();
+    break;
+    } catch(BadGameInitialisation e) {
+    System.out.println(e.getMessage());
+    }
+    }
+    } while(true);
+    }*/
 //   public static void main(String... args) {
 //      Player player = new Player(args[0]);
 //      player.getServer();
