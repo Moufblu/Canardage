@@ -7,7 +7,10 @@ import chat.Emoticon;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.TreeMap;
+import java.util.function.BiFunction;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -43,6 +46,8 @@ public class FXMLCanardageController implements Initializable {
    Player player = Player.getInstance();
    
    @FXML
+   private Button startButton;
+   @FXML
    private GridPane playersGrid;
    @FXML
    private GridPane smileyGrid;
@@ -69,24 +74,22 @@ public class FXMLCanardageController implements Initializable {
    };
 
    private ArrayList<ImageView> targetsList;
-   private Image imageTarget;
+   private final Image imageTarget;
    
    private ArrayList<ImageView> ducksGameList;
-   private Image imageDuckGame;
    
    private ArrayList<ImageView> ducksHidenList;
-   private Image imageDuckHiden;
+   private ImageView viewDuckHiden;
    
    private ArrayList<ImageView> protectionCardsList;
-   private Image imageProtection;
+   private final Image imageProtection;
    
-   private Image imageBackCard;
+   private final Image imageBackCard;
    private ImageView viewBackCard;
    
    /**
     * Variables pour les cartes
     */
-   
    Image[] duckImages = {
       new Image("/images/DuckEmpty.jpg"),
       new Image("/images/DuckGreen.jpg"),
@@ -96,6 +99,7 @@ public class FXMLCanardageController implements Initializable {
       new Image("/images/DuckYellow.jpg"),
       new Image("/images/DuckOrange.jpg")
    };
+   ArrayList<ImageView> duckViews;
    
    public FXMLCanardageController() {
       
@@ -110,45 +114,44 @@ public class FXMLCanardageController implements Initializable {
          playersChatList.add(new Label());
       }
 
-      this.playersGrid = new GridPane();
-      
       for(int i = 0; i < ProtocolV1.MAX_NO_POS; i++) {
          playersChatList.get(i).setText("Something" + i);
-         playersList.get(i).setFitHeight(playersList.get(i).getBoundsInLocal().getHeight() / RESIZE_CARDS);
-         playersList.get(i).setFitWidth(playersList.get(i).getBoundsInLocal().getWidth() / RESIZE_CARDS);
+         resizeImageView(playersList.get(i));
       }
       
-      this.buttonsList = new ArrayList(NUMBER_OF_SMILEYS);
-      
+      buttonsList = new ArrayList(NUMBER_OF_SMILEYS);
       for(int i = 0; i < NUMBER_OF_SMILEYS; i++) {
          buttonsList.add(new Button("B" + i));
       }
       
-      // A faire dans Player pour avoirr la liste de cartes dans le Player
-      this.cardsList = new ArrayList(NUMBER_OF_CARDS);
+      // A faire dans Player pour avoir la liste de cartes dans le Player
+      cardsList = new ArrayList(NUMBER_OF_CARDS);
       for(int i = 0; i < NUMBER_OF_CARDS; i++) {
-         ImageView imageView = new ImageView(imageCards[i]);
-         imageView.setFitHeight(imageView.getBoundsInLocal().getHeight() / RESIZE_CARDS);
-         imageView.setFitWidth(imageView.getBoundsInLocal().getWidth() / RESIZE_CARDS);
+         ImageView viewCards = new ImageView(imageCards[i]);
+         resizeImageView(viewCards);
          Button b = new Button();
-         b.setGraphic(imageView);
+         b.setGraphic(viewCards);
          cardsList.add(b);
       }
       
-      this.imageTarget = new Image("/images/Target.png");
-      this.targetsList = new ArrayList(NUMBER_OF_TARGETS);
+      duckViews = new ArrayList<>(duckImages.length);
+      for(int i = 0; i < duckImages.length; i++) {
+         createAndResizeImageView(duckViews, i, duckImages[i]);
+      }
       
-      this.imageProtection = new Image("/images/CardACouvert.jpg");
-      this.protectionCardsList = new ArrayList(NUMBER_OF_PROTECTIONS);
+      imageTarget = new Image("/images/Target.png");
+      targetsList = new ArrayList(NUMBER_OF_TARGETS);
       
-      this.ducksGameList = new ArrayList(ProtocolV1.MAX_NO_POS);
+      imageProtection = new Image("/images/CardACouvert.jpg");
+      protectionCardsList = new ArrayList(NUMBER_OF_PROTECTIONS);
       
-      this.ducksHidenList = new ArrayList(ProtocolV1.MAX_NO_POS);
+      ducksGameList = new ArrayList(ProtocolV1.MAX_NO_POS);
       
-      this.imageBackCard = new Image("/images/CardBack.jpg");
-      this.viewBackCard = new ImageView(imageBackCard);
-      viewBackCard.setFitHeight(viewBackCard.getBoundsInLocal().getHeight() / RESIZE_CARDS);
-      viewBackCard.setFitWidth(viewBackCard.getBoundsInLocal().getWidth() / RESIZE_CARDS);
+      ducksHidenList = new ArrayList(ProtocolV1.MAX_NO_POS);
+      
+      imageBackCard = new Image("/images/CardBack.jpg");
+      viewBackCard = new ImageView(imageBackCard);
+      resizeImageView(viewBackCard);
    }
    /**
     * Initialises le controlleur de la classe.
@@ -157,22 +160,20 @@ public class FXMLCanardageController implements Initializable {
     */
    @Override
    public void initialize(URL url, ResourceBundle rb) {
-      
-      // Th buttons for the chat
+      // Les boutons du chat
       for(int i = 0; i < NUMBER_OF_SMILEYS / GRID_POS; i++) {
          for(int j = 0; j < NUMBER_OF_SMILEYS / GRID_POS; j++) {
+            
             final int position = i * GRID_POS + j;
             Button b = buttonsList.get(position);
             GridPane.setConstraints(b, j, i, 1, 1, HPos.CENTER, VPos.CENTER);
             
             b.setOnAction(new EventHandler<ActionEvent>() {
-               
                @Override
                public void handle(ActionEvent event) {
                   player.sendEmoticon(Emoticon.values()[position]);
                }
             });
-            
          }
       }
       
@@ -194,6 +195,12 @@ public class FXMLCanardageController implements Initializable {
       update();
       
    }
+
+   @FXML
+   private void startGame(ActionEvent event) {
+      startButton.setDisable(true);
+      startButton.setVisible(false);
+   }
    
    public void showPlayers(int nbPlayers) {
       for(int i = 0; i < nbPlayers; i++) {
@@ -214,9 +221,7 @@ public class FXMLCanardageController implements Initializable {
    public void targets() {
       // Les cibles qui peuvent être posées sur le plateau de jeu
       for(int i = 0; i < NUMBER_OF_TARGETS; i++) {
-         targetsList.add(new ImageView(imageTarget));
-         targetsList.get(i).setFitHeight(targetsList.get(i).getBoundsInLocal().getHeight() / RESIZE_CARDS);
-         targetsList.get(i).setFitWidth(targetsList.get(i).getBoundsInLocal().getWidth() / RESIZE_CARDS);
+         createAndResizeImageView(targetsList, i, imageTarget);
          GridPane.setConstraints(targetsList.get(i), i, 0, 1, 1, HPos.CENTER, VPos.CENTER);
          targetsList.get(i).setVisible(false); // On cache les cibles tant qu'on les joues pas
       }
@@ -234,9 +239,7 @@ public class FXMLCanardageController implements Initializable {
    public void hidenDucks() {
       // BOUCLE POUR LES CANARDS CACHÉS, FAIT JUSTE POUR L'AFFICHAGE, UTILISÉ SI ON VEUT CACHER UN CANARD PLUS TARD
       for(int i = 0; i < ProtocolV1.MAX_NO_POS; i++) {
-         ducksHidenList.add(new ImageView(imageDuckHiden));
-         ducksHidenList.get(i).setFitHeight(ducksHidenList.get(i).getBoundsInLocal().getHeight() / RESIZE_CARDS);
-         ducksHidenList.get(i).setFitWidth(ducksHidenList.get(i).getBoundsInLocal().getWidth() / RESIZE_CARDS);
+         createAndResizeImageView(ducksHidenList, i, duckImages[i]);
          GridPane.setConstraints(ducksHidenList.get(i), i, 0, 1, 1, HPos.CENTER, VPos.CENTER);
          GridPane.setMargin(ducksHidenList.get(i), new Insets(0, 0, 0, MARGIN_LEFT));
          ducksHidenList.get(i).setVisible(false);
@@ -249,16 +252,19 @@ public class FXMLCanardageController implements Initializable {
    }
    
    public void showHidenDucks(int position, int duck) {
-      ducksHidenList.get(position).setImage(duckImages[duck]);
+      System.out.println("HERE");
       ducksHidenList.get(position).setVisible(true);
+      System.out.println("VISIBLE " + ducksHidenList.get(position).toString());
+      viewDuckHiden = ducksHidenList.set(position, duckViews.get(duck));
+      System.out.println("OLD VISIBLE " + viewDuckHiden.toString() + " NEXT VISIBLE "
+              + ducksHidenList.get(position).toString());
+      System.out.println("OUT");
    }
    
    public void ducksGame() {
       // BOUCLE POUR LES CANARDS SUR LE PLATEAU, FAIT JUSTE POUR L'AFFICHAGE, UTILISÉ SI ON VEUT AFFICHER UN CANARD DU PLATEAU PLUS TARD
       for(int i = 0; i < ProtocolV1.MAX_NO_POS; i++) {
-         ducksGameList.add(new ImageView(imageDuckGame));
-         ducksGameList.get(i).setFitHeight(ducksGameList.get(i).getBoundsInLocal().getHeight() / RESIZE_CARDS);
-         ducksGameList.get(i).setFitWidth(ducksGameList.get(i).getBoundsInLocal().getWidth() / RESIZE_CARDS);
+         createAndResizeImageView(ducksGameList, i, duckImages[i]);
          GridPane.setConstraints(ducksGameList.get(i), i, 0, 1, 1, HPos.LEFT, VPos.CENTER);
          GridPane.setMargin(ducksGameList.get(i), new Insets(0, 0, MARGIN_DOWN, MARGIN_LEFT));
       }
@@ -271,15 +277,12 @@ public class FXMLCanardageController implements Initializable {
          GridPane.setConstraints(ducksGameList.get(i), i, 0, 1, 1, HPos.LEFT, VPos.CENTER);
          GridPane.setMargin(ducksGameList.get(i), new Insets(0, 0, MARGIN_DOWN, MARGIN_LEFT));
       }
-//      playerCardsGrid.getChildren().addAll(cardsList);
    }
    
    public void protectionCards() {
       // BOUCLE POUR LA CARTE À COUVERT, FAIT JUSTE POUR L'AFFICHAGE, UTILISÉ SI ON VEUT UTILISER LA CARTE À COUVERT PLUS TARD
       for(int i = 0; i < NUMBER_OF_PROTECTIONS; i++) {
-         protectionCardsList.add(new ImageView(imageProtection));
-         protectionCardsList.get(i).setFitHeight(protectionCardsList.get(i).getBoundsInLocal().getHeight() / RESIZE_CARDS);
-         protectionCardsList.get(i).setFitWidth(protectionCardsList.get(i).getBoundsInLocal().getWidth() / RESIZE_CARDS);
+         createAndResizeImageView(protectionCardsList, i, imageProtection);
          GridPane.setConstraints(protectionCardsList.get(i), i, 0, 1, 1, HPos.LEFT, VPos.CENTER);
          GridPane.setMargin(protectionCardsList.get(i), new Insets(0, 0, MARGIN_DOWN, 0));
          protectionCardsList.get(i).setVisible(false);
@@ -293,7 +296,16 @@ public class FXMLCanardageController implements Initializable {
    
    public void showGuard(int position) {
       protectionCardsList.get(position).setVisible(true);
-//      protectionCardsList.get(position).setStyle(value);
+   }
+   
+   private void createAndResizeImageView(ArrayList<ImageView> list, int position, Image image) {
+      list.add(new ImageView(image));
+      resizeImageView(list.get(position));
+   }
+   
+   private void resizeImageView(ImageView imageView) {
+      imageView.setFitHeight(imageView.getBoundsInLocal().getHeight() / RESIZE_CARDS);
+      imageView.setFitWidth(imageView.getBoundsInLocal().getWidth() / RESIZE_CARDS);
    }
    
    public void update() {
@@ -307,11 +319,11 @@ public class FXMLCanardageController implements Initializable {
       showTargets(5);
       
       showHidenDucks(0, 2);
-      showHidenDucks(1, 3);
-      showHidenDucks(3, 1);
+      showHidenDucks(1, 5);
+      showHidenDucks(3, 4);
       
-      showGuard(1);
-      showGuard(4);
+//      showGuard(1);
+//      showGuard(4);
    }
 
    public void updateCards(List<Integer> cards) {

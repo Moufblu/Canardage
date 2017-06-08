@@ -28,22 +28,24 @@ public class BoardView extends Application {
    public void start(Stage primaryStage) throws Exception {
       Parent root;
       try {
-         root = FXMLLoader.load(getClass().getResource("/fxml/FXMLBoard.fxml"));
-         Image value = new Image(getClass().getResourceAsStream("/images/canardBleuCopie.png"));
-         ImageView duck = new ImageView(value);
-         duck.setImage(value);
-         duck.setVisible(true);
+         root = FXMLLoader.load(getClass().getResource("/fxml/FXMLCanardage.fxml"));
+//         Image value = new Image(getClass().getResourceAsStream("/images/canardBleuCopie.png"));
+//         ImageView duck = new ImageView(value);
+//         duck.setImage(value);
+//         duck.setVisible(true);
          Scene scene = new Scene(root);
          
          primaryStage.setTitle("Canardage");
-         pane = new Pane();
-         pane.getChildren().add(duck);
+               primaryStage.resizableProperty().set(false);
+               primaryStage.setScene(scene);
+//         pane = new Pane();
+//         pane.getChildren().add(duck);
          
          primaryStage.centerOnScreen();
          GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
-         Rectangle maximumWindowBounds = graphicsEnvironment.getMaximumWindowBounds();
-         primaryStage.setMinHeight(maximumWindowBounds.height / 2);
-         primaryStage.setMinWidth(maximumWindowBounds.width / 2);
+//         Rectangle maximumWindowBounds = graphicsEnvironment.getMaximumWindowBounds();
+//         primaryStage.setMinHeight(maximumWindowBounds.height / 2);
+//         primaryStage.setMinWidth(maximumWindowBounds.width / 2);
          primaryStage.setScene(scene);
 
          primaryStage.show();
