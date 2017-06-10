@@ -251,19 +251,15 @@ public class FXMLCanardageController implements Initializable {
    }
    
    public void showHidenDucks(int position, int duck) {
-      // C'est ici la merde Miguel :3
-      for(Object label : duckViews) {
-         System.out.println("THINGS " + ((ImageView)label).toString());
-      }
-      System.out.println("HERE");
       ducksHidenList.get(position).setVisible(true);
-      System.out.println("VISIBLE " + ducksHidenList.get(position).toString());
-      viewDuckHiden = ducksHidenList.remove(position);
-      ducksHidenList.add(position, duckViews.get(duck));
-//      viewDuckHiden = ducksHidenList.set(position, duckViews.get(duck));
-      System.out.println("OLD VISIBLE " + viewDuckHiden.toString() + " NEXT VISIBLE "
-              + ducksHidenList.get(position).toString());
-      System.out.println("OUT");
+      
+      ducksAndProtectionsGrid.getChildren().removeAll(ducksHidenList.get(position));
+      
+      ducksHidenList.get(position).setImage(duckImages[duck]);
+      
+      ducksAndProtectionsGrid.getChildren().add(position, ducksHidenList.get(position));
+      imagesMarginAndPosition(ducksHidenList, position, position, 0, HPos.CENTER, VPos.CENTER,
+                                 0, MARGIN_LEFT);
    }
    
    public void ducksGame() {
@@ -300,8 +296,8 @@ public class FXMLCanardageController implements Initializable {
       protectionCardsList.get(position).setVisible(true);
    }
    
-   private void createAndResizeImageView(ArrayList<ImageView> list, int position, Image image) {
-      list.add(new ImageView(image));
+   private void createAndResizeImageView(List<ImageView> list, int position, Image image) {
+      list.add(position, new ImageView(image));
       resizeImageView(list.get(position));
    }
    
@@ -335,12 +331,15 @@ public class FXMLCanardageController implements Initializable {
       showTargets(2);
       showTargets(5);
       
-      showHidenDucks(2, 1);
+      showHidenDucks(2, 4);
       showHidenDucks(5, 6);
-      showHidenDucks(3, 4);
+      showHidenDucks(3, 2);
+      showHidenDucks(1, 3);
+      showHidenDucks(0, 5);
+      showHidenDucks(4, 1);
       
-//      showGuard(1);
-//      showGuard(4);
+      showGuard(1);
+      showGuard(4);
    }
 
    public void updateCards(List<Integer> cards) {
