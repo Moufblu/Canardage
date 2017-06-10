@@ -223,7 +223,7 @@ public class Player implements Runnable {
                writer.flush();
                break;
             case ProtocolV1.REFUSE_CARD:
-               canardageFxml.alert(Integer.parseInt(splittedCommand[1]));
+               canardageFxml.alert(Global.ERROR_MESSAGES.valueOf(splittedCommand[1]));
                System.out.println(ProtocolV1.ERRORS[Integer.parseInt(splittedCommand[1])]);
                break;
          }

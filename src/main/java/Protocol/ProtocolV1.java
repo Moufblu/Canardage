@@ -1,6 +1,7 @@
 package Protocol;
 
 import canardage.Board;
+import canardage.Global.ERROR_MESSAGES;
 import chat.Emoticon;
 
 /**
@@ -144,18 +145,13 @@ public class ProtocolV1 {
    
    /**
     * Indique qu'un choix est refusé par un message d'erreur et son identifiant
-    * @param idError position dans le tableau des erreurs connus
+    * @param message message à envoyer
     * @return une String valide du protocol indiquant une erreur
     * @throws IllegalArgumentException si l'erreur n'existe pas dans le tableau des 
     * erreurs connues
     */
-   public static String messageRefuse(int idError) throws IllegalArgumentException {
-      if(idError < 0 || idError >= ERRORS.length) {
-         throw new IllegalArgumentException("Id d'erreur n'existant pas: " + idError);
-      }
-      
-      String result = REFUSE_CARD + SEPARATOR + idError;
-      return result;
+   public static String messageError(ERROR_MESSAGES message) {
+      return REFUSE_CARD + SEPARATOR + message;
    }
    
    /**

@@ -2,6 +2,7 @@ package fxml.controller;
 
 import Protocol.AlertPopup;
 import Protocol.ProtocolV1;
+import canardage.Global;
 import canardage.Player;
 import chat.Emoticon;
 import java.net.URL;
@@ -372,8 +373,8 @@ public class FXMLCanardageController implements Initializable {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
    }
 
-   public void alert(int parseInt) {
-      AlertPopup.alert("Wrong move", "You cannot do this action", ProtocolV1.messageRefuse(parseInt), Alert.AlertType.INFORMATION);
+   public void alert(Global.ERROR_MESSAGES message) {
+      AlertPopup.alert("Wrong move", "You cannot do this action", ProtocolV1.messageError(message), Alert.AlertType.INFORMATION);
    }
 
    public int askPosition() {
