@@ -6,6 +6,10 @@
 package canardage.action;
 
 import canardage.Board;
+import canardage.Client;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -47,6 +51,13 @@ public class PlaceBeforeTest {
    public void canPlaceYourDuckOnePlaceBeforeWhereItIs() {
       System.out.println("isPlayable");
       PlaceBefore pb = new PlaceBefore();
+      Client client = null;
+      try {
+         client = new Client(null);
+      } catch(IOException ex) {
+         Logger.getLogger(PlaceBeforeTest.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      client.setId(1);
       Action a = new Action() {
          @Override
          public void effect() {
@@ -63,8 +74,13 @@ public class PlaceBeforeTest {
          public int getId() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
          }
+
+         @Override
+         public int getNbCards() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+         }
       };
-      a.setPlayer(1);
+      a.setPlayer(client);
       board.setLocation(3, 1);
       board.setLocation(2, 0);
       assertTrue(pb.isPlayable(3));

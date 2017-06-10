@@ -64,6 +64,8 @@ public class Board {
       }
    }
 
+   private final static int NOT_FINISHED = -2;
+   private final static int ALL_DUCKS_DEAD = -1;
    private final static int MISSING = -1;        // Signifie qu'il n'y a pas de carte
    private final static int WATER_CARD_VALUE = 0;// Pour dire qu'il y a une carte eau
    public final static int MAX_DUCK_PER_PLAYER = 5;  // Maximum de canard par joueur
@@ -713,5 +715,30 @@ public class Board {
     */
    public void setLocation(int location, int duck) {
       locations[location].setDuck(duck);
+   }
+   
+   /**
+    * définie le vainqueur s'il y en a un
+    * @return -2 si la partie n'est pas terminée
+    *         -1 si tous les canards sont morts
+    *         l'id des canard gagnant sinon
+    */
+   public int won() {
+      int result = ALL_DUCKS_DEAD;
+      for(Integer duck : ducks) {
+         if(result == ALL_DUCKS_DEAD && isDuck(duck)) {
+            result = duck;
+         } else if (result > ALL_DUCKS_DEAD && isDuck(duck)) {
+            return NOT_FINISHED;
+         }
+      }
+      for(int i = 0; i < locations.length; i++) {
+         if(result == ALL_DUCKS_DEAD && isDuck(locations[i].getDuck())) {
+            result = locations[i].getDuck();
+         } else if (result > ALL_DUCKS_DEAD && isDuck(locations[i].getDuck())) {
+            return NOT_FINISHED;
+         }
+      }
+      return result;
    }
 }

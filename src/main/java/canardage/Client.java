@@ -113,5 +113,35 @@ public class Client {
       int choiceLocation = Integer.parseInt(readLine());
       return choiceLocation;
    }
+   
+   public int useCard() {
+      
+      int choiceCard = -1;
+      boolean hasCardWithEffect = hasAnyCardPlayable();
+      
+      do {
+         writeLine(ProtocolV1.YOUR_TURN);
+         try {
+            choiceCard = Integer.parseInt(readLine());
+            
+            //vérifie l'intégrité du choix côté serveur
+            if(!hasCard(choiceCard)) {
+               throw new RuntimeException("Le joueur a joué une carte qui n'est pas dans sa main");
+            }
+         } catch(IOException ex) {
+            //TODO
+         }
+      } while(!hand[choiceCard].hasEffect() || hasCardWithEffect);
+      
+      hand[choiceCard].effect();
+      hand[choiceCard] = null;
+      
+      return choiceCard;
+   }
+   
+   public void distribute(int position, Action newCard) {
+      hand[position] = newCard;
+      writeLine(ProtocolV1.messageDistributeCard(newCard.getId()));
+   }
 
 }

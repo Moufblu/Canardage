@@ -50,7 +50,7 @@ public class Player implements Runnable {
 
    private int playerNumber;
 
-   private List<Integer> cards;           // Liste des cartes
+   private Integer[] cards;           // Liste des cartes
 
    boolean connected = false;             // Booléen pour connaître la connexion
 
@@ -65,7 +65,7 @@ public class Player implements Runnable {
     * @param adress
     */
    private Player() {
-      cards = new ArrayList<>();
+      cards = new Integer[ProtocolV1.HAND_SIZE];
       servers = new HashSet<>();
    }
 
@@ -193,23 +193,22 @@ public class Player implements Runnable {
                writer.flush();
                break;
             case ProtocolV1.DISTRIBUTE_CARD:
-               if(cards.size() > 0) {
+               if(cards.length > 0) {
                   throw new IllegalStateException("Main du joueurs pleine");
                } else {
-                  cards.remove(locationChoice);
-                  cards.add(readLineCardFileInfo(Integer.parseInt(splittedCommand[1])));
+                  cards[locationChoice] = readLineCardFileInfo(Integer.parseInt(splittedCommand[1]));
                   canardageFxml.updateCards(cards);
                }
                break;
             case ProtocolV1.DISTRIBUTE_HAND:
-               if(cards.size() > 0) {
+               if(cards.length > 0) {
                   // Aucun sense dans le message d'erreur, comprend pas :/
                   // Vérification inversée? Jimmy shit? Am I a shit?
                   // Beep beep I'm a sheep, Beepbeep I'm a sheep (8)
                   throw new IllegalStateException("Action cards yet distributed");
                } else {
                   for(int i = 1; i < ProtocolV1.HAND_SIZE + 1; i++) {
-                     cards.add(readLineCardFileInfo(Integer.parseInt(splittedCommand[i])));
+                     cards[i] = readLineCardFileInfo(Integer.parseInt(splittedCommand[i]));
                   }
                   canardageFxml.updateCards(cards);
                }
@@ -339,7 +338,7 @@ public class Player implements Runnable {
             if(positionCard <= 0 || positionCard > ProtocolV1.HAND_SIZE) {
                continue;
             }
-            cardChoice = cards.get(positionCard - 1);
+            cardChoice = cards[positionCard - 1];
             break;
          } catch(InputMismatchException e) {
             System.out.println("Entrée non valide.");

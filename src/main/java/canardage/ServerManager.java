@@ -52,6 +52,7 @@ public class ServerManager {
    private Thread acceptingClients;
 
    private List<Action> deck;               // La pile de cartes
+   private List<Action> usedCards;           //les cartes déjà jouée qu'on récupère une fois le deck vide
    private List<List<Integer>> playerCards;  // Les listes des cartes des joueurs
    private Board board;
 
@@ -83,7 +84,8 @@ public class ServerManager {
     * @param hash Le tableau avec les hash
     */
    private ServerManager(String name, byte[] hash) {
-      deck = new ArrayList<>(NB_ACTION_CARDS);
+      deck = new ArrayList<>();
+      usedCards = new ArrayList<>();
       playerCards = new ArrayList<>();
       playersSockets = new ArrayList<>();
       nbPlayers = 0;
@@ -267,7 +269,8 @@ public class ServerManager {
       do {
          for(Client player : playersSockets) {
             playATurn(player);
-            if(conditionWon()) {
+            int winner = board.won();
+            if(winner > -1) {
                gameFinished = true;
                break;
             }
@@ -276,28 +279,20 @@ public class ServerManager {
 
    }
    
-   private boolean conditionWon() {
-      return false;
+   private void playATurn(Client client) {
+      int choiceCard = client.useCard();
+      client.distribute(choiceCard, deck.remove(0));
+      
+      if(deck.size() == 0) {
+         restoreDeck();
+      }
+      
    }
    
-   private void playATurn(Client client) {
-      int choiceCard = -1;
-      boolean hasCardWithEffect = client.hasAnyCardPlayable();
-      
-      do {
-         client.writeLine(ProtocolV1.YOUR_TURN);
-         try {
-            choiceCard = Integer.parseInt(client.readLine());
-            
-            //vérifie l'intégrité du choix côté serveur
-            if(!client.hasCard(choiceCard)) {
-               throw new RuntimeException("Le joueur a joué une carte qui n'est pas dans sa main");
-            }
-         } catch(IOException ex) {
-            //TODO
-         }
-      } while(!Global.cards[choiceCard].hasEffect() || hasCardWithEffect);
-      
+   private void restoreDeck() {
+      while(usedCards.size() > 0) {
+         deck.add(usedCards.remove(0));
+      }
    }
 
    private void initialiseGame() {
