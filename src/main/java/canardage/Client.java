@@ -2,6 +2,7 @@ package canardage;
 
 import Protocol.ProtocolV1;
 import canardage.action.Action;
+import canardage.action.WithLocation;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +43,10 @@ public class Client {
 
    public void setId(int id) {
       this.id = id;
+   }
+   
+   public int getId() {
+      return id;
    }
    
    /**
@@ -92,6 +97,21 @@ public class Client {
          }
       }
       return false;
+   }
+   
+   boolean hasCard(int idCard) {
+      for(Action action : hand) {
+         if(action.getId() == idCard) {
+            return true;
+         }
+      }
+      return false;
+   }
+   
+   public int getLocation() throws IOException {
+      writeLine(ProtocolV1.ASK_FOR_POSITION);
+      int choiceLocation = Integer.parseInt(readLine());
+      return choiceLocation;
    }
 
 }

@@ -1,7 +1,10 @@
 package canardage.action;
 
 import canardage.Board;
+import java.io.IOException;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Description: Classe pour implémenter la carte pour se cacher derrière un canard
@@ -9,10 +12,8 @@ import java.util.Scanner;
  * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
  * @version 0.1
  */
-public class Hide extends WithLocation implements IDirection {
+public class Hide extends WithDirection {
 
-   private boolean direction = true;   // Direction vers laquelle on veut bouger le 
-   // canard; vrai - gauche, faux - droite
    
    private static final int id;
    
@@ -31,11 +32,7 @@ public class Hide extends WithLocation implements IDirection {
    @Override
    public void effect() {
       if(hasEffect()) {
-         int positionChoice;
-         do {
-            positionChoice = getLocationChoice();
-            direction = getDirectionChoice();
-         } while(!isPlayable(positionChoice));
+         int positionChoice = getLocationChoice();
          board.hide(positionChoice, direction);
       }
    }
@@ -69,17 +66,6 @@ public class Hide extends WithLocation implements IDirection {
       effect |= super.hasEffect();
 
       return effect;
-   }
-
-   /**
-    * Méthode pour que l'utilisateur puisse donner la position voulue
-    * @return Vrai si il veut jouer é gauche, faux si cest à droite
-    */
-   @Override
-   public boolean getDirectionChoice() {
-      Scanner scanner = new Scanner(System.in);
-      System.out.println("Souhaitez-vous aller à gauche ou à droite ? (true/false)");
-      return scanner.nextBoolean();
    }
 
    @Override

@@ -214,6 +214,7 @@ public class ServerManager {
                               System.out.println("    Acceptation d'une connexion au joueur");
                               playersSockets.add(client);
                               client.writeLine(ProtocolV1.messageAccept(nbPlayers));
+                              client.setId(nbPlayers);
                               synchronized (this) {
                                  nbPlayers++;
                               }
@@ -286,10 +287,16 @@ public class ServerManager {
          client.writeLine(ProtocolV1.YOUR_TURN);
          try {
             choiceCard = Integer.parseInt(client.readLine());
+            
+            //vérifie l'intégrité du choix côté serveur
+            if(!client.hasCard(choiceCard)) {
+               throw new RuntimeException("Le joueur a joué une carte qui n'est pas dans sa main");
+            }
          } catch(IOException ex) {
             //TODO
          }
       } while(!Global.cards[choiceCard].hasEffect() || hasCardWithEffect);
+      
    }
 
    private void initialiseGame() {
@@ -310,7 +317,7 @@ public class ServerManager {
       
       for(Action card : Global.cards) {
          for(int i = 0; i < card.getNbCards(); i++) {
-            deck.add(card.getId());
+            deck.add(card.clone());
          }
       }
 

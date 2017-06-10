@@ -1,6 +1,9 @@
 package canardage.action;
 
+import java.io.IOException;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Description: Classe pour vérifier la position dans le tableau de jeu et pouvoir
@@ -10,13 +13,15 @@ import java.util.Scanner;
  */
 public abstract class WithLocation extends Action {
 
+   protected static final int BAD_LOCATION = -1;
+   
    /**
     * Constructeur de WithLocation (utile?)
     */
    public WithLocation() {
       super();
    }
-
+   
    /**
     * Méthode à redéfinir dans les sous-classes pour savoir si la carte est jouable à
     * une position donnée
@@ -30,14 +35,15 @@ public abstract class WithLocation extends Action {
     * @return La position demandée à l'utilisateur
     */
    protected int getLocationChoice() {
-
-      Scanner in = new Scanner(System.in);
-      int positionChoice;
+      int positionChoice = BAD_LOCATION;
 
       // Bocle tant que le choix de l'utilisateur est fausse
       while(true) {
-         System.out.println("Veuillez entrer une position valide : (0..5)");
-         positionChoice = in.nextInt();
+         try {
+            positionChoice = client.getLocation();
+         } catch(IOException ex) {
+            Logger.getLogger(WithLocation.class.getName()).log(Level.SEVERE, null, ex);
+         }
          if(isPlayable(positionChoice)) {
             break;
          }

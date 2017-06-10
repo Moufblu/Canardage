@@ -1,6 +1,7 @@
 package canardage.action;
 
 import canardage.Board;
+import canardage.Client;
 
 /**
  * Description: Classe à hériter quand on veut rajouter une carte ou un effet Date:
@@ -10,8 +11,9 @@ import canardage.Board;
  */
 public abstract class Action {
 
+   protected final static int BAD_LOCATION = -1;
    protected Board board;  // Où l'effet ce réalisera
-   protected int player;   // Joueur courrant
+   protected Client client;   // Joueur courrant
    protected static int counter = 0;
 
    /**
@@ -26,22 +28,19 @@ public abstract class Action {
 
    /**
     * Méthode qui défini le joueur courrant
-    * @param player Le numéro du joueur courrant
+    * @param client Le numéro du joueur courrant
     * @throws IllegalArgumentException Si le numéro du joueur est invalide
     */
-   public void setPlayer(int player) throws IllegalArgumentException {
-      if(player < 0 || player >= board.getMaxPlayers()) {
-         throw new IllegalArgumentException("The player's number is invalid.");
-      }
-      this.player = player;
+   public void setPlayer(Client client) throws IllegalArgumentException {
+      this.client = client;
    }
 
    /**
     * Méthode pour obtenir le joueur courrant
     * @return Le joueur courrant
     */
-   public int getPlayer() {
-      return player;
+   public Client getPlayer() {
+      return client;
    }
    
    //public static abstract int getId();
