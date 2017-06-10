@@ -12,13 +12,17 @@ public abstract class Action {
 
    protected Board board;  // Où l'effet ce réalisera
    protected int player;   // Joueur courrant
+   protected static int counter = 0;
 
    /**
     * Constructeur de la classe Action
     */
    public Action() {
+      Board.registerInstance(3);
       board = Board.getInstance();
    }
+   public abstract int getNbCards();
+   public abstract int getId();
 
    /**
     * Méthode qui défini le joueur courrant
@@ -39,6 +43,8 @@ public abstract class Action {
    public int getPlayer() {
       return player;
    }
+   
+   //public static abstract int getId();
 
    /**
     * Méthode à redéfinir dans les sous-classes pour implémenter un nouveau effet

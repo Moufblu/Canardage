@@ -1,5 +1,7 @@
 package canardage;
 
+import Protocol.ProtocolV1;
+import canardage.action.Action;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.stream.Stream;
 
 /**
  * Description: Classe pour la partie client de la connexion client-serveur Date:
@@ -20,6 +23,8 @@ public class Client {
    private BufferedReader reader;
    private InputStream byteReader;
    private PrintWriter writer;
+   private Action[] hand;
+   private int id;
 
    /**
     * Constructeur de la classe Client
@@ -32,8 +37,13 @@ public class Client {
       byteReader = clientSocket.getInputStream();
       reader = new BufferedReader(new InputStreamReader(byteReader));
       writer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+      hand = new Action[ProtocolV1.HAND_SIZE];
    }
 
+   public void setId(int id) {
+      this.id = id;
+   }
+   
    /**
     * Méthode pour que le client puisse écrire une requête au serveur
     * @param message Le message envoyé par le client
@@ -59,6 +69,13 @@ public class Client {
    String readLine() throws IOException {
       return reader.readLine();
    }
+   
+   public void sendNewHand(Action[] hand) {
+      writeLine(ProtocolV1.messageHand(Stream.of(hand)
+         .map(Action::getId)
+         .toArray(Integer[]::new)
+      ));
+   }
 
    /**
     * Fermeture du socket du client
@@ -66,6 +83,15 @@ public class Client {
     */
    void close() throws IOException {
       clientSocket.close();
+   }
+
+   boolean hasAnyCardPlayable() {
+      for(Action cardId : hand) {
+         if(cardId.hasEffect()) {
+            return true;
+         }
+      }
+      return false;
    }
 
 }

@@ -2,6 +2,7 @@ package canardage;
 
 import java.net.ServerSocket;
 import Protocol.ProtocolV1;
+import canardage.action.Action;
 import java.lang.reflect.Type;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -47,7 +48,7 @@ public class ServerManager {
    private ServerSocket serverSocket;  // Le Socket du serveur
    private Thread acceptingClients;
 
-   private List<Integer> deck;               // La pile de cartes
+   private List<Action> deck;               // La pile de cartes
    private List<List<Integer>> playerCards;  // Les listes des cartes des joueurs
    private Board board;
 
@@ -263,46 +264,35 @@ public class ServerManager {
       }
 
       initialiseGame();
-
-      for(Client player : playersSockets) {
-         String answer = "";
-         String expectedAnswer = ProtocolV1.USE_CARD + ProtocolV1.SEPARATOR + 4;
-
-         do {
-            System.out.println("Asking for card");
-            player.writeLine(ProtocolV1.YOUR_TURN);
-
-            try {
-               answer = player.readLine();
-            } catch(IOException ex) {
-               System.out.println("Couldn't get action card.");
+      boolean gameFinished = false;
+      do {
+         for(Client player : playersSockets) {
+            playATurn(player);
+            if(conditionWon()) {
+               gameFinished = true;
+               break;
             }
-         } while(!answer.equals(expectedAnswer));
+         }
+      } while(!gameFinished);
 
-         System.out.println("Player played the card Target");
-
-         do {
-            answer = "";
-            System.out.println("Asking for position");
-            player.writeLine(ProtocolV1.ASK_FOR_POSITION);
-
-            try {
-               answer = player.readLine();
-            } catch(IOException ex) {
-               System.out.println("Couldn't get position to play action card.");
-            }
-         } while(!answer.contains(ProtocolV1.ASK_FOR_POSITION));
-
-         String[] temp = answer.split(ProtocolV1.SEPARATOR);
-         int position = Integer.valueOf(temp[1]);
-         System.out.println("Player played in the position " + position);
-
-         board.setTarget(position, true);
-
-         System.out.println("Sending updated board");
-         player.writeLine(ProtocolV1.messageBoardState());
-      }
-
+   }
+   
+   private boolean conditionWon() {
+      return false;
+   }
+   
+   private void playATurn(Client client) {
+      int choiceCard = -1;
+      boolean hasCardWithEffect = client.hasAnyCardPlayable();
+      
+      do {
+         client.writeLine(ProtocolV1.YOUR_TURN);
+         try {
+            choiceCard = Integer.parseInt(client.readLine());
+         } catch(IOException ex) {
+            //TODO
+         }
+      } while(!Global.cards[choiceCard].hasEffect() || hasCardWithEffect);
    }
 
    private void initialiseGame() {
@@ -311,31 +301,20 @@ public class ServerManager {
       initialiseDeck();
       for(Client client : playersSockets) {
          System.out.println("Envoi d'une main");
-         int[] hand = {4, 4, 4};
-         client.writeLine(ProtocolV1.messageHand(hand));
+         Action[] hand = new Action[ProtocolV1.HAND_SIZE];
+         for(int i = 0; i < ProtocolV1.HAND_SIZE; i++) {
+            hand[i] = deck.remove(0);
+         }
+         client.sendNewHand(hand);
       }
    }
 
    private void initialiseDeck() {
-      int nbCards = 10;
-      for(int i = 0; i < nbCards; i++) {
-         deck.add(0);
-      }
-
-      for(int i = 0; i < nbCards; i++) {
-         deck.add(1);
-      }
-
-      for(int i = 0; i < nbCards; i++) {
-         deck.add(2);
-      }
-
-      for(int i = 0; i < nbCards; i++) {
-         deck.add(3);
-      }
-
-      for(int i = 0; i < nbCards; i++) {
-         deck.add(4);
+      
+      for(Action card : Global.cards) {
+         for(int i = 0; i < card.getNbCards(); i++) {
+            deck.add(card.getId());
+         }
       }
 
       Collections.shuffle(deck);

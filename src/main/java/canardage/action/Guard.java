@@ -7,7 +7,17 @@ package canardage.action;
  * @version 0.1
  */
 public class Guard extends WithLocation {
-
+   private static final int id;
+   
+   static {
+      id = counter++;
+   }
+   
+   @Override
+   public int getId() {
+      return id;
+   }
+   
    /**
     * On regarde si la carte de garde peut utiliser son effet et on l'utilise si
     * possible
@@ -30,5 +40,10 @@ public class Guard extends WithLocation {
          return true;
       }
       return false;
+   }
+
+   @Override
+   public int getNbCards() {
+      return 10;
    }
 }

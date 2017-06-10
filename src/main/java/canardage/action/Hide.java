@@ -13,7 +13,18 @@ public class Hide extends WithLocation implements IDirection {
 
    private boolean direction = true;   // Direction vers laquelle on veut bouger le 
    // canard; vrai - gauche, faux - droite
-
+   
+   private static final int id;
+   
+   static {
+      id = counter++;
+   }
+   
+   @Override
+   public int getId() {
+      return id;
+   }
+   
    /**
     * Vérifie si la carte a un effet et réalise l'effet correspondant si possible
     */
@@ -69,5 +80,10 @@ public class Hide extends WithLocation implements IDirection {
       Scanner scanner = new Scanner(System.in);
       System.out.println("Souhaitez-vous aller à gauche ou à droite ? (true/false)");
       return scanner.nextBoolean();
+   }
+
+   @Override
+   public int getNbCards() {
+      return 10;
    }
 }
