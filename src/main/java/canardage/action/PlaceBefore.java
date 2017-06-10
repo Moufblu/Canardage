@@ -1,5 +1,6 @@
 package canardage.action;
 
+
 /**
  * Description: Classe pour implémenter la carte qui sert à mettre un canard une
  * position derrière lui dsur le plateu s'il y a un canard derrière lui Date:
@@ -8,7 +9,18 @@ package canardage.action;
  * @version 0.1
  */
 public class PlaceBefore extends WithLocation {
-
+   
+   private static final int id;
+   
+   static {
+      id = counter++;
+   }
+   
+   @Override
+   public int getId() {
+      return id;
+   }
+   
    /**
     * Vérifie si la carte a un effet et réalise l'effet correspondant si possible
     */
@@ -46,5 +58,10 @@ public class PlaceBefore extends WithLocation {
          }
       }
       return false;
+   }
+
+   @Override
+   public int getNbCards() {
+      return 5;
    }
 }
