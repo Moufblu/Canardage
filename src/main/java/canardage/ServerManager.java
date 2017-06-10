@@ -38,6 +38,8 @@ import java.util.logging.Logger;
  */
 public class ServerManager {
 
+   private final Object mutex = new Object();
+   
    private byte[] hash;    // Tableau pour stocker les hash des mots de passe
    private Thread thread;  // Threads pour les serveurs
    private Server server;  // Le serveur en lui-même
@@ -214,8 +216,7 @@ public class ServerManager {
                               System.out.println("    Acceptation d'une connexion au joueur");
                               playersSockets.add(client);
                               client.writeLine(ProtocolV1.messageAccept(nbPlayers));
-                              client.setId(nbPlayers);
-                              synchronized (this) {
+                              synchronized (mutex) {
                                  nbPlayers++;
                               }
                            } else {
@@ -317,7 +318,12 @@ public class ServerManager {
       
       for(Action card : Global.cards) {
          for(int i = 0; i < card.getNbCards(); i++) {
-            deck.add(card.clone());
+            try {
+               deck.add(card.clone());
+            } catch(CloneNotSupportedException ex) {
+               Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE, null, ex);
+               throw new RuntimeException(ex.getCause());
+            }
          }
       }
 
