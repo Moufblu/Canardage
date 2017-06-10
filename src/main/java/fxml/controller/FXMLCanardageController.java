@@ -30,11 +30,12 @@ import javafx.scene.layout.GridPane;
  * @author Miguel-Portable
  */
 public class FXMLCanardageController implements Initializable {
-   
+   // A VÉRIFIER SI ON DOIT METTRE DANS LE PROTOCOL ET VOIR LEQUELS ENLEVER ET
+   // UTILISER CELLES DU PROTOCOL À LA PLACE
    private final int RESIZE_CARDS = 5;
    private final int MARGIN_LEFT = 20;
    private final int MARGIN_DOWN = 15;
-   // A METTRE DANS LE PROTOCOL (?)
+   
    private final int NUMBER_OF_PROTECTIONS = 6;
    private final int NUMBER_OF_TARGETS = 6;
    
@@ -42,6 +43,7 @@ public class FXMLCanardageController implements Initializable {
    private final int NUMBER_OF_CARDS   = 3;
    private final int GRID_POS          = 2;
    
+   // Changer les trucs en dur (String) par base de données pour tout ce qui est carte et affichage (?)
    Player player = Player.getInstance();
    
    @FXML
@@ -78,7 +80,6 @@ public class FXMLCanardageController implements Initializable {
    private final ArrayList<ImageView> ducksGameList;
    
    private final ArrayList<ImageView> ducksHidenList;
-   private ImageView viewDuckHiden;
    
    private final ArrayList<ImageView> protectionCardsList;
    private final Image imageProtection;
@@ -87,7 +88,7 @@ public class FXMLCanardageController implements Initializable {
    private final ImageView viewBackCard;
    
    /**
-    * Variables pour les cartes
+    * Variables pour les cartes, à faire dans un autre endroit plutôt (?)
     */
    Image[] duckImages = {
       new Image("/images/DuckEmpty.jpg"),
@@ -124,6 +125,7 @@ public class FXMLCanardageController implements Initializable {
       }
       
       // A faire dans Player pour avoir la liste de cartes dans le Player
+      // Et aussi changer et utiliser la liste de toutes les cartes et pas celle prédefinie ici
       cardsList = new ArrayList(NUMBER_OF_CARDS);
       for(int i = 0; i < NUMBER_OF_CARDS; i++) {
          ImageView viewCards = new ImageView(imageCards[i]);
@@ -152,8 +154,9 @@ public class FXMLCanardageController implements Initializable {
       viewBackCard = new ImageView(imageBackCard);
       resizeImageView(viewBackCard);
    }
+   
    /**
-    * Initialises le controlleur de la classe.
+    * Initialise le controlleur de la classe.
     * @param url
     * @param rb
     */
@@ -182,6 +185,8 @@ public class FXMLCanardageController implements Initializable {
       imagesMarginAndPosition(Arrays.asList(viewBackCard), 0, 6, 0,
                               HPos.CENTER, VPos.CENTER, MARGIN_DOWN, 0);
       ducksAndProtectionsGrid.getChildren().add(viewBackCard);
+      
+      showPlayers(4); // Il faut changer le 4 par le nombre de joueurs et tout machin chose truc bidule
       
       targets();
       
@@ -278,6 +283,16 @@ public class FXMLCanardageController implements Initializable {
       }
    }
    
+   public void modifieDucksInGame(int position, int duck) {
+      ducksAndProtectionsGrid.getChildren().removeAll(ducksGameList.get(position));
+      
+      ducksGameList.get(position).setImage(duckImages[duck]);
+      
+      ducksAndProtectionsGrid.getChildren().add(position, ducksGameList.get(position));
+      imagesMarginAndPosition(ducksGameList, position, position, 0, HPos.LEFT, VPos.CENTER,
+                                 MARGIN_DOWN, MARGIN_LEFT);
+   }
+   
    public void protectionCards() {
       for(int i = 0; i < NUMBER_OF_PROTECTIONS; i++) {
          createAndResizeImageView(protectionCardsList, i, imageProtection);
@@ -322,14 +337,16 @@ public class FXMLCanardageController implements Initializable {
    }
    
    public void update() {
-      showPlayers(4); // Here the number of players that will play the game
-      
       showPlayerCards();
       
       showDucksGame();
       
       showTargets(2);
       showTargets(5);
+      
+      showGuard(2);
+      
+      modifieDucksInGame(0, 6);
       
       showHidenDucks(2, 4);
       showHidenDucks(5, 6);
@@ -338,7 +355,7 @@ public class FXMLCanardageController implements Initializable {
       showHidenDucks(0, 5);
       showHidenDucks(4, 1);
       
-      showGuard(1);
+      showGuard(0);
       showGuard(4);
    }
 
