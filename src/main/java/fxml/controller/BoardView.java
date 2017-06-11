@@ -1,8 +1,6 @@
 package fxml.controller;
 
 import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,11 +8,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
 /**
@@ -23,27 +17,19 @@ import javafx.stage.Stage;
  */
 public class BoardView extends Application {
    
-   private Pane pane;
    @Override
    public void start(Stage primaryStage) throws Exception {
       Parent root;
       try {
-         root = FXMLLoader.load(getClass().getResource("/fxml/FXMLBoard.fxml"));
-         Image value = new Image(getClass().getResourceAsStream("/images/canardBleuCopie.png"));
-         ImageView duck = new ImageView(value);
-         duck.setImage(value);
-         duck.setVisible(true);
+         root = FXMLLoader.load(getClass().getResource("/fxml/FXMLCanardage.fxml"));
          Scene scene = new Scene(root);
          
          primaryStage.setTitle("Canardage");
-         pane = new Pane();
-         pane.getChildren().add(duck);
+         primaryStage.resizableProperty().set(false);
+         primaryStage.setScene(scene);
          
          primaryStage.centerOnScreen();
-         GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
-         Rectangle maximumWindowBounds = graphicsEnvironment.getMaximumWindowBounds();
-         primaryStage.setMinHeight(maximumWindowBounds.height / 2);
-         primaryStage.setMinWidth(maximumWindowBounds.width / 2);
+         primaryStage.setResizable(false);
          primaryStage.setScene(scene);
 
          primaryStage.show();
