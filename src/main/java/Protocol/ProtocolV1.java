@@ -97,7 +97,7 @@ public class ProtocolV1 {
     * @throws IllegalArgumentException si le nombre de cartes est faut ou si une 
     * carte ne possède pas un indientifiant valide
     */
-   public static String messageHand(int[] idCards) throws IllegalArgumentException {
+   public static String messageHand(Integer[] idCards) throws IllegalArgumentException {
       // check si la taille du tableau est bien celle d'une main
       if (idCards.length != HAND_SIZE) {
          throw new IllegalArgumentException("Nombres de cartes de la main invalide: "

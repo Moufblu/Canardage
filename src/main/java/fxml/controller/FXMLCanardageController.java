@@ -315,7 +315,7 @@ public class FXMLCanardageController implements Initializable {
       showGuard(4);
    }
 
-   public void updateCards(List<Integer> cards) {
+   public void updateCards(Integer[] cards) {
       // need Database ?
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
    }
