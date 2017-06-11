@@ -1,6 +1,5 @@
 package canardage;
 
-import Protocol.AlertPopup;
 import java.net.Socket;
 import Protocol.ProtocolV1;
 import chat.ChatClient;
@@ -33,12 +32,8 @@ import java.util.logging.Logger;
 public class Player implements Runnable {
 
    private FXMLCanardageController canardageFxml;
-   private final int HAND_CARDS_NUMBER = 3;  // Nombre de cartes maximal d'un joueur
    private final long REFRESH_DELAY = 2000;
    private static final int TIMEOUT_ANSWER = 0;
-
-   private final String ENCODING_ALGORITHM = "SHA-256";  // Algorithme de hachage
-   private final String FORMAT_TEXT = "UTF-8";  // Format d'encodage du texte
 
    private Socket clientSocket;           // Socket du client
    private BufferedReader responseBuffer; // Buffer pour le réponse
@@ -74,6 +69,10 @@ public class Player implements Runnable {
          instance = new Player();
       }
       return instance;
+   }
+
+   public int getPlayerNumber() {
+      return playerNumber;
    }
 
    /**
@@ -129,8 +128,8 @@ public class Player implements Runnable {
     */
    private byte[] hash(String password) throws NoSuchAlgorithmException,
            UnsupportedEncodingException {
-      MessageDigest md = MessageDigest.getInstance(ENCODING_ALGORITHM);
-      md.update(password.getBytes(FORMAT_TEXT));
+      MessageDigest md = MessageDigest.getInstance(Global.Security.ENCODING_ALGORITHM);
+      md.update(password.getBytes(Global.Text.FORMAT_TEXT));
       return md.digest();
    }
 
@@ -214,7 +213,7 @@ public class Player implements Runnable {
                }
                break;
             case ProtocolV1.PATCH_BOARD:
-               canardageFxml.updateBoard(splittedCommand);
+               canardageFxml.updateBoard(splittedCommand[1]);
                break;
             case ProtocolV1.YOUR_TURN:
                int cardChoice = canardageFxml.askCard();
@@ -233,10 +232,13 @@ public class Player implements Runnable {
     * Intialisation de la partie
     * @param canardageFxml
     * @throws IllegalStateException Lancée si trop de cartes dans la main du joueur,
+    * @throws BadGameInitialisation Lancée si le nombre de joueurs est trop faible
     * si pas de cartes pas de connexion avec le serveur
     */
-   public void startGame(FXMLCanardageController canardageFxml) throws IllegalStateException {
+   public void startGame(FXMLCanardageController canardageFxml) throws IllegalStateException, BadGameInitialisation, IOException {
       if(isConnected()) {
+         server.startGame();
+         
          this.canardageFxml = canardageFxml;
          Thread thread = new Thread(this);
          thread.start();

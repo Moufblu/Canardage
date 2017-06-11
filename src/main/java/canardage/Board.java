@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
 import canardage.action.*;
+import canardage.Global.Board.*;
 
 /**
  * Description: Classe principale dans laquelle on implémente le plateau de jeu Date:
@@ -445,15 +446,15 @@ public class Board {
          }
 
          if(locations[i].targetted) {
-            display += "*";
+            display += Global.Board.TARGET;
          }
 
          if(locations[i].guarded) {
-            display += "G";
+            display += Global.Board.GUARD;
          }
 
          if(i != 0) {
-            display += " ";
+            display += Global.Board.SEPARATOR;
          }
       }
 

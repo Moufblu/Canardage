@@ -61,22 +61,22 @@ public class FXMLCreateServerController implements Initializable {
 
       if(player.createServer(gameName, password)) {
 
-//         Parent root;
-//         try {
-//            root = FXMLLoader.load(getClass().getResource("/fxml/FXMLCanardage.fxml"));
-//            Stage joinStage = new Stage();
-//            Scene scene = new Scene(root);
-//
-//            joinStage.setTitle(gameName);
-//            joinStage.resizableProperty().set(false);
-//            joinStage.setScene(scene);
-//
-//            ((Node) (event.getSource())).getScene().getWindow().hide();
-//            joinStage.show();
-//         } catch(IOException e) {
-//            Logger logger = Logger.getLogger(getClass().getName());
-//            logger.log(Level.SEVERE, "Erreur à la création d'une nouvelle fenêtre.", e);
-//         }
+         Parent root;
+         try {
+            root = FXMLLoader.load(getClass().getResource("/fxml/FXMLCanardage.fxml"));
+            Stage joinStage = new Stage();
+            Scene scene = new Scene(root);
+
+            joinStage.setTitle(gameName);
+            joinStage.resizableProperty().set(false);
+            joinStage.setScene(scene);
+
+            ((Node) (event.getSource())).getScene().getWindow().hide();
+            joinStage.show();
+         } catch(IOException e) {
+            Logger logger = Logger.getLogger(getClass().getName());
+            logger.log(Level.SEVERE, "Erreur à la création d'une nouvelle fenêtre.", e);
+         }
       } else {
          AlertPopup.alert("Erreur", "Erreur de création",
                  "Erreur lors de la connexion au serveur " + serverNameField.getText(),

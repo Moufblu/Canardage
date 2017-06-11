@@ -44,8 +44,6 @@ public class ServerManager {
    private Thread thread;  // Threads pour les serveurs
    private Server server;  // Le serveur en lui-même
 
-   private final static int MIN_NB_PLAYERS = 3;
-   private final static int MAX_NB_PLAYERS = 6;    // Nombre maximum de joueur
    private final static int NB_ACTION_CARDS = 10;  // Nombre de cartes action
 
    private ServerSocket serverSocket;  // Le Socket du serveur
@@ -106,7 +104,7 @@ public class ServerManager {
          
          // TODO alternative au nombre de connexions max ou posssibilité d'interrompre la recherche des clients ?
          //Création du chat avec le nombre de joueurs max
-         chat = new ChatMaster(server.getIpAddress(), MAX_NB_PLAYERS);
+         chat = new ChatMaster(server.getIpAddress(), Global.Rules.MAX_NB_PLAYERS);
          chat.accept();
       } catch(UnknownHostException ex) {
          System.out.println("Impossible de trouver l'adresse IP du host.");
@@ -184,7 +182,7 @@ public class ServerManager {
     */
    public void acceptClients() throws IOException {
       if(serverSocket == null || serverSocket.isBound()) {
-         serverSocket = new ServerSocket(ProtocolV1.PORT, MAX_NB_PLAYERS);
+         serverSocket = new ServerSocket(ProtocolV1.PORT, Global.Rules.MAX_NB_PLAYERS);
       }
 
       acceptingClients = new Thread(new Runnable() {
@@ -233,7 +231,7 @@ public class ServerManager {
 
                   }).start();
 
-               } while(nbPlayers < MAX_NB_PLAYERS);
+               } while(nbPlayers < Global.Rules.MAX_NB_PLAYERS);
 
                //serverSocket.close();
             } catch(IOException e) {
@@ -247,8 +245,8 @@ public class ServerManager {
    }
 
    public void startGame() throws BadGameInitialisation, IOException {
-      if(nbPlayers < MIN_NB_PLAYERS) {
-         throw new BadGameInitialisation("Number of players must be at least " + MIN_NB_PLAYERS);
+      if(nbPlayers < Global.Rules.MIN_NB_PLAYERS) {
+         throw new BadGameInitialisation("Number of players must be at least " + Global.Rules.MIN_NB_PLAYERS);
       }
 
       //Killing the thread accepting clients
