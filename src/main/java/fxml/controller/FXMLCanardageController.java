@@ -198,6 +198,7 @@ public class FXMLCanardageController implements Initializable {
    @FXML
    private void startGame(ActionEvent event) {
       try {
+         player.startGame();
          player.startGame(this);
          startButton.setDisable(true);
          startButton.setVisible(false);
