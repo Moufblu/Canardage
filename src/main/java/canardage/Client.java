@@ -101,15 +101,6 @@ public class Client {
       return false;
    }
    
-   boolean hasCard(int idCard) {
-      for(Action action : hand) {
-         if(action.getId() == idCard) {
-            return true;
-         }
-      }
-      return false;
-   }
-   
    public int getLocation() throws IOException {
       writeLine(ProtocolV1.ASK_FOR_POSITION);
       int choiceLocation = Integer.parseInt(readLine());
@@ -126,11 +117,6 @@ public class Client {
          try {
             String[] response = readLine().split(ProtocolV1.SEPARATOR);
             choiceCard = Integer.parseInt(response[1]);
-            
-            //vérifie l'intégrité du choix côté serveur
-            if(!hasCard(choiceCard)) {
-               throw new RuntimeException("Le joueur a joué une carte qui n'est pas dans sa main");
-            }
          } catch(IOException ex) {
             //TODO
          }
