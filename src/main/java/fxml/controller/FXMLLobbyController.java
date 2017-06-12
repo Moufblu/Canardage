@@ -74,7 +74,9 @@ public class FXMLLobbyController implements Initializable {
             System.out.println("affichage board");
             Parent root;
             try {
-               root = FXMLLoader.load(getClass().getResource("/fxml/FXMLCanardage.fxml"));
+               FXMLLoader fxmlLoader = new FXMLLoader();
+               fxmlLoader.setLocation(getClass().getResource("/fxml/FXMLCanardage.fxml"));
+               root = fxmlLoader.load();
                Stage joinStage = new Stage();
                Scene scene = new Scene(root);
 
@@ -84,12 +86,9 @@ public class FXMLLobbyController implements Initializable {
 
                ((Node) (event.getSource())).getScene().getWindow().hide();
                joinStage.show();
-
-               FXMLLoader fxmlLoader = new FXMLLoader();
-               Pane p = fxmlLoader.load(getClass().getResource("/fxml/FXMLCanardage.fxml").openStream());
-               FXMLCanardageController controller = (FXMLCanardageController) fxmlLoader.getController();
-
-               player.startGame(controller);
+               
+               player.startGame(fxmlLoader.getController());
+               
             } catch(IOException e) {
                Logger logger = Logger.getLogger(getClass().getName());
                logger.log(Level.SEVERE, "Erreur à la création d'une nouvelle fenêtre.", e);

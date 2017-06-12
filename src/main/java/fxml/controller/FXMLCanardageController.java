@@ -99,7 +99,7 @@ public class FXMLCanardageController implements Initializable {
    ArrayList<ImageView> duckViews;
 
    public FXMLCanardageController() {
-
+      
       imageProtection = new Image("/images/CardACouvert.jpg");
       imageTarget = new Image("/images/Target.png");
       imageBackCard = new Image("/images/CardBack.jpg");
@@ -189,6 +189,10 @@ public class FXMLCanardageController implements Initializable {
       ducksGame();
       protectionCards();
       showPlayerCards();
+      
+      if(player.getPlayerNumber() != 0){
+         startButton.setVisible(false);
+      }
    }
 
    @FXML
