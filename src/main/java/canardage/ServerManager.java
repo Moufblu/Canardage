@@ -244,7 +244,7 @@ public class ServerManager implements Runnable {
       acceptingClients.start();
    }
 
-   private void startGame() throws BadGameInitialisation, IOException {
+   public void loadGame() throws BadGameInitialisation, IOException {
       if(nbPlayers < Global.Rules.MIN_NB_PLAYERS) {
          throw new BadGameInitialisation("Number of players must be at least " + Global.Rules.MIN_NB_PLAYERS);
       }
@@ -263,6 +263,9 @@ public class ServerManager implements Runnable {
       }
 
       initialiseGame();
+   }
+   
+   private void startGame()  {
       boolean gameFinished = false;
       do {
          for(Client player : playersSockets) {
@@ -344,12 +347,6 @@ public class ServerManager implements Runnable {
 
    @Override
    public void run() {
-      try {
-         startGame();
-      } catch(BadGameInitialisation ex) {
-         Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE, null, ex);
-      } catch(IOException ex) {
-         Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE, null, ex);
-      }
+      startGame();
    }
 }
