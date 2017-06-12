@@ -5,11 +5,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
  *
@@ -37,6 +40,13 @@ public class Canardage extends Application {
          Logger logger = Logger.getLogger(getClass().getName());
          logger.log(Level.SEVERE, "Erreur à la création d'une nouvelle fenêtre.", e);
       }
+      primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+         @Override
+         public void handle(WindowEvent event) {
+            Platform.exit();
+            System.exit(0);
+         }
+      });
    }
 
    public static void main(String[] args) {
