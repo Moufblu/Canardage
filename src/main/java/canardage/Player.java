@@ -375,6 +375,11 @@ public class Player {
    {
       chatClient.write(emoticon);
    }
+   
+   public void displayEmoticon(int player, Emoticon emoticon)
+   {
+      ui.showEmoticon(player, emoticon);
+   }
 
 //   public static void main(String... args) {
 //      Player player = new Player(args[0]);

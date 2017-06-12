@@ -58,19 +58,15 @@ public class ChatClient {
                   Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                }
 
-               System.out.println(line);
-               String[] answer = line.split(ProtocolV1.SEPARATOR);
-               if (answer[0].equals(ProtocolV1.EMOTICON))
-               {
-                  int player = Integer.valueOf(answer[1]);
-                  //On récupère l'id de l'émoticone reçu et on stocke l'enum associé
-                  Emoticon emoticon = Emoticon.values()[Integer.valueOf(answer[2])];
-                  
-                  //TODO utilisation de player et emoticon
-               }
+               process(line);
             }
          }
       }).start();
+   }
+   
+   protected void process(String text)
+   {
+      System.out.println(text);
    }
    
    public int getId()
