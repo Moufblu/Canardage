@@ -231,6 +231,10 @@ public class Player implements Runnable {
       writer.flush();
    }
    
+   public void startGame() {
+      server.run();
+   }
+   
    /**
     * Intialisation de la partie
     * @param canardageFxml
@@ -240,7 +244,6 @@ public class Player implements Runnable {
     */
    public void startGame(FXMLCanardageController canardageFxml) throws IllegalStateException, BadGameInitialisation, IOException {
       if(isConnected()) {
-         server.startGame();
          
          this.canardageFxml = canardageFxml;
          Thread thread = new Thread(this);

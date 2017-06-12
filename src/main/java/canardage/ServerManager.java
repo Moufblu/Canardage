@@ -36,7 +36,7 @@ import java.util.logging.Logger;
  * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
  * @version 0.1
  */
-public class ServerManager {
+public class ServerManager implements Runnable {
 
    private final Object mutex = new Object();
    
@@ -244,7 +244,7 @@ public class ServerManager {
       acceptingClients.start();
    }
 
-   public void startGame() throws BadGameInitialisation, IOException {
+   private void startGame() throws BadGameInitialisation, IOException {
       if(nbPlayers < Global.Rules.MIN_NB_PLAYERS) {
          throw new BadGameInitialisation("Number of players must be at least " + Global.Rules.MIN_NB_PLAYERS);
       }
@@ -340,5 +340,16 @@ public class ServerManager {
     */
    public boolean isRunning() {
       return serverSocket != null && serverSocket.isBound();
+   }
+
+   @Override
+   public void run() {
+      try {
+         startGame();
+      } catch(BadGameInitialisation ex) {
+         Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE, null, ex);
+      } catch(IOException ex) {
+         Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE, null, ex);
+      }
    }
 }
