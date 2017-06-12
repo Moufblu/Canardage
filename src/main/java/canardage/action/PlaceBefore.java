@@ -62,6 +62,6 @@ public class PlaceBefore extends WithLocation {
 
    @Override
    public int getNbCards() {
-      return 5;
+      return 3;
    }
 }

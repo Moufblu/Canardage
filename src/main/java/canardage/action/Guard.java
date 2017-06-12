@@ -44,6 +44,6 @@ public class Guard extends WithLocation {
 
    @Override
    public int getNbCards() {
-      return 10;
+      return 3;
    }
 }
