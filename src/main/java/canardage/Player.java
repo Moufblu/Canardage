@@ -230,9 +230,15 @@ public class Player implements Runnable {
       writer.println(ProtocolV1.messageAskPosition(position));
       writer.flush();
    }
-   
-   public void startGame() {
-      server.run();
+   /**
+    * lance la partie du côté serveur
+    * @throws BadGameInitialisation si l'état du serveur ne permet pas de lancer la partie
+    * @throws IOException soucis lors de la connection des client en début de partie
+    */
+   public void startGame() throws BadGameInitialisation, IOException {
+      server.loadGame();
+      Thread thread = new Thread(server);
+      thread.start();
    }
    
    /**
