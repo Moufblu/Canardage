@@ -12,10 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
@@ -122,14 +119,23 @@ public class FXMLCanardageController implements Initializable {
          buttonsList.add(new Button("B" + i));
       }
 
-      // A faire dans Player pour avoir la liste de cartes dans le Player
-      // Et aussi changer et utiliser la liste de toutes les cartes et pas celle prédefinie ici
+
       cardsList = new ArrayList(Global.Rules.HAND_SIZE);
       for(int i = 0; i < Global.Rules.HAND_SIZE; i++) {
          ImageView viewCards = new ImageView(imageBackCard);
          resizeImageView(viewCards);
          Button b = new Button();
          b.setGraphic(viewCards);
+         b.setDisable(true);
+
+         final int trigger = i;
+         b.setOnAction((ActionEvent event) -> {
+            player.playCard(trigger);
+            
+            cardsList.stream().forEach((cardsButton) -> {
+               cardsButton.setDisable(true);
+            });
+         });
          cardsList.add(b);
       }
 
@@ -165,11 +171,8 @@ public class FXMLCanardageController implements Initializable {
             Button b = buttonsList.get(position);
             imagesPosition(buttonsList, position, j, i, HPos.CENTER, VPos.CENTER);
 
-            b.setOnAction(new EventHandler<ActionEvent>() {
-               @Override
-               public void handle(ActionEvent event) {
-                  player.sendEmoticon(Emoticon.values()[position]);
-               }
+            b.setOnAction((ActionEvent event) -> {
+               player.sendEmoticon(Emoticon.values()[position]);
             });
          }
       }
@@ -186,7 +189,7 @@ public class FXMLCanardageController implements Initializable {
       hidenDucks();
       ducksGame();
       protectionCards();
-
+      showPlayerCards();
    }
 
    @FXML
@@ -268,19 +271,14 @@ public class FXMLCanardageController implements Initializable {
    }
 
    public void ducksGame() {
-      // BOUCLE POUR LES CANARDS SUR LE PLATEAU, FAIT JUSTE POUR L'AFFICHAGE, UTILISÉ SI ON VEUT AFFICHER UN CANARD DU PLATEAU PLUS TARD
       for(int i = 0; i < Global.Rules.MAX_NO_POS; i++) {
          final int trigger = i;
          createAndResizeImageView(ducksGameList, i, duckImages[i]);
-         ducksAndProtectionsGrid.setOnMouseClicked(new EventHandler<MouseEvent>(){
-
-            @Override
-            public void handle(MouseEvent event) {
-               if(areCardsUsable){
-                  player.playCard(Global.Rules.MAX_NO_POS - 1 - trigger);
-               }
+         ducksAndProtectionsGrid.setOnMouseClicked((MouseEvent event) -> {
+            if(areCardsUsable){
+               player.posChoose(Global.Rules.MAX_NO_POS - 1 - trigger);
+               areCardsUsable = false;
             }
-            
          });
       }
       ducksAndProtectionsGrid.getChildren().addAll(ducksGameList);
@@ -348,8 +346,7 @@ public class FXMLCanardageController implements Initializable {
    }
 
    public void update() {
-      showPlayerCards();
-
+      
       showDucksGame();
 
       showTargets(2);
@@ -371,8 +368,7 @@ public class FXMLCanardageController implements Initializable {
    }
 
    public void updateCards(Integer[] cards) {
-      // need Database ?
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      
    }
 
    public void updateBoard(String stringBoard) {
@@ -423,20 +419,19 @@ public class FXMLCanardageController implements Initializable {
       }
    }
 
-   public int askCard() {
-      // activer boutons action
-
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+   public void askCard() {
+      cardsList.stream().forEach((cardButton) -> {
+         cardButton.setDisable(false);
+      });
    }
 
    public void alert(Global.ERROR_MESSAGES message) {
       AlertPopup.alert("Wrong move", "You cannot do this action", ProtocolV1.messageError(message), Alert.AlertType.INFORMATION);
    }
 
-   public int askPosition() {
-      // activer cartes position (possible ?)
-
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+   public void askPosition() {
+      areCardsUsable = true;
+      AlertPopup.alert("Position", "Choisissez une position", "Veuillez choisir une position", Alert.AlertType.INFORMATION);
    }
 
 }
