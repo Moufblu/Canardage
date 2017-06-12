@@ -76,6 +76,8 @@ public class Client {
    }
    
    public void sendNewHand(Action[] hand) {
+      System.arraycopy(hand, 0, this.hand, 0, hand.length);
+      
       writeLine(ProtocolV1.messageHand(Stream.of(hand)
          .map(Action::getId)
          .toArray(Integer[]::new)

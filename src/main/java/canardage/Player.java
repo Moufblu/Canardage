@@ -244,8 +244,8 @@ public class Player implements Runnable {
     */
    public void startGame(FXMLCanardageController canardageFxml) throws IllegalStateException, BadGameInitialisation, IOException {
       if(isConnected()) {
-         
          this.canardageFxml = canardageFxml;
+         
          Thread thread = new Thread(this);
          thread.start();
       } else {
