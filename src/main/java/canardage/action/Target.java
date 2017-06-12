@@ -47,4 +47,9 @@ public class Target extends WithLocation {
    public int getNbCards() {
       return 11;
    }
+   
+   @Override
+   public String getFile() {
+      return "/images/CardEnJoue.jpg";
+   }
 }

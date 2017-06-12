@@ -72,4 +72,10 @@ public class Hide extends WithDirection {
    public int getNbCards() {
       return 2;
    }
+   
+   
+   @Override
+   public String getFile() {
+      return "/images/CardPlanque.jpg";
+   }
 }

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -99,7 +100,7 @@ public class FXMLCanardageController implements Initializable {
    ArrayList<ImageView> duckViews;
 
    public FXMLCanardageController() {
-      
+
       imageProtection = new Image("/images/CardACouvert.jpg");
       imageTarget = new Image("/images/Target.png");
       imageBackCard = new Image("/images/CardBack.jpg");
@@ -189,8 +190,8 @@ public class FXMLCanardageController implements Initializable {
       ducksGame();
       protectionCards();
       showPlayerCards();
-      
-      if(player.getPlayerNumber() != 0){
+
+      if(player.getPlayerNumber() != 0) {
          startButton.setVisible(false);
       }
    }
@@ -262,16 +263,53 @@ public class FXMLCanardageController implements Initializable {
       ducksHidenList.get(position).setVisible(false);
    }
 
-   public void showHidenDucks(int position, int duck) {
-      ducksHidenList.get(position).setVisible(true);
+   public void showHidenDuck(int position, int duck) {
+      Platform.runLater(new Runnable() {
 
-      ducksAndProtectionsGrid.getChildren().removeAll(ducksHidenList.get(position));
+         @Override
+         public void run() {
+            ducksHidenList.get(position).setVisible(true);
 
-      ducksHidenList.get(position).setImage(duckImages[duck]);
+            ducksAndProtectionsGrid.getChildren().removeAll(ducksHidenList.get(position));
 
-      ducksAndProtectionsGrid.getChildren().add(position, ducksHidenList.get(position));
-      imagesMarginAndPosition(ducksHidenList, position, position, 0, HPos.CENTER, VPos.CENTER,
-              0, MARGIN_LEFT);
+            ducksHidenList.get(position).setImage(duckImages[duck]);
+
+            ducksAndProtectionsGrid.getChildren().add(position, ducksHidenList.get(position));
+            imagesMarginAndPosition(ducksHidenList, position, position, 0, HPos.CENTER, VPos.CENTER,
+                    0, MARGIN_LEFT);
+         }
+      });
+   }
+
+   private void showHand(Integer[] cards) {
+      Platform.runLater(() -> {
+         for(int i = 0; i < cards.length; i++) {
+            ImageView viewCards = new ImageView(new Image(Global.cards[i].getFile()));
+            resizeImageView(viewCards);
+
+            cardsList.get(i).setGraphic(viewCards);
+         }
+      });
+   }
+
+   public void showDuck(int position, int duck) {
+
+      Platform.runLater(new Runnable() {
+
+         @Override
+         public void run() {
+            ducksGameList.get(position).setVisible(true);
+
+            ducksAndProtectionsGrid.getChildren().removeAll(ducksGameList.get(position));
+
+            ducksGameList.get(position).setImage(duckImages[duck]);
+
+            ducksAndProtectionsGrid.getChildren().add(position, ducksGameList.get(position));
+            imagesMarginAndPosition(ducksGameList, position, position, 0, HPos.LEFT, VPos.CENTER,
+                    MARGIN_DOWN, MARGIN_LEFT);
+
+         }
+      });
    }
 
    public void ducksGame() {
@@ -356,29 +394,33 @@ public class FXMLCanardageController implements Initializable {
 
       modifieDucksInGame(0, 6);
 
-      showHidenDucks(2, 4);
-      showHidenDucks(5, 6);
-      showHidenDucks(3, 2);
-      showHidenDucks(1, 3);
-      showHidenDucks(0, 5);
-      showHidenDucks(4, 1);
+      showHidenDuck(2, 4);
+      showHidenDuck(5, 6);
+      showHidenDuck(3, 2);
+      showHidenDuck(1, 3);
+      showHidenDuck(0, 5);
+      showHidenDuck(4, 1);
 
       showGuard(0);
       showGuard(4);
    }
 
    public void updateCards(Integer[] cards) {
-
+      showHand(cards);
    }
 
    public void updateBoard(String stringBoard) {
+
+      System.out.println("BOARD GOT : " + stringBoard);
       String[] blocs = stringBoard.split(String.valueOf(Global.Board.SEPARATOR));
       boolean hasGuard;
       boolean hasTarget;
       int hiddenDuck;
       for(int k = 0; k < blocs.length; k++) {
          String splittedBoard = blocs[k];
-         Integer.parseInt(splittedBoard.substring(0, 1));
+         int displayDuck = Integer.parseInt(splittedBoard.substring(0, 1));
+
+         showDuck(k, displayDuck);
 
          hasGuard = false;
          hasTarget = false;
@@ -399,7 +441,7 @@ public class FXMLCanardageController implements Initializable {
             }
 
             if(hiddenDuck != 0) {
-               showHidenDucks(k, hiddenDuck);
+               showHidenDuck(k, hiddenDuck);
             } else {
                unshowHidenDucks(k);
             }

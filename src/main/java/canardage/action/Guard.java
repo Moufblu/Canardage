@@ -46,4 +46,9 @@ public class Guard extends WithLocation {
    public int getNbCards() {
       return 3;
    }
+
+   @Override
+   public String getFile() {
+      return "/images/CardACouvert.jpg";
+   }
 }

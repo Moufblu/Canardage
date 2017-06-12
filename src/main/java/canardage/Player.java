@@ -198,14 +198,14 @@ public class Player implements Runnable {
                }
                break;
             case ProtocolV1.DISTRIBUTE_HAND:
-               for(int i = 1; i < Global.Rules.HAND_SIZE + 1; i++) {
-                  cards[i] = readLineCardFileInfo(Integer.parseInt(splittedCommand[i]));
+               for(int i = 0; i < Global.Rules.HAND_SIZE; i++) {
+                  cards[i] = readLineCardFileInfo(Integer.parseInt(splittedCommand[i + 1]));
                }
                canardageFxml.updateCards(cards);
 
                break;
             case ProtocolV1.PATCH_BOARD:
-               canardageFxml.updateBoard(splittedCommand[1]);
+               canardageFxml.updateBoard(inputServer.substring(inputServer.indexOf(ProtocolV1.SEPARATOR) + 1));
                break;
             case ProtocolV1.YOUR_TURN:
                canardageFxml.askCard();

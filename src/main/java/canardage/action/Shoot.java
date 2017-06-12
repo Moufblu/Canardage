@@ -46,4 +46,9 @@ public class Shoot extends WithLocation {
    public int getNbCards() {
       return 13;
    }
+   
+   @Override
+   public String getFile() {
+      return "/images/CardPan.jpg";
+   }
 }

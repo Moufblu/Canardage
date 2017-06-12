@@ -124,7 +124,8 @@ public class Client {
       do {
          writeLine(ProtocolV1.YOUR_TURN);
          try {
-            choiceCard = Integer.parseInt(readLine());
+            String[] response = readLine().split(ProtocolV1.SEPARATOR);
+            choiceCard = Integer.parseInt(response[1]);
             
             //vérifie l'intégrité du choix côté serveur
             if(!hasCard(choiceCard)) {

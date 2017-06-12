@@ -313,6 +313,7 @@ public class ServerManager implements Runnable {
    
    private void sendBoard() {
       for(Client client : playersSockets) {
+         System.out.println("Sending board state");
          client.writeLine(ProtocolV1.messageBoardState());
       }
    }

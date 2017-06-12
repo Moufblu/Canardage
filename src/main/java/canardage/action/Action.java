@@ -62,4 +62,6 @@ public abstract class Action implements Cloneable{
    public Action clone() throws CloneNotSupportedException {
       return (Action)super.clone();
    }
+
+   abstract public String getFile();
 }
