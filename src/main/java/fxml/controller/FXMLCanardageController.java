@@ -45,8 +45,8 @@ public class FXMLCanardageController implements Initializable {
 
    private int nbCurrentPlayers = 0;
 
-   private boolean areCardsUsable = false; 
-   
+   private boolean areCardsUsable = false;
+
    // Changer les trucs en dur (String) par base de données pour tout ce qui est carte et affichage (?)
    Player player = Player.getInstance();
 
@@ -108,7 +108,7 @@ public class FXMLCanardageController implements Initializable {
       playersList = new ArrayList(Global.Rules.MAX_NO_POS);
       playersChatList = new ArrayList(Global.Rules.MAX_NO_POS);
       buttonsList = new ArrayList(NUMBER_OF_SMILEYS);
-      
+
       for(int i = 0; i < Global.Rules.MAX_NO_POS; i++) {
          playersList.add(new ImageView(duckImages[i + 1]));
          playersChatList.add(new Label());
@@ -118,7 +118,6 @@ public class FXMLCanardageController implements Initializable {
       for(int i = 0; i < NUMBER_OF_SMILEYS; i++) {
          buttonsList.add(new Button("B" + i));
       }
-
 
       cardsList = new ArrayList(Global.Rules.HAND_SIZE);
       for(int i = 0; i < Global.Rules.HAND_SIZE; i++) {
@@ -131,7 +130,7 @@ public class FXMLCanardageController implements Initializable {
          final int trigger = i;
          b.setOnAction((ActionEvent event) -> {
             player.playCard(trigger);
-            
+
             cardsList.stream().forEach((cardsButton) -> {
                cardsButton.setDisable(true);
             });
@@ -211,7 +210,7 @@ public class FXMLCanardageController implements Initializable {
          playersGrid.addColumn(i, playersList.get(i), playersChatList.get(i));
          imagesPosition(playersList, i, i, 0, HPos.CENTER, VPos.TOP);
          imagesPosition(playersChatList, i, i, 0, HPos.CENTER, VPos.BOTTOM);
-         if(i == player.getPlayerNumber()){
+         if(i == player.getPlayerNumber()) {
             playersChatList.get(i).setText("You");
          }
       }
@@ -275,20 +274,18 @@ public class FXMLCanardageController implements Initializable {
          final int trigger = i;
          createAndResizeImageView(ducksGameList, i, duckImages[i]);
          ducksAndProtectionsGrid.setOnMouseClicked((MouseEvent event) -> {
-            if(areCardsUsable){
+            if(areCardsUsable) {
                player.posChoose(Global.Rules.MAX_NO_POS - 1 - trigger);
                areCardsUsable = false;
             }
          });
       }
       ducksAndProtectionsGrid.getChildren().addAll(ducksGameList);
-   }
 
-   public void showDucksGame() {
-      // Les canards des joueurs, à refaire selon la liste des joueurs qui sont dnas le jeu et prendre les 6 premiers du tas de canards mélangé
       for(int i = 0; i < Global.Rules.MAX_NO_POS; i++) {
          imagesMarginAndPosition(ducksGameList, i, i, 0, HPos.LEFT, VPos.CENTER,
                  MARGIN_DOWN, MARGIN_LEFT);
+         ducksGameList.get(i).setVisible(false);
       }
    }
 
@@ -346,8 +343,6 @@ public class FXMLCanardageController implements Initializable {
    }
 
    public void update() {
-      
-      showDucksGame();
 
       showTargets(2);
       showTargets(5);
@@ -368,7 +363,7 @@ public class FXMLCanardageController implements Initializable {
    }
 
    public void updateCards(Integer[] cards) {
-      
+
    }
 
    public void updateBoard(String stringBoard) {

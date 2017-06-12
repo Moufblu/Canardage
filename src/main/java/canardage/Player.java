@@ -199,10 +199,7 @@ public class Player implements Runnable {
                break;
             case ProtocolV1.DISTRIBUTE_HAND:
                if(cards.length > 0) {
-                  // Aucun sense dans le message d'erreur, comprend pas :/
-                  // Vérification inversée? Jimmy shit? Am I a shit?
-                  // Beep beep I'm a sheep, Beepbeep I'm a sheep (8)
-                  throw new IllegalStateException("Action cards yet distributed");
+                  throw new IllegalStateException("Action cards already distributed");
                } else {
                   for(int i = 1; i < Global.Rules.HAND_SIZE + 1; i++) {
                      cards[i] = readLineCardFileInfo(Integer.parseInt(splittedCommand[i]));
