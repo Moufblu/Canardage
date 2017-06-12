@@ -45,6 +45,6 @@ public class Target extends WithLocation {
 
    @Override
    public int getNbCards() {
-      return 5;
+      return 11;
    }
 }

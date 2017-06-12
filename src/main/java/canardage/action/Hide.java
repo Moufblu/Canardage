@@ -70,6 +70,6 @@ public class Hide extends WithDirection {
 
    @Override
    public int getNbCards() {
-      return 10;
+      return 2;
    }
 }

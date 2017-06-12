@@ -187,9 +187,7 @@ public class Player implements Runnable {
 
          switch(splittedCommand[0]) {
             case ProtocolV1.ASK_FOR_POSITION:
-               locationChoice = canardageFxml.askPosition();
-               writer.println(ProtocolV1.messageAskPosition(locationChoice));
-               writer.flush();
+               canardageFxml.askPosition();
                break;
             case ProtocolV1.DISTRIBUTE_CARD:
                if(cards.length > 0) {
@@ -216,9 +214,7 @@ public class Player implements Runnable {
                canardageFxml.updateBoard(splittedCommand[1]);
                break;
             case ProtocolV1.YOUR_TURN:
-               int cardChoice = canardageFxml.askCard();
-               writer.println(ProtocolV1.messageUseCard(cardChoice));
-               writer.flush();
+               canardageFxml.askCard();
                break;
             case ProtocolV1.REFUSE_CARD:
                canardageFxml.alert(Global.ERROR_MESSAGES.valueOf(splittedCommand[1]));
@@ -228,6 +224,16 @@ public class Player implements Runnable {
       } while(!splittedCommand[0].equals(ProtocolV1.END_GAME));
    }
 
+   public void playCard(int posCard) {
+      writer.println(ProtocolV1.messageUseCard(posCard));
+      writer.flush();
+   }
+   
+   public void posChoose(int position) {
+      writer.println(ProtocolV1.messageAskPosition(position));
+      writer.flush();
+   }
+   
    /**
     * Intialisation de la partie
     * @param canardageFxml
