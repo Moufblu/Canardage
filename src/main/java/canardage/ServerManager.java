@@ -280,7 +280,7 @@ public class ServerManager {
    private void playATurn(Client client) {
       int choiceCard = client.useCard();
       client.distribute(choiceCard, deck.remove(0));
-      
+      sendBoard();
       if(deck.size() == 0) {
          restoreDeck();
       }
@@ -304,6 +304,13 @@ public class ServerManager {
             hand[i] = deck.remove(0);
          }
          client.sendNewHand(hand);
+      }
+      sendBoard();
+   }
+   
+   private void sendBoard() {
+      for(Client client : playersSockets) {
+         client.writeLine(ProtocolV1.messageBoardState());
       }
    }
 
