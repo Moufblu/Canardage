@@ -299,8 +299,8 @@ public class ServerManager {
       initialiseDeck();
       for(Client client : playersSockets) {
          System.out.println("Envoi d'une main");
-         Action[] hand = new Action[ProtocolV1.HAND_SIZE];
-         for(int i = 0; i < ProtocolV1.HAND_SIZE; i++) {
+         Action[] hand = new Action[Global.Rules.HAND_SIZE];
+         for(int i = 0; i < Global.Rules.HAND_SIZE; i++) {
             hand[i] = deck.remove(0);
          }
          client.sendNewHand(hand);

@@ -38,7 +38,7 @@ public class Client {
       byteReader = clientSocket.getInputStream();
       reader = new BufferedReader(new InputStreamReader(byteReader));
       writer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-      hand = new Action[ProtocolV1.HAND_SIZE];
+      hand = new Action[Global.Rules.HAND_SIZE];
    }
 
    public void setId(int id) {
