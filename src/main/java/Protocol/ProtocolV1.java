@@ -1,6 +1,7 @@
 package Protocol;
 
 import canardage.Board;
+import canardage.Global;
 import canardage.Global.ERROR_MESSAGES;
 import chat.Emoticon;
 
@@ -40,17 +41,11 @@ public class ProtocolV1 {
    public final static String HASH = "Hash";
    public final static int HASH_SIZE = 64;
    
-   public final static int HAND_SIZE    = 3; // Totale de carte pour un joueur
-   public final static int MIN_ID_CARD  = 0; // Minimum de l'id d'une carte
-   public final static int MAX_ID_CARD  = 4; // Maximum de l'id d'une carte
-   public final static int MIN_NO_POS   = 0; // Minimum pour la position d'une carte
-   public final static int MAX_NO_POS   = 6; // Maximum pour la position d'une carte
-
    public final static int PORT      = 1337; // Port de connexion sur le serveur
    
    public static String messageAccept(int playerNumber)
                            throws IllegalArgumentException {
-      if(playerNumber >= MAX_NO_POS || playerNumber < MIN_NO_POS) {
+      if(playerNumber >= Global.Rules.MAX_NO_POS || playerNumber < Global.Rules.MIN_NO_POS) {
          throw new IllegalArgumentException("Joueur invalide: " + playerNumber);
       }
       
@@ -66,7 +61,7 @@ public class ProtocolV1 {
     * @throws IllegalArgumentException si l'id de la carte est inexistante
     */
    public static String messageUseCard(int idCard) throws IllegalArgumentException{
-      if(idCard < MIN_ID_CARD || idCard > MAX_ID_CARD) {
+      if(idCard < Global.Rules.MIN_ID_CARD || idCard > Global.Rules.MAX_ID_CARD) {
          throw new IllegalArgumentException("Id carte invalide: " + idCard);
       }
       
@@ -82,7 +77,7 @@ public class ProtocolV1 {
     */
    public static String messageAskPosition(int noPosition)
                            throws IllegalArgumentException {
-      if(noPosition < MIN_NO_POS || noPosition > MAX_NO_POS) {
+      if(noPosition < Global.Rules.MIN_NO_POS || noPosition > Global.Rules.MAX_NO_POS) {
          throw new IllegalArgumentException("Numéro de case impossible: " + noPosition);
       }
       
@@ -99,19 +94,19 @@ public class ProtocolV1 {
     */
    public static String messageHand(Integer[] idCards) throws IllegalArgumentException {
       // check si la taille du tableau est bien celle d'une main
-      if (idCards.length != HAND_SIZE) {
+      if (idCards.length != Global.Rules.HAND_SIZE) {
          throw new IllegalArgumentException("Nombres de cartes de la main invalide: "
                                             + idCards.length);
       }
       // check si toutes les cartes passées ont un id valdie
-      for (int i = 0; i < HAND_SIZE; i++) {
-         if(idCards[i] < MIN_ID_CARD || idCards[i] > MAX_ID_CARD) {
+      for (int i = 0; i < Global.Rules.HAND_SIZE; i++) {
+         if(idCards[i] < Global.Rules.MIN_ID_CARD || idCards[i] > Global.Rules.MAX_ID_CARD) {
             throw new IllegalArgumentException("Id carte invalide: " + idCards[i]);
          }
       }
       
       String result = DISTRIBUTE_HAND;
-      for(int i = 0; i < HAND_SIZE; i++) {
+      for(int i = 0; i < Global.Rules.HAND_SIZE; i++) {
          result += SEPARATOR + idCards[i];
       }
       return result;
@@ -135,7 +130,7 @@ public class ProtocolV1 {
     */
    public static String messageDistributeCard(int idCard)
                            throws IllegalArgumentException {
-      if(idCard < MIN_ID_CARD || idCard > MAX_ID_CARD) {
+      if(idCard < Global.Rules.MIN_ID_CARD || idCard > Global.Rules.MAX_ID_CARD) {
          throw new IllegalArgumentException("Id carte invalide: " + idCard);
       }
       
@@ -193,7 +188,7 @@ public class ProtocolV1 {
    }
    
    public static String messageChat(int player, Emoticon emote) {
-      if(player < MAX_NO_POS || player > MIN_NO_POS) {
+      if(player < Global.Rules.MAX_NO_POS || player > Global.Rules.MIN_NO_POS) {
          throw new IllegalArgumentException("Joueur invalide: " + player);
       }
       

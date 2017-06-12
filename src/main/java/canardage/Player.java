@@ -60,7 +60,7 @@ public class Player implements Runnable {
     * @param adress
     */
    private Player() {
-      cards = new Integer[ProtocolV1.HAND_SIZE];
+      cards = new Integer[Global.Rules.HAND_SIZE];
       servers = new HashSet<>();
    }
 
@@ -206,7 +206,7 @@ public class Player implements Runnable {
                   // Beep beep I'm a sheep, Beepbeep I'm a sheep (8)
                   throw new IllegalStateException("Action cards yet distributed");
                } else {
-                  for(int i = 1; i < ProtocolV1.HAND_SIZE + 1; i++) {
+                  for(int i = 1; i < Global.Rules.HAND_SIZE + 1; i++) {
                      cards[i] = readLineCardFileInfo(Integer.parseInt(splittedCommand[i]));
                   }
                   canardageFxml.updateCards(cards);
@@ -337,7 +337,7 @@ public class Player implements Runnable {
                readLineCardFileInfo(i);
             }
             int positionCard = in.nextInt();
-            if(positionCard <= 0 || positionCard > ProtocolV1.HAND_SIZE) {
+            if(positionCard <= 0 || positionCard > Global.Rules.HAND_SIZE) {
                continue;
             }
             cardChoice = cards[positionCard - 1];
