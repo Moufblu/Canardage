@@ -198,14 +198,11 @@ public class Player implements Runnable {
                }
                break;
             case ProtocolV1.DISTRIBUTE_HAND:
-               if(cards.length > 0) {
-                  throw new IllegalStateException("Action cards already distributed");
-               } else {
-                  for(int i = 1; i < Global.Rules.HAND_SIZE + 1; i++) {
-                     cards[i] = readLineCardFileInfo(Integer.parseInt(splittedCommand[i]));
-                  }
-                  canardageFxml.updateCards(cards);
+               for(int i = 1; i < Global.Rules.HAND_SIZE + 1; i++) {
+                  cards[i] = readLineCardFileInfo(Integer.parseInt(splittedCommand[i]));
                }
+               canardageFxml.updateCards(cards);
+
                break;
             case ProtocolV1.PATCH_BOARD:
                canardageFxml.updateBoard(splittedCommand[1]);
@@ -225,14 +222,16 @@ public class Player implements Runnable {
       writer.println(ProtocolV1.messageUseCard(posCard));
       writer.flush();
    }
-   
+
    public void posChoose(int position) {
       writer.println(ProtocolV1.messageAskPosition(position));
       writer.flush();
    }
+
    /**
     * lance la partie du côté serveur
-    * @throws BadGameInitialisation si l'état du serveur ne permet pas de lancer la partie
+    * @throws BadGameInitialisation si l'état du serveur ne permet pas de lancer la
+    * partie
     * @throws IOException soucis lors de la connection des client en début de partie
     */
    public void startGame() throws BadGameInitialisation, IOException {
@@ -240,18 +239,18 @@ public class Player implements Runnable {
       Thread thread = new Thread(server);
       thread.start();
    }
-   
+
    /**
     * Intialisation de la partie
     * @param canardageFxml
     * @throws IllegalStateException Lancée si trop de cartes dans la main du joueur,
-    * @throws BadGameInitialisation Lancée si le nombre de joueurs est trop faible
-    * si pas de cartes pas de connexion avec le serveur
+    * @throws BadGameInitialisation Lancée si le nombre de joueurs est trop faible si
+    * pas de cartes pas de connexion avec le serveur
     */
    public void startGame(FXMLCanardageController canardageFxml) throws IllegalStateException, BadGameInitialisation, IOException {
       if(isConnected()) {
          this.canardageFxml = canardageFxml;
-         
+
          Thread thread = new Thread(this);
          thread.start();
       } else {
