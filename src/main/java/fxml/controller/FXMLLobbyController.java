@@ -11,7 +11,9 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -24,6 +26,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
  * FXML Controller class
@@ -84,7 +87,13 @@ public class FXMLLobbyController implements Initializable {
 
                ((Node) (event.getSource())).getScene().getWindow().hide();
                joinStage.show();
-
+               joinStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                  @Override
+                  public void handle(WindowEvent event) {
+                     Platform.exit();
+                     System.exit(0);
+                  }
+               });
                FXMLLoader fxmlLoader = new FXMLLoader();
                Pane p = fxmlLoader.load(getClass().getResource("/fxml/FXMLCanardage.fxml").openStream());
                FXMLCanardageController controller = (FXMLCanardageController) fxmlLoader.getController();
@@ -94,7 +103,7 @@ public class FXMLLobbyController implements Initializable {
                Logger logger = Logger.getLogger(getClass().getName());
                logger.log(Level.SEVERE, "Erreur à la création d'une nouvelle fenêtre.", e);
             }
-
+            
             
          } else {
             AlertPopup.alert("Info", "mot de passe erroné", "Veuillez indiquer un bon mot de passe", Alert.AlertType.INFORMATION);

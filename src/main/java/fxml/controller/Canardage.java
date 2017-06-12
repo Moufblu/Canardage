@@ -40,7 +40,13 @@ public class Canardage extends Application {
          Logger logger = Logger.getLogger(getClass().getName());
          logger.log(Level.SEVERE, "Erreur à la création d'une nouvelle fenêtre.", e);
       }
-      
+      primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+         @Override
+         public void handle(WindowEvent event) {
+            Platform.exit();
+            System.exit(0);
+         }
+      });
    }
 
    public static void main(String[] args) {
