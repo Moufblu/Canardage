@@ -1,7 +1,6 @@
 package chat;
 
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 public enum Emoticon {
    EMOTE1("/images/Content.png"),
@@ -9,13 +8,13 @@ public enum Emoticon {
    EMOTE3("/images/Please.png"),
    EMOTE4("/images/Pan.png");
 
-   ImageView emote;
+   Image emote;
    
    private Emoticon(String imagePath) {
-      emote = new ImageView(new Image(imagePath));
+      emote = new Image(imagePath);
    }
 
-   public ImageView getEmote() {
+   public Image getEmote() {
       return emote;
    }
 }

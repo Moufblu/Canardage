@@ -3,6 +3,7 @@ package canardage;
 import java.net.Socket;
 import Protocol.ProtocolV1;
 import chat.ChatClient;
+import chat.DuckChatClient;
 import chat.Emoticon;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -16,13 +17,9 @@ import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.ProtocolException;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Description: Classe pour créer et gérer les joueurs d'une partie Date: 03.05.2017
@@ -315,7 +312,7 @@ public class Player implements Runnable {
              * envoyés par le chat.
              */
             System.out.println("Information chat : " + clientSocket.getInetAddress().getHostAddress() + " - " + playerNumber);
-            chatClient = new ChatClient(clientSocket.getInetAddress().getHostAddress(), playerNumber); // erreur ici
+            chatClient = new DuckChatClient(clientSocket.getInetAddress().getHostAddress(), playerNumber); // erreur ici
             chatClient.listen();
          } else if(!answer[0].equals(ProtocolV1.REFUSE_CONNECTION)) {
             throw new ProtocolException("erreur dans le protocole");
@@ -412,9 +409,10 @@ public class Player implements Runnable {
       chatClient.write(emoticon);
    }
    
-   public void displayEmoticon(int player, Emoticon emoticon)
-   {
-      ui.showEmoticon(player, emoticon);
+   public void displayEmoticon(int player, Emoticon emoticon) {
+      if(canardageFxml != null) {
+         canardageFxml.showEmoticon(player, emoticon);
+      }
    }
 
    /*public void createServer() {

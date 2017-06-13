@@ -8,10 +8,12 @@ import chat.Emoticon;
 import duckException.BadGameInitialisation;
 import java.io.IOException;
 import java.net.URL;
+import javafx.util.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -170,8 +172,10 @@ public class FXMLCanardageController implements Initializable {
 
             final int position = i * GRID_POS + j;
             imagesPosition(smileysList, position, j, i, HPos.CENTER, VPos.CENTER);
-            smileysList.get(position).setGraphic(Emoticon.values()[position].getEmote());
-            resizeImageView(Emoticon.values()[position].getEmote());
+            
+            ImageView smiley = new ImageView(Emoticon.values()[position].getEmote());
+            smileysList.get(position).setGraphic(smiley);
+            resizeImageView(smiley);
             
             smileysList.get(position).setOnAction((ActionEvent event) -> {
                player.sendEmoticon(Emoticon.values()[position]);
@@ -204,7 +208,7 @@ public class FXMLCanardageController implements Initializable {
       startButton.setOnAction((ActionEvent event) -> {
          try {
             player.startGame();
-            player.startGame(FXMLCanardageController.this);
+            player.startGame(this);
             startButton.setDisable(true);
             startButton.setVisible(false);
          } catch(BadGameInitialisation e) {
@@ -215,20 +219,28 @@ public class FXMLCanardageController implements Initializable {
       });
    }
 
-//   @FXML
-//   private void startGame(ActionEvent event) {
-//      try {
-//         player.startGame();
-//         player.startGame(this);
-//         startButton.setDisable(true);
-//         startButton.setVisible(false);
-//      } catch(BadGameInitialisation e) {
-//         AlertPopup.alert("Avertissement", "Pas assez de joueurs", e.getMessage(), Alert.AlertType.WARNING);
-//      } catch(IllegalStateException | IOException e) {
-//         AlertPopup.alert(e);
-//      }
-//   }
-
+   public void showEmoticon(int player, Emoticon emoticon) {
+      PauseTransition pause = new PauseTransition(Duration.seconds(5));
+      Platform.runLater(() -> {
+         ImageView smileyChat = new ImageView(emoticon.getEmote());
+         resizeImageView(smileyChat);
+         imagesMarginAndPosition(Arrays.asList(smileyChat), 0, player, 0, HPos.CENTER, VPos.BOTTOM, MARGIN_DOWN, 0);
+         playersGrid.add(smileyChat, player, 0);
+         pause.pause();
+         pause.setOnFinished(e -> playersGrid.getChildren().removeAll(smileyChat));
+         pause.play();
+      });
+         
+//      }));
+//      pause.play();
+//      Platform.runLater(() -> {
+//         ImageView smileyChat = new ImageView(emoticon.getEmote());
+//         resizeImageView(smileyChat);
+//         imagesMarginAndPosition(Arrays.asList(smileyChat), 0, player, 0, HPos.CENTER, VPos.BOTTOM, MARGIN_DOWN, 0);
+//         playersGrid.add(smileyChat, player, 0);
+//      });
+   }
+   
    public void showPlayers() {
       for(int i = nbCurrentPlayers; i < 6; i++) {
          nbCurrentPlayers++;

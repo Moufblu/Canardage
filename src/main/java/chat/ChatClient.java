@@ -9,7 +9,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,7 +56,6 @@ public class ChatClient {
                   line = "KO";
                   Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                }
-
                process(line);
             }
          }

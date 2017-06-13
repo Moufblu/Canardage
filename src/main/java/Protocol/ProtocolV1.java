@@ -188,7 +188,7 @@ public class ProtocolV1 {
    }
    
    public static String messageChat(int player, Emoticon emote) {
-      if(player < Global.Rules.MAX_NO_POS || player > Global.Rules.MIN_NO_POS) {
+      if(player < Global.Rules.MIN_NO_POS || player >= Global.Rules.MAX_NB_PLAYERS) {
          throw new IllegalArgumentException("Joueur invalide: " + player);
       }
       
