@@ -411,6 +411,11 @@ public class Player implements Runnable {
    public void sendEmoticon(Emoticon emoticon) {
       chatClient.write(emoticon);
    }
+   
+   public void displayEmoticon(int player, Emoticon emoticon)
+   {
+      ui.showEmoticon(player, emoticon);
+   }
 
    /*public void createServer() {
     boolean nameNotRedondant = false;
