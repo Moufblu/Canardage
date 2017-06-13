@@ -1,10 +1,6 @@
 package canardage.action;
 
 import canardage.Board;
-import java.io.IOException;
-import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Description: Classe pour implémenter la carte pour se cacher derrière un canard

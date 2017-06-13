@@ -1,7 +1,6 @@
 package canardage;
 
 import java.net.Socket;
-import Protocol.ProtocolV1;
 import chat.ChatClient;
 import chat.DuckChatClient;
 import chat.Emoticon;
@@ -88,9 +87,9 @@ public class Player implements Runnable {
 
          servers.clear();
 
-         socket = new MulticastSocket(ProtocolV1.MULTICAST_PORT);
+         socket = new MulticastSocket(canardage.Global.ProtocolV1.MULTICAST_PORT);
          socket.setInterface(ipAddress);
-         socket.joinGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
+         socket.joinGroup(InetAddress.getByName(canardage.Global.ProtocolV1.MULTICAST_ADDRESS));
          socket.setSoTimeout((int) REFRESH_DELAY);
 
          long start = new Date().getTime();
@@ -108,7 +107,7 @@ public class Player implements Runnable {
                servers.add((Server) gson.fromJson(msg, type));
             }
          }
-         socket.leaveGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
+         socket.leaveGroup(InetAddress.getByName(canardage.Global.ProtocolV1.MULTICAST_ADDRESS));
       } catch(SocketException ex) {
          System.out.println("socket creation fail : " + ex.getMessage());
       } catch(IOException ex) {
@@ -177,21 +176,21 @@ public class Player implements Runnable {
       do {
          try {
             inputServer = responseBuffer.readLine();
-            splittedCommand = inputServer.split(ProtocolV1.SEPARATOR);
+            splittedCommand = inputServer.split(canardage.Global.ProtocolV1.SEPARATOR);
          } catch(IOException e) {
             System.out.println(e.toString());
             continue;
          }
 
          switch(splittedCommand[0]) {
-            case ProtocolV1.ASK_FOR_POSITION:
+            case canardage.Global.ProtocolV1.ASK_FOR_POSITION:
                canardageFxml.askPosition();
                break;
-            case ProtocolV1.DISTRIBUTE_CARD:
+            case canardage.Global.ProtocolV1.DISTRIBUTE_CARD:
                cards[locationChoice] = readLineCardFileInfo(Integer.parseInt(splittedCommand[1]));
                canardageFxml.updateCards(cards);
                break;
-            case ProtocolV1.DISTRIBUTE_HAND:
+            case canardage.Global.ProtocolV1.DISTRIBUTE_HAND:
                for(int i = 0; i < Global.Rules.HAND_SIZE; i++) {
                   cards[i] = readLineCardFileInfo(Integer.parseInt(splittedCommand[i + 1]));
                }
@@ -202,30 +201,30 @@ public class Player implements Runnable {
                canardageFxml.updateCards(cards);
 
                break;
-            case ProtocolV1.PATCH_BOARD:
-               canardageFxml.updateBoard(inputServer.substring(inputServer.indexOf(ProtocolV1.SEPARATOR) + 1));
+            case canardage.Global.ProtocolV1.PATCH_BOARD:
+               canardageFxml.updateBoard(inputServer.substring(inputServer.indexOf(canardage.Global.ProtocolV1.SEPARATOR) + 1));
                break;
-            case ProtocolV1.YOUR_TURN:
+            case canardage.Global.ProtocolV1.YOUR_TURN:
                canardageFxml.askCard();
                break;
-            case ProtocolV1.REFUSE_CARD:
+            case canardage.Global.ProtocolV1.REFUSE_CARD:
                canardageFxml.alert(Global.ERROR_MESSAGES.valueOf(splittedCommand[1]));
-               System.out.println(ProtocolV1.ERRORS[Integer.parseInt(splittedCommand[1])]);
+               System.out.println(canardage.Global.ProtocolV1.ERRORS[Integer.parseInt(splittedCommand[1])]);
                break;
          }
-      } while(!splittedCommand[0].equals(ProtocolV1.END_GAME));
+      } while(!splittedCommand[0].equals(canardage.Global.ProtocolV1.END_GAME));
    }
 
    public void playCard(int posCard) {
       locationChoice = posCard;
       System.out.println("envoie carte a la pos : " + posCard);
-      writer.println(ProtocolV1.messageUseCard(posCard));
+      writer.println(canardage.Global.ProtocolV1.messageUseCard(posCard));
       writer.flush();
    }
 
    public void posChoose(int position) {
       System.out.println("position jouee par player : " + position);
-      writer.println(ProtocolV1.messageAskPosition(position));
+      writer.println(canardage.Global.ProtocolV1.messageAskPosition(position));
       writer.flush();
    }
 
@@ -284,7 +283,7 @@ public class Player implements Runnable {
       if(!connected) {
 
          System.out.println("tentative de connection");
-         clientSocket = new Socket(server.getIpAddress(), ProtocolV1.PORT);
+         clientSocket = new Socket(server.getIpAddress(), canardage.Global.ProtocolV1.PORT);
          clientSocket.setSoTimeout(TIMEOUT_ANSWER);
 
          responseBuffer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
@@ -292,9 +291,9 @@ public class Player implements Runnable {
          writer = new PrintWriter(new OutputStreamWriter(byteWriter, "UTF-8"));
 
          System.out.println("Attente du serveur");
-         String[] answer = (responseBuffer.readLine()).split(ProtocolV1.SEPARATOR);
+         String[] answer = (responseBuffer.readLine()).split(canardage.Global.ProtocolV1.SEPARATOR);
          System.out.println(answer[0]);
-         if(answer[0].equals(ProtocolV1.HASH)) {
+         if(answer[0].equals(canardage.Global.ProtocolV1.HASH)) {
             byte[] hashedPassword = hash(mdp);
             System.out.println("Envoi du mot de passe Hashé : " + hashedPassword.length);
             byteWriter.write(hashedPassword);
@@ -304,9 +303,9 @@ public class Player implements Runnable {
             throw new ProtocolException("erreur dans le protocole");
          }
          System.out.println("Phase d'acceptation");
-         answer = (responseBuffer.readLine()).split(ProtocolV1.SEPARATOR);
+         answer = (responseBuffer.readLine()).split(canardage.Global.ProtocolV1.SEPARATOR);
          System.out.println(answer[0]);
-         if(answer[0].equals(ProtocolV1.ACCEPT_CONNECTION)) {
+         if(answer[0].equals(canardage.Global.ProtocolV1.ACCEPT_CONNECTION)) {
             System.out.println("Joueur connecté");
             connected = true;
             playerNumber = Integer.valueOf(answer[1]);
@@ -316,7 +315,7 @@ public class Player implements Runnable {
             System.out.println("Information chat : " + clientSocket.getInetAddress().getHostAddress() + " - " + playerNumber);
             chatClient = new DuckChatClient(clientSocket.getInetAddress().getHostAddress(), playerNumber); // erreur ici
             chatClient.listen();
-         } else if(!answer[0].equals(ProtocolV1.REFUSE_CONNECTION)) {
+         } else if(!answer[0].equals(canardage.Global.ProtocolV1.REFUSE_CONNECTION)) {
             throw new ProtocolException("erreur dans le protocole");
          }
       }

@@ -1,7 +1,6 @@
 package fxml.controller;
 
-import Protocol.AlertPopup;
-import Protocol.ProtocolV1;
+import canardage.AlertPopup;
 import canardage.Global;
 import canardage.Player;
 import chat.Emoticon;
@@ -37,8 +36,6 @@ import javafx.scene.layout.GridPane;
  */
 public class FXMLCanardageController implements Initializable {
 
-   // A VÉRIFIER SI ON DOIT METTRE DANS LE PROTOCOL ET VOIR LEQUELS ENLEVER ET
-   // UTILISER CELLES DU PROTOCOL À LA PLACE
    private final int RESIZE_CARDS = 5;
    private final int MARGIN_LEFT = 20;
    private final int MARGIN_DOWN = 15;
@@ -230,15 +227,6 @@ public class FXMLCanardageController implements Initializable {
          pause.setOnFinished(e -> playersGrid.getChildren().removeAll(smileyChat));
          pause.play();
       });
-         
-//      }));
-//      pause.play();
-//      Platform.runLater(() -> {
-//         ImageView smileyChat = new ImageView(emoticon.getEmote());
-//         resizeImageView(smileyChat);
-//         imagesMarginAndPosition(Arrays.asList(smileyChat), 0, player, 0, HPos.CENTER, VPos.BOTTOM, MARGIN_DOWN, 0);
-//         playersGrid.add(smileyChat, player, 0);
-//      });
    }
    
    public void showPlayers() {
@@ -454,7 +442,7 @@ public class FXMLCanardageController implements Initializable {
    public void updateBoard(String stringBoard) {
 
       System.out.println("BOARD GOT : " + stringBoard);
-      String[] blocs = stringBoard.split(String.valueOf(Global.Board.SEPARATOR));
+      String[] blocs = stringBoard.split(String.valueOf(Global.BoardParam.SEPARATOR));
       boolean hasGuard;
       boolean hasTarget;
       int hiddenDuck;
@@ -471,10 +459,10 @@ public class FXMLCanardageController implements Initializable {
          for(int i = 1; i < splittedBoard.length(); i++) {
             char c = splittedBoard.charAt(i);
             switch(c) {
-               case Global.Board.GUARD:
+               case Global.BoardParam.GUARD:
                   hasGuard = true;
                   break;
-               case Global.Board.TARGET:
+               case Global.BoardParam.TARGET:
                   hasTarget = true;
                   break;
                default:
@@ -513,7 +501,7 @@ public class FXMLCanardageController implements Initializable {
    }
 
    public void alert(Global.ERROR_MESSAGES message) {
-      AlertPopup.alert("Wrong move", "You cannot do this action", ProtocolV1.messageError(message), Alert.AlertType.INFORMATION);
+      AlertPopup.alert("Wrong move", "You cannot do this action", canardage.Global.ProtocolV1.messageError(message), Alert.AlertType.INFORMATION);
    }
 
    public void askPosition() {

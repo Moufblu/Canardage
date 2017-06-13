@@ -1,7 +1,7 @@
 package chat;
 
-import Protocol.ProtocolV1;
 import canardage.Client;
+import canardage.Global;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,14 +23,14 @@ public class ChatClient {
    public ChatClient(String address, int id) throws IOException
    {
       this.id = id;
-      socket = new Socket(address, ProtocolV1.CHAT_PORT);
+      socket = new Socket(address, Global.ProtocolV1.CHAT_PORT);
       socket.setSoTimeout(TIMEOUT_ANSWER);
       reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
       writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
    }
    
    public void write(Emoticon emoticon) {
-      writer.println(ProtocolV1.messageChat(id, emoticon));
+      writer.println(Global.ProtocolV1.messageChat(id, emoticon));
       writer.flush();
    }
    

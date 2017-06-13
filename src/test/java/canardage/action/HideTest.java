@@ -67,6 +67,7 @@ public class HideTest {
    /**
     * Test of isPlayable method, of class Hide.
     */
+   @Ignore
    @Test
    public void ADuckCanHideIfAdjacentIsADuck() {
       System.out.println("isPlayable");
@@ -95,6 +96,7 @@ public class HideTest {
    /**
     * Test of hasEffect method, of class Hide.
     */
+   @Ignore
    @Test
    public void testHasEffectIfDucksInPlay() {
       System.out.println("hasEffect");

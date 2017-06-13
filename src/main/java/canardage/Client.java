@@ -1,6 +1,5 @@
 package canardage;
 
-import Protocol.ProtocolV1;
 import canardage.action.Action;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -80,7 +79,7 @@ public class Client {
       }
       System.arraycopy(hand, 0, this.hand, 0, hand.length);
       
-      writeLine(ProtocolV1.messageHand(Stream.of(hand)
+      writeLine(canardage.Global.ProtocolV1.messageHand(Stream.of(hand)
          .map(Action::getId)
          .toArray(Integer[]::new)
       ));
@@ -104,8 +103,8 @@ public class Client {
    }
    
    public int getLocation() throws IOException {
-      writeLine(ProtocolV1.ASK_FOR_POSITION);
-      String[] positionAnswer = readLine().split(ProtocolV1.SEPARATOR);
+      writeLine(canardage.Global.ProtocolV1.ASK_FOR_POSITION);
+      String[] positionAnswer = readLine().split(canardage.Global.ProtocolV1.SEPARATOR);
       System.out.println("position recu cote server : " + positionAnswer[1]);
       int choiceLocation = Integer.parseInt(positionAnswer[1]);
       return choiceLocation;
@@ -117,9 +116,9 @@ public class Client {
       boolean hasCardWithEffect = hasAnyCardPlayable();
       System.out.println(hasCardWithEffect);
       do {
-         writeLine(ProtocolV1.YOUR_TURN);
+         writeLine(canardage.Global.ProtocolV1.YOUR_TURN);
          try {
-            String[] response = readLine().split(ProtocolV1.SEPARATOR);
+            String[] response = readLine().split(canardage.Global.ProtocolV1.SEPARATOR);
             choiceCard = Integer.parseInt(response[1]);
             System.out.println("carte reçu choisie : " + choiceCard);
          } catch(IOException ex) {
@@ -139,7 +138,7 @@ public class Client {
    public void distribute(int position, Action newCard) {
       newCard.setPlayer(this);
       hand[position] = newCard;
-      writeLine(ProtocolV1.messageDistributeCard(newCard.getId()));
+      writeLine(canardage.Global.ProtocolV1.messageDistributeCard(newCard.getId()));
    }
 
 }
