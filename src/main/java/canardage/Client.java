@@ -114,8 +114,6 @@ public class Client {
       
       int choiceCard = -1;
       boolean hasCardWithEffect = hasAnyCardPlayable();
-      System.out.println("Card with Effect" + hasCardWithEffect);
-      System.out.println("Has Effect" + !hand[choiceCard].hasEffect());
       System.out.println(hasCardWithEffect);
       do {
          writeLine(canardage.Global.ProtocolV1.YOUR_TURN);
