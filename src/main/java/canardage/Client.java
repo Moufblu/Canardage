@@ -2,7 +2,6 @@ package canardage;
 
 import Protocol.ProtocolV1;
 import canardage.action.Action;
-import canardage.action.WithLocation;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -112,7 +111,7 @@ public class Client {
       return choiceLocation;
    }
    
-   public int useCard() {
+   public CardInfo useCard() {
       
       int choiceCard = -1;
       boolean hasCardWithEffect = hasAnyCardPlayable();
@@ -130,9 +129,11 @@ public class Client {
       } while(!hand[choiceCard].hasEffect() && hasCardWithEffect);
       System.out.println("use card no : " + hand[choiceCard]);
       hand[choiceCard].effect();
+      CardInfo cardInfo = new CardInfo(choiceCard, hand[choiceCard].getId());
       hand[choiceCard] = null;
       
-      return choiceCard;
+      
+      return cardInfo;
    }
    
    public void distribute(int position, Action newCard) {

@@ -347,14 +347,6 @@ public class FXMLCanardageController implements Initializable {
       for(int i = 0; i < Global.Rules.MAX_NO_POS; i++) {
          final int trigger = i;
          createAndResizeImageView(ducksGameList, i, duckImages[i]);
-         ducksAndProtectionsGrid.setOnMouseClicked((MouseEvent event) -> {
-            System.out.println("clic sur case no : " + trigger);
-            if(areCardsUsable) {
-               System.out.println("est rentré dans le if : " + (Global.Rules.MAX_NO_POS - 1 - trigger));
-               player.posChoose(Global.Rules.MAX_NO_POS - 1 - trigger);
-               areCardsUsable = false;
-            }
-         });
       }
       ducksAndProtectionsGrid.getChildren().addAll(ducksGameList);
 
@@ -394,7 +386,24 @@ public class FXMLCanardageController implements Initializable {
    }
 
    private void createAndResizeImageView(List<ImageView> list, int position, Image image) {
-      list.add(position, new ImageView(image));
+      ImageView imageView = new ImageView(image);
+      imageView.setOnMouseClicked((MouseEvent event) -> {
+         System.out.println("clic sur case no : " + (Global.Rules.MAX_NO_POS - 1 - position));
+         if(areCardsUsable) {
+            System.out.println("est rentré dans ");
+            player.posChoose(Global.Rules.MAX_NO_POS - 1 - position);
+            areCardsUsable = false;
+         }
+      });
+      imageView.setOnMouseEntered((MouseEvent event) -> {
+         imageView.setOpacity(.5);
+      });
+      
+      imageView.setOnMouseExited((MouseEvent event) -> {
+         imageView.setOpacity(1);
+      });
+
+      list.add(position, imageView);
       resizeImageView(list.get(position));
    }
 
@@ -472,25 +481,28 @@ public class FXMLCanardageController implements Initializable {
                   hiddenDuck = Character.getNumericValue(c);
                   break;
             }
-
-            if(hiddenDuck != 0) {
-               showHidenDuck(k, hiddenDuck);
-            } else {
-               unshowHidenDucks(k);
-            }
-
-            if(hasTarget) {
-               showTargets(k);
-            } else {
-               unshowTargets(k);
-            }
-
-            if(hasGuard) {
-               showGuard(k);
-            } else {
-               unshowGuard(k);
-            }
          }
+
+         if(hiddenDuck != 0) {
+            showHidenDuck(k, hiddenDuck);
+         } else {
+            unshowHidenDucks(k);
+         }
+
+         if(hasTarget) {
+            System.out.println("SHOW TARGET");
+            showTargets(k);
+         } else {
+            System.out.println("HIDE TARGET");
+            unshowTargets(k);
+         }
+
+         if(hasGuard) {
+            showGuard(k);
+         } else {
+            unshowGuard(k);
+         }
+
       }
    }
 

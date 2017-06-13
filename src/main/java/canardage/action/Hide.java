@@ -49,7 +49,7 @@ public class Hide extends WithDirection {
 
          return false;
       }
-      if(board.possibleHide(position, direction)) {
+      if(board.possibleHide(position, direction)&& board.isMyDuck(position, getPlayer().getId())) {
          return true;
       }
       return false;
