@@ -1,17 +1,18 @@
 package fxml.controller;
 
-import Protocol.AlertPopup;
-import Protocol.ProtocolV1;
+import canardage.AlertPopup;
 import canardage.Global;
 import canardage.Player;
 import chat.Emoticon;
 import duckException.BadGameInitialisation;
 import java.io.IOException;
 import java.net.URL;
+import javafx.util.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -35,8 +36,6 @@ import javafx.scene.layout.GridPane;
  */
 public class FXMLCanardageController implements Initializable {
 
-   // A VÉRIFIER SI ON DOIT METTRE DANS LE PROTOCOL ET VOIR LEQUELS ENLEVER ET
-   // UTILISER CELLES DU PROTOCOL À LA PLACE
    private final int RESIZE_CARDS = 5;
    private final int MARGIN_LEFT = 20;
    private final int MARGIN_DOWN = 15;
@@ -68,7 +67,7 @@ public class FXMLCanardageController implements Initializable {
 
    private final ArrayList<ImageView> playersList;
 
-   private final ArrayList<Button> buttonsList;
+   private final ArrayList<Button> smileysList;
 
    private final ArrayList<Button> cardsList;
 
@@ -108,7 +107,7 @@ public class FXMLCanardageController implements Initializable {
       // Liste des images des canards en jeu
       playersList = new ArrayList(Global.Rules.MAX_NO_POS);
       playersChatList = new ArrayList(Global.Rules.MAX_NO_POS);
-      buttonsList = new ArrayList(NUMBER_OF_SMILEYS);
+      smileysList = new ArrayList(NUMBER_OF_SMILEYS);
 
       for(int i = 0; i < Global.Rules.MAX_NO_POS; i++) {
          playersList.add(new ImageView(duckImages[i + 1]));
@@ -117,13 +116,14 @@ public class FXMLCanardageController implements Initializable {
       }
 
       for(int i = 0; i < NUMBER_OF_SMILEYS; i++) {
-         buttonsList.add(new Button("B" + i));
+         smileysList.add(new Button());
       }
 
       cardsList = new ArrayList(Global.Rules.HAND_SIZE);
       for(int i = 0; i < Global.Rules.HAND_SIZE; i++) {
          ImageView viewCards = new ImageView(imageBackCard);
          resizeImageView(viewCards);
+         
          Button b = new Button();
          b.setGraphic(viewCards);
          b.setDisable(true);
@@ -168,22 +168,25 @@ public class FXMLCanardageController implements Initializable {
          for(int j = 0; j < NUMBER_OF_SMILEYS / GRID_POS; j++) {
 
             final int position = i * GRID_POS + j;
-            Button b = buttonsList.get(position);
-            imagesPosition(buttonsList, position, j, i, HPos.CENTER, VPos.CENTER);
-
-            b.setOnAction((ActionEvent event) -> {
+            imagesPosition(smileysList, position, j, i, HPos.CENTER, VPos.CENTER);
+            
+            ImageView smiley = new ImageView(Emoticon.values()[position].getEmote());
+            smileysList.get(position).setGraphic(smiley);
+            resizeImageView(smiley);
+            
+            smileysList.get(position).setOnAction((ActionEvent event) -> {
                player.sendEmoticon(Emoticon.values()[position]);
             });
          }
       }
 
-      smileyGrid.getChildren().addAll(buttonsList);
+      smileyGrid.getChildren().addAll(smileysList);
 
       // La partie arrière d'une carte canard pour la pile de canard
       imagesMarginAndPosition(Arrays.asList(viewBackCard), 0, 6, 0,
               HPos.CENTER, VPos.CENTER, MARGIN_DOWN, 0);
       ducksAndProtectionsGrid.getChildren().add(viewBackCard);
-
+      
       showPlayers();
       targets();
       hidenDucks();
@@ -191,25 +194,41 @@ public class FXMLCanardageController implements Initializable {
       protectionCards();
       showPlayerCards();
 
+      startButton = new Button("Commencer!");
+      imagesPosition(Arrays.asList(startButton), 0, 0, 1, HPos.LEFT, VPos.BOTTOM);
+      smileyGrid.getChildren().add(startButton);
+      
       if(player.getPlayerNumber() != 0) {
          startButton.setVisible(false);
       }
+      
+      startButton.setOnAction((ActionEvent event) -> {
+         try {
+            player.startGame();
+            player.startGame(this);
+            startButton.setDisable(true);
+            startButton.setVisible(false);
+         } catch(BadGameInitialisation e) {
+            AlertPopup.alert("Avertissement", "Pas assez de joueurs", e.getMessage(), Alert.AlertType.WARNING);
+         } catch(IllegalStateException | IOException e) {
+            AlertPopup.alert(e);
+         }
+      });
    }
 
-   @FXML
-   private void startGame(ActionEvent event) {
-      try {
-         player.startGame();
-         player.startGame(this);
-         startButton.setDisable(true);
-         startButton.setVisible(false);
-      } catch(BadGameInitialisation e) {
-         AlertPopup.alert("Avertissement", "Pas assez de joueurs", e.getMessage(), Alert.AlertType.WARNING);
-      } catch(IllegalStateException | IOException e) {
-         AlertPopup.alert(e);
-      }
+   public void showEmoticon(int player, Emoticon emoticon) {
+      PauseTransition pause = new PauseTransition(Duration.seconds(5));
+      Platform.runLater(() -> {
+         ImageView smileyChat = new ImageView(emoticon.getEmote());
+         resizeImageView(smileyChat);
+         imagesMarginAndPosition(Arrays.asList(smileyChat), 0, player, 0, HPos.CENTER, VPos.BOTTOM, MARGIN_DOWN, 0);
+         playersGrid.add(smileyChat, player, 0);
+         pause.pause();
+         pause.setOnFinished(e -> playersGrid.getChildren().removeAll(smileyChat));
+         pause.play();
+      });
    }
-
+   
    public void showPlayers() {
       for(int i = nbCurrentPlayers; i < 6; i++) {
          nbCurrentPlayers++;
@@ -423,7 +442,7 @@ public class FXMLCanardageController implements Initializable {
    public void updateBoard(String stringBoard) {
 
       System.out.println("BOARD GOT : " + stringBoard);
-      String[] blocs = stringBoard.split(String.valueOf(Global.Board.SEPARATOR));
+      String[] blocs = stringBoard.split(String.valueOf(Global.BoardParam.SEPARATOR));
       boolean hasGuard;
       boolean hasTarget;
       int hiddenDuck;
@@ -440,10 +459,10 @@ public class FXMLCanardageController implements Initializable {
          for(int i = 1; i < splittedBoard.length(); i++) {
             char c = splittedBoard.charAt(i);
             switch(c) {
-               case Global.Board.GUARD:
+               case Global.BoardParam.GUARD:
                   hasGuard = true;
                   break;
-               case Global.Board.TARGET:
+               case Global.BoardParam.TARGET:
                   hasTarget = true;
                   break;
                default:
@@ -482,7 +501,7 @@ public class FXMLCanardageController implements Initializable {
    }
 
    public void alert(Global.ERROR_MESSAGES message) {
-      AlertPopup.alert("Wrong move", "You cannot do this action", ProtocolV1.messageError(message), Alert.AlertType.INFORMATION);
+      AlertPopup.alert("Wrong move", "You cannot do this action", canardage.Global.ProtocolV1.messageError(message), Alert.AlertType.INFORMATION);
    }
 
    public void askPosition() {

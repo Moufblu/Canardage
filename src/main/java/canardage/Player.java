@@ -1,8 +1,8 @@
 package canardage;
 
 import java.net.Socket;
-import Protocol.ProtocolV1;
 import chat.ChatClient;
+import chat.DuckChatClient;
 import chat.Emoticon;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -16,13 +16,9 @@ import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.ProtocolException;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Description: Classe pour créer et gérer les joueurs d'une partie Date: 03.05.2017
@@ -91,9 +87,9 @@ public class Player implements Runnable {
 
          servers.clear();
 
-         socket = new MulticastSocket(ProtocolV1.MULTICAST_PORT);
+         socket = new MulticastSocket(canardage.Global.ProtocolV1.MULTICAST_PORT);
          socket.setInterface(ipAddress);
-         socket.joinGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
+         socket.joinGroup(InetAddress.getByName(canardage.Global.ProtocolV1.MULTICAST_ADDRESS));
          socket.setSoTimeout((int) REFRESH_DELAY);
 
          long start = new Date().getTime();
@@ -111,7 +107,7 @@ public class Player implements Runnable {
                servers.add((Server) gson.fromJson(msg, type));
             }
          }
-         socket.leaveGroup(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
+         socket.leaveGroup(InetAddress.getByName(canardage.Global.ProtocolV1.MULTICAST_ADDRESS));
       } catch(SocketException ex) {
          System.out.println("socket creation fail : " + ex.getMessage());
       } catch(IOException ex) {
@@ -180,21 +176,21 @@ public class Player implements Runnable {
       do {
          try {
             inputServer = responseBuffer.readLine();
-            splittedCommand = inputServer.split(ProtocolV1.SEPARATOR);
+            splittedCommand = inputServer.split(canardage.Global.ProtocolV1.SEPARATOR);
          } catch(IOException e) {
             System.out.println(e.toString());
             continue;
          }
 
          switch(splittedCommand[0]) {
-            case ProtocolV1.ASK_FOR_POSITION:
+            case canardage.Global.ProtocolV1.ASK_FOR_POSITION:
                canardageFxml.askPosition();
                break;
-            case ProtocolV1.DISTRIBUTE_CARD:
+            case canardage.Global.ProtocolV1.DISTRIBUTE_CARD:
                cards[locationChoice] = readLineCardFileInfo(Integer.parseInt(splittedCommand[1]));
                canardageFxml.updateCards(cards);
                break;
-            case ProtocolV1.DISTRIBUTE_HAND:
+            case canardage.Global.ProtocolV1.DISTRIBUTE_HAND:
                for(int i = 0; i < Global.Rules.HAND_SIZE; i++) {
                   cards[i] = readLineCardFileInfo(Integer.parseInt(splittedCommand[i + 1]));
                }
@@ -205,30 +201,30 @@ public class Player implements Runnable {
                canardageFxml.updateCards(cards);
 
                break;
-            case ProtocolV1.PATCH_BOARD:
-               canardageFxml.updateBoard(inputServer.substring(inputServer.indexOf(ProtocolV1.SEPARATOR) + 1));
+            case canardage.Global.ProtocolV1.PATCH_BOARD:
+               canardageFxml.updateBoard(inputServer.substring(inputServer.indexOf(canardage.Global.ProtocolV1.SEPARATOR) + 1));
                break;
-            case ProtocolV1.YOUR_TURN:
+            case canardage.Global.ProtocolV1.YOUR_TURN:
                canardageFxml.askCard();
                break;
-            case ProtocolV1.REFUSE_CARD:
+            case canardage.Global.ProtocolV1.REFUSE_CARD:
                canardageFxml.alert(Global.ERROR_MESSAGES.valueOf(splittedCommand[1]));
-               System.out.println(ProtocolV1.ERRORS[Integer.parseInt(splittedCommand[1])]);
+               System.out.println(canardage.Global.ProtocolV1.ERRORS[Integer.parseInt(splittedCommand[1])]);
                break;
          }
-      } while(!splittedCommand[0].equals(ProtocolV1.END_GAME));
+      } while(!splittedCommand[0].equals(canardage.Global.ProtocolV1.END_GAME));
    }
 
    public void playCard(int posCard) {
       locationChoice = posCard;
       System.out.println("envoie carte a la pos : " + posCard);
-      writer.println(ProtocolV1.messageUseCard(posCard));
+      writer.println(canardage.Global.ProtocolV1.messageUseCard(posCard));
       writer.flush();
    }
 
    public void posChoose(int position) {
       System.out.println("position jouee par player : " + position);
-      writer.println(ProtocolV1.messageAskPosition(position));
+      writer.println(canardage.Global.ProtocolV1.messageAskPosition(position));
       writer.flush();
    }
 
@@ -251,7 +247,7 @@ public class Player implements Runnable {
     * @throws BadGameInitialisation Lancée si le nombre de joueurs est trop faible si
     * pas de cartes pas de connexion avec le serveur
     */
-   public void startGame(FXMLCanardageController canardageFxml) throws IllegalStateException, BadGameInitialisation, IOException {
+   public void startGame(FXMLCanardageController canardageFxml) throws IllegalStateException, BadGameInitialisation {
       if(isConnected()) {
          this.canardageFxml = canardageFxml;
 
@@ -287,7 +283,7 @@ public class Player implements Runnable {
       if(!connected) {
 
          System.out.println("tentative de connection");
-         clientSocket = new Socket(server.getIpAddress(), ProtocolV1.PORT);
+         clientSocket = new Socket(server.getIpAddress(), canardage.Global.ProtocolV1.PORT);
          clientSocket.setSoTimeout(TIMEOUT_ANSWER);
 
          responseBuffer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
@@ -295,9 +291,9 @@ public class Player implements Runnable {
          writer = new PrintWriter(new OutputStreamWriter(byteWriter, "UTF-8"));
 
          System.out.println("Attente du serveur");
-         String[] answer = (responseBuffer.readLine()).split(ProtocolV1.SEPARATOR);
+         String[] answer = (responseBuffer.readLine()).split(canardage.Global.ProtocolV1.SEPARATOR);
          System.out.println(answer[0]);
-         if(answer[0].equals(ProtocolV1.HASH)) {
+         if(answer[0].equals(canardage.Global.ProtocolV1.HASH)) {
             byte[] hashedPassword = hash(mdp);
             System.out.println("Envoi du mot de passe Hashé : " + hashedPassword.length);
             byteWriter.write(hashedPassword);
@@ -307,9 +303,9 @@ public class Player implements Runnable {
             throw new ProtocolException("erreur dans le protocole");
          }
          System.out.println("Phase d'acceptation");
-         answer = (responseBuffer.readLine()).split(ProtocolV1.SEPARATOR);
+         answer = (responseBuffer.readLine()).split(canardage.Global.ProtocolV1.SEPARATOR);
          System.out.println(answer[0]);
-         if(answer[0].equals(ProtocolV1.ACCEPT_CONNECTION)) {
+         if(answer[0].equals(canardage.Global.ProtocolV1.ACCEPT_CONNECTION)) {
             System.out.println("Joueur connecté");
             connected = true;
             playerNumber = Integer.valueOf(answer[1]);
@@ -317,9 +313,9 @@ public class Player implements Runnable {
              * envoyés par le chat.
              */
             System.out.println("Information chat : " + clientSocket.getInetAddress().getHostAddress() + " - " + playerNumber);
-            chatClient = new ChatClient(clientSocket.getInetAddress().getHostAddress(), playerNumber); // erreur ici
+            chatClient = new DuckChatClient(clientSocket.getInetAddress().getHostAddress(), playerNumber); // erreur ici
             chatClient.listen();
-         } else if(!answer[0].equals(ProtocolV1.REFUSE_CONNECTION)) {
+         } else if(!answer[0].equals(canardage.Global.ProtocolV1.REFUSE_CONNECTION)) {
             throw new ProtocolException("erreur dans le protocole");
          }
       }
@@ -413,87 +409,10 @@ public class Player implements Runnable {
    public void sendEmoticon(Emoticon emoticon) {
       chatClient.write(emoticon);
    }
-
-   /*public void createServer() {
-    boolean nameNotRedondant = false;
-    while (!nameNotRedondant) {
-    nameNotRedondant = true;
-    player.getServers();
-    System.out.println("quel est le nom du serveur ?");
-    in.reset();
-    answerNameServer = in.nextLine();
-    answerNameServer = answerNameServer.equals("") ? defaultServerName : answerNameServer;
-
-    for (Server server : player.servers) {
-    if (server.getName().equals(answerNameServer)) {
-    nameNotRedondant = false;
-    }
-    }
-    }
-    System.out.println("quel est le mot de passe ?");
-    in.reset();
-    String answerPassword = in.nextLine();
-    answerPassword = answerPassword.equals("") ? defaultPassword : answerPassword;
-    System.out.println("NOM : " + answerNameServer + ", MDP : " + answerPassword);
-    ServerManager server = player.createServer(answerNameServer, answerPassword);
-    do {
-    System.out.println("'go' pour commencer!!!");
-    answer = in.next();
-    if(answer.equals("go")) {
-    try {
-    server.startGame();
-    break;
-    } catch(BadGameInitialisation e) {
-    System.out.println(e.getMessage());
-    }
-    }
-    } while(true);
-    }*/
-//   public static void main(String... args) {
-//      Player player = new Player(args[0]);
-//      player.getServer();
-//   }
-   public static void main(String... args) {
-//      Player player = new Player();
-//      System.out.println("souhaitez-vous creer ou rejoindre un server ? (c/r)");
-//      Scanner in = new Scanner(System.in);
-//      String answer;
-//      String answerNameServer = defaultServerName;
-//      boolean nameNotRedondant = false;
-//      while(!nameNotRedondant) {
-//         nameNotRedondant = true;
-//         player.getServers();
-//         System.out.println("quel est le nom du serveur ?");
-//         in.reset();
-//         answerNameServer = in.nextLine();
-//         answerNameServer = answerNameServer.equals("") ? defaultServerName : answerNameServer;
-//
-//         for(Server server : player.servers) {
-//            if(server.getName().equals(answerNameServer)) {
-//               nameNotRedondant = false;
-//            }
-//         }
-//      }
-//      System.out.println("quel est le mot de passe ?");
-//      in.reset();
-//      String answerPassword = in.nextLine();
-//      answerPassword = answerPassword.equals("") ? defaultPassword : answerPassword;
-//      System.out.println("NOM : " + answerNameServer + ", MDP : " + answerPassword);
-//      ServerManager server = player.createServer(answerNameServer, answerPassword);
-//      do {
-//         System.out.println("'go' pour commencer!!!");
-//         answer = in.next();
-//         if(answer.equals("go")) {
-//            try {
-//               server.startGame();
-//               break;
-//            } catch(BadGameInitialisation e) {
-//               System.out.println(e.getMessage());
-//            }
-//         }
-//      } while(true);
-//
-//      player.startGame();
+   
+   public void displayEmoticon(int player, Emoticon emoticon) {
+      if(canardageFxml != null) {
+         canardageFxml.showEmoticon(player, emoticon);
+      }
    }
-
 }

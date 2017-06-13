@@ -1,6 +1,6 @@
 package fxml.controller;
 
-import Protocol.AlertPopup;
+import canardage.AlertPopup;
 import canardage.Player;
 import canardage.Server;
 import java.io.IOException;

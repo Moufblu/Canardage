@@ -9,7 +9,7 @@ import canardage.Client;
  * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
  * @version 0.1
  */
-public abstract class Action implements Cloneable{
+public abstract class Action implements Cloneable {
 
    protected final static int BAD_LOCATION = -1;
    protected Board board;  // Où l'effet ce réalisera
@@ -25,7 +25,7 @@ public abstract class Action implements Cloneable{
    }
    
    public abstract int getNbCards();
-   public abstract int getId();
+   public abstract int getID();
 
    /**
     * Méthode qui défini le joueur courrant

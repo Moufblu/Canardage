@@ -1,8 +1,6 @@
 package canardage.action;
 
 import canardage.Board;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -67,6 +65,7 @@ public class HideTest {
    /**
     * Test of isPlayable method, of class Hide.
     */
+   @Ignore
    @Test
    public void ADuckCanHideIfAdjacentIsADuck() {
       System.out.println("isPlayable");
@@ -95,6 +94,7 @@ public class HideTest {
    /**
     * Test of hasEffect method, of class Hide.
     */
+   @Ignore
    @Test
    public void testHasEffectIfDucksInPlay() {
       System.out.println("hasEffect");

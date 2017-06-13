@@ -7,15 +7,15 @@ package canardage.action;
  * @version 0.1
  */
 public class Guard extends WithLocation {
-   private static final int id;
+   private static final int ID;
    
    static {
-      id = counter++;
+      ID = Action.counter++;
    }
    
    @Override
-   public int getId() {
-      return id;
+   public int getID() {
+      return ID;
    }
    
    /**
@@ -36,10 +36,7 @@ public class Guard extends WithLocation {
     */
    @Override
    public boolean isPlayable(int position) {
-      if(!board.isGuarded(position)) {
-         return true;
-      }
-      return false;
+      return !board.isGuarded(position);
    }
 
    @Override

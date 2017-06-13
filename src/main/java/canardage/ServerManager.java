@@ -1,7 +1,6 @@
 package canardage;
 
 import java.net.ServerSocket;
-import Protocol.ProtocolV1;
 import chat.ChatMaster;
 import canardage.action.Action;
 import java.lang.reflect.Type;
@@ -99,7 +98,7 @@ public class ServerManager implements Runnable {
          server = new Server(UUID.randomUUID(),
                  name,
                  socket.getLocalAddress().getHostAddress(),
-                 ProtocolV1.PORT);
+                 Global.ProtocolV1.PORT);
          sendInfo(socket.getLocalAddress());
          
          // TODO alternative au nombre de connexions max ou posssibilité d'interrompre la recherche des clients ?
@@ -142,14 +141,14 @@ public class ServerManager implements Runnable {
             try {
                byte[] payload = msg.getBytes();
 
-               final MulticastSocket socket = new MulticastSocket(ProtocolV1.MULTICAST_PORT);
+               final MulticastSocket socket = new MulticastSocket(Global.ProtocolV1.MULTICAST_PORT);
                socket.setInterface(address);
                socket.setBroadcast(true);
 
                final DatagramPacket datagram = new DatagramPacket(payload,
                        payload.length);
-               datagram.setAddress(InetAddress.getByName(ProtocolV1.MULTICAST_ADDRESS));
-               datagram.setPort(ProtocolV1.MULTICAST_PORT);
+               datagram.setAddress(InetAddress.getByName(Global.ProtocolV1.MULTICAST_ADDRESS));
+               datagram.setPort(Global.ProtocolV1.MULTICAST_PORT);
 
                new Timer().scheduleAtFixedRate(new TimerTask() {
 
@@ -182,7 +181,7 @@ public class ServerManager implements Runnable {
     */
    public void acceptClients() throws IOException {
       if(serverSocket == null || serverSocket.isBound()) {
-         serverSocket = new ServerSocket(ProtocolV1.PORT, Global.Rules.MAX_NB_PLAYERS);
+         serverSocket = new ServerSocket(Global.ProtocolV1.PORT, Global.Rules.MAX_NB_PLAYERS);
       }
 
       acceptingClients = new Thread(new Runnable() {
@@ -206,7 +205,7 @@ public class ServerManager implements Runnable {
                      public void run() {
 
                         System.out.println("    Demande du mot de passe au joueur");
-                        client.writeLine(ProtocolV1.HASH);
+                        client.writeLine(Global.ProtocolV1.HASH);
 
                         System.out.println("    Mot clé Hash reçu par le serveur");
                         try {
@@ -215,14 +214,14 @@ public class ServerManager implements Runnable {
                            if(Arrays.equals(givenHash, hash)) {
                               System.out.println("    Acceptation d'une connexion au joueur");
                               playersSockets.add(client);
-                              client.writeLine(ProtocolV1.messageAccept(nbPlayers));
+                              client.writeLine(Global.ProtocolV1.messageAccept(nbPlayers));
                               synchronized (mutex) {
                                  nbPlayers++;
                               }
                               client.setId(nbPlayers);
                            } else {
                               System.out.println("    Refus de la connexion du joueur");
-                              client.writeLine(ProtocolV1.REFUSE_CONNECTION);
+                              client.writeLine(Global.ProtocolV1.REFUSE_CONNECTION);
 
                            }
                         } catch(IOException ex) {
@@ -326,7 +325,7 @@ public class ServerManager implements Runnable {
    private void sendBoard() {
       for(Client client : playersSockets) {
          System.out.println("Sending board state");
-         client.writeLine(ProtocolV1.messageBoardState());
+         client.writeLine(Global.ProtocolV1.messageBoardState());
       }
    }
 

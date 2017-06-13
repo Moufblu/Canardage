@@ -1,6 +1,5 @@
 package chat;
 
-import Protocol.ProtocolV1;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -21,7 +20,7 @@ public class ChatMaster
    public ChatMaster(String address, int maxConnexions) throws IOException
    {
       MAXIMUM_CONNEXIONS = maxConnexions;
-      socket = new ServerSocket(ProtocolV1.CHAT_PORT, MAXIMUM_CONNEXIONS, InetAddress.getByName(address));
+      socket = new ServerSocket(canardage.Global.ProtocolV1.CHAT_PORT, MAXIMUM_CONNEXIONS, InetAddress.getByName(address));
       workers = new ArrayList<>();
    }
 

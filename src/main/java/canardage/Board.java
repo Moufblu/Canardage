@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
 import canardage.action.*;
-import canardage.Global.Board.*;
 
 /**
  * Description: Classe principale dans laquelle on implémente le plateau de jeu Date:
@@ -80,11 +79,10 @@ public class Board {
 
    private final static int NOT_FINISHED = -2;
    private final static int ALL_DUCKS_DEAD = -1;
+   
    private final static int MISSING = -1;        // Signifie qu'il n'y a pas de carte
    private final static int WATER_CARD_VALUE = 0;// Pour dire qu'il y a une carte eau
    public final static int MAX_DUCK_PER_PLAYER = 5;  // Maximum de canard par joueur
-   public final static int NB_PLAYERS_MIN = 2;       // Nombre minimum de joueur
-   public final static int NB_PLAYERS_MAX = 6;       // Nombre maximum de joueur
 
    private List<Integer> ducks;     // Liste de canard sur le plateau
    private int currentPlayer = 0;   // Le numéro du joueur courrant
@@ -103,8 +101,8 @@ public class Board {
     */
    private Board(int nbPlayers) throws IllegalArgumentException {
 
-      if(nbPlayers < NB_PLAYERS_MIN || nbPlayers > NB_PLAYERS_MAX) {
-         throw new IllegalArgumentException("Invalid number of players ");
+      if(nbPlayers < Global.Rules.MIN_NB_PLAYERS || nbPlayers > Global.Rules.MAX_NB_PLAYERS) {
+         throw new IllegalArgumentException("Invalid number of players");
       }
 
       this.nbPlayers = nbPlayers;
@@ -173,7 +171,7 @@ public class Board {
     * @return Le nombre maximum de joueurs
     */
    public static int getMaxPlayers() {
-      return NB_PLAYERS_MAX;
+      return Global.Rules.MAX_NB_PLAYERS;
    }
 
    /**
@@ -365,7 +363,7 @@ public class Board {
     * Vérifie si la position est ciblée ou pas
     *
     * @param location La position à vérifier
-    * @return Vrai si possibilité de ciblé, faux sinon
+    * @return Vrai si c'est de ciblé, faux sinon
     * @throws IndexOutOfBoundsException Si on veut mettre une cible dans une position
     * en dehors des possibles
     */
@@ -467,15 +465,15 @@ public class Board {
          }
 
          if(locations[i].targetted) {
-            display += Global.Board.TARGET;
+            display += Global.BoardParam.TARGET;
          }
 
          if(locations[i].guarded) {
-            display += Global.Board.GUARD;
+            display += Global.BoardParam.GUARD;
          }
 
          if(i != 0) {
-            display += Global.Board.SEPARATOR;
+            display += Global.BoardParam.SEPARATOR;
          }
       }
 
@@ -564,16 +562,13 @@ public class Board {
    public boolean isMyDuck(int location, int player) throws IndexOutOfBoundsException {
       validate(location);
       currentPlayer = player;
-      if(locations[location].duck == currentPlayer) {
-         return true;
-      }
-      return false;
+      
+      return locations[location].duck == currentPlayer;
    }
 
    public static void main(String... args) {
 
       //creation de 2 plateau un a 2 joueur et un a 6
-      //Board board2Player = new Board(2);
       Board.registerInstance(6);
       Board board6Player = Board.getInstance();
       //instanciation des cartes action

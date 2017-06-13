@@ -1,5 +1,9 @@
 package canardage.action;
 
+import java.io.File;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+
 /**
  * Description: Classe pour implémenter la carte de tirer sur un canard ciblé Date:
  * 03.05.2017
@@ -7,15 +11,16 @@ package canardage.action;
  * @version 0.1
  */
 public class Shoot extends WithLocation {
-   private static final int id;
+   
+   private static final int ID;
    
    static {
-      id = counter++;
+      ID = Action.counter++;
    }
    
    @Override
-   public int getId() {
-      return id;
+   public int getID() {
+      return ID;
    }
    
    /**
@@ -37,6 +42,9 @@ public class Shoot extends WithLocation {
    @Override
    public boolean isPlayable(int position) {
       if(board.isTargetted(position)) {
+//         Media sound = new Media(new File("/sounds/PAN.mp3").getAbsolutePath());
+//         MediaPlayer mediaPlayer = new MediaPlayer(sound);
+//         mediaPlayer.play();
          return true;
       }
       return false;
