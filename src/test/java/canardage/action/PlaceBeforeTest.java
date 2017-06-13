@@ -79,6 +79,11 @@ public class PlaceBeforeTest {
          public int getNbCards() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
          }
+
+         @Override
+         public String getFile() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+         }
       };
       a.setPlayer(client);
       board.setLocation(3, 1);

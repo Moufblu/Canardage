@@ -44,6 +44,7 @@ public class Player implements Runnable {
    private ChatClient chatClient;
 
    private int playerNumber;
+   private int locationChoice;
 
    private Integer[] cards;           // Liste des cartes
 
@@ -174,7 +175,7 @@ public class Player implements Runnable {
    public void run() {
       String inputServer;
       String[] splittedCommand = {""};
-      int locationChoice = 0;
+      locationChoice = 0;
 
       do {
          try {
@@ -219,6 +220,7 @@ public class Player implements Runnable {
    }
 
    public void playCard(int posCard) {
+      locationChoice = posCard;
       System.out.println("envoie carte a la pos : " + posCard);
       writer.println(ProtocolV1.messageUseCard(posCard));
       writer.flush();

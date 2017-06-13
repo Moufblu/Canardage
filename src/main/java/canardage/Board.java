@@ -14,6 +14,18 @@ import canardage.Global.Board.*;
  */
 public class Board {
 
+   void cleanNecessariesGards() {
+      for(int i  = 0; i < locations.length; i++) {
+         if(locations[i].tickStartGard + nbPlayers == tick) {
+            setGuard(i, false);
+         }
+      }
+   }
+
+   void nextTick() {
+      tick++;
+   }
+
    /**
     * Classe interne de Board pour la position sur le plateau
     */
@@ -21,6 +33,7 @@ public class Board {
 
       private boolean targetted; // Si l'endroit possède une cible
       private boolean guarded;   // Si l'endroit est protégé
+      private int tickStartGard;
       private int duck;          // Le numéro du canard
       private int hiddenDuck;    // Le numéro du canard caché
 
@@ -78,6 +91,8 @@ public class Board {
 
    public final static int NB_LOCATIONS = 6; // Le nombre de position maximum
    private final Location[] locations;       // Tableau avec les positions
+   private int tick = 0;
+   private int nbPlayers;
 
    private static Board instance;   // Instance pour le plateau
 
@@ -92,6 +107,7 @@ public class Board {
          throw new IllegalArgumentException("Invalid number of players ");
       }
 
+      this.nbPlayers = nbPlayers;
       ducks = new LinkedList();
       locations = new Location[NB_LOCATIONS];
 
@@ -104,7 +120,7 @@ public class Board {
       if(nbPlayers == 2) {
          nbCardsWater = 2;
       } else {
-         nbCardsWater = nbPlayers - 1;
+         nbCardsWater = 5 ; //TODO nbPlayers - 1;
       }
 
       /* Ajout des cartes eau */
@@ -370,6 +386,7 @@ public class Board {
       validate(location);
 
       locations[location].guarded = value;
+      locations[location].tickStartGard = tick;
    }
 
    /**
@@ -729,14 +746,14 @@ public class Board {
       for(Integer duck : ducks) {
          if(result == ALL_DUCKS_DEAD && isDuck(duck)) {
             result = duck;
-         } else if (result > ALL_DUCKS_DEAD && isDuck(duck)) {
+         } else if (result > ALL_DUCKS_DEAD && isDuck(duck) && duck != result) {
             return NOT_FINISHED;
          }
       }
       for(int i = 0; i < locations.length; i++) {
          if(result == ALL_DUCKS_DEAD && isDuck(locations[i].getDuck())) {
             result = locations[i].getDuck();
-         } else if (result > ALL_DUCKS_DEAD && isDuck(locations[i].getDuck())) {
+         } else if (result > ALL_DUCKS_DEAD && isDuck(locations[i].getDuck()) && locations[i].getDuck() != result) {
             return NOT_FINISHED;
          }
       }

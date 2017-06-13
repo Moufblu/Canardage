@@ -267,34 +267,44 @@ public class ServerManager implements Runnable {
    
    private void startGame()  {
       boolean gameFinished = false;
+      int winner = -3;
       do {
          for(Client player : playersSockets) {
             playATurn(player);
-            int winner = board.won();
+            winner = board.won();
             if(winner > -1) {
                gameFinished = true;
                break;
             }
          }
       } while(!gameFinished);
-
+      System.out.println("PARTIE TERMINEEEEEEEE" + winner);
    }
    
    private void playATurn(Client client) {
       System.out.println("demande l'utilisation d'une carte");
-      int choiceCard = client.useCard();
-      client.distribute(choiceCard, deck.remove(0));
-      sendBoard();
-      if(deck.size() == 0) {
+      CardInfo cardInfo = client.useCard();
+      int choiceCard = cardInfo.getPosition();
+      try {
+         usedCards.add(Global.cards[cardInfo.getIdCard()].clone());
+      } catch(CloneNotSupportedException ex) {
+         Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      if(deck.isEmpty()) {
+         System.out.println("redistribution du deck action");
          restoreDeck();
       }
+      board.nextTick();
+      board.cleanNecessariesGards();
+      client.distribute(choiceCard, deck.remove(0));
+      sendBoard();
+      
       
    }
    
    private void restoreDeck() {
-      while(usedCards.size() > 0) {
-         deck.add(usedCards.remove(0));
-      }
+      deck.addAll(usedCards);
+      usedCards.clear();
    }
 
    private void initialiseGame() {
