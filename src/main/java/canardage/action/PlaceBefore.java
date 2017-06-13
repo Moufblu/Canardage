@@ -39,10 +39,7 @@ public class PlaceBefore extends WithLocation {
     */
    @Override
    public boolean isPlayable(int position) {
-      if(board.isDuck(position - 1) && board.isMyDuck(position, getPlayer().getId())) {
-         return true;
-      }
-      return false;
+      return board.isDuck(position - 1) && board.isMyDuck(position, getPlayer().getId());
    }
 
    /**

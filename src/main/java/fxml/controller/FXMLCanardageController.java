@@ -303,7 +303,7 @@ public class FXMLCanardageController implements Initializable {
    private void showHand(Integer[] cards) {
       Platform.runLater(() -> {
          for(int i = 0; i < cards.length; i++) {
-            ImageView viewCards = new ImageView(new Image(Global.cards[i].getFile()));
+            ImageView viewCards = new ImageView(new Image(Global.cards[cards[i]].getFile()));
             resizeImageView(viewCards);
 
             cardsList.get(i).setGraphic(viewCards);
@@ -336,7 +336,9 @@ public class FXMLCanardageController implements Initializable {
          final int trigger = i;
          createAndResizeImageView(ducksGameList, i, duckImages[i]);
          ducksAndProtectionsGrid.setOnMouseClicked((MouseEvent event) -> {
+            System.out.println("clic sur case no : " + trigger);
             if(areCardsUsable) {
+               System.out.println("est rentré dans le if : " + (Global.Rules.MAX_NO_POS - 1 - trigger));
                player.posChoose(Global.Rules.MAX_NO_POS - 1 - trigger);
                areCardsUsable = false;
             }

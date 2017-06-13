@@ -281,6 +281,7 @@ public class ServerManager implements Runnable {
    }
    
    private void playATurn(Client client) {
+      System.out.println("demande l'utilisation d'une carte");
       int choiceCard = client.useCard();
       client.distribute(choiceCard, deck.remove(0));
       sendBoard();
