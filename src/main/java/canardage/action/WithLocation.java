@@ -40,6 +40,7 @@ public abstract class WithLocation extends Action {
       // Bocle tant que le choix de l'utilisateur est fausse
       while(true) {
          try {
+            System.out.println(client);
             positionChoice = client.getLocation();
          } catch(IOException ex) {
             Logger.getLogger(WithLocation.class.getName()).log(Level.SEVERE, null, ex);

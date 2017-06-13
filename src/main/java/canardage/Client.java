@@ -76,6 +76,9 @@ public class Client {
    }
    
    public void sendNewHand(Action[] hand) {
+      for(Action card : hand) {
+         card.setPlayer(this);
+      }
       System.arraycopy(hand, 0, this.hand, 0, hand.length);
       
       writeLine(ProtocolV1.messageHand(Stream.of(hand)
@@ -111,17 +114,19 @@ public class Client {
       
       int choiceCard = -1;
       boolean hasCardWithEffect = hasAnyCardPlayable();
-      
+      System.out.println(hasCardWithEffect);
       do {
          writeLine(ProtocolV1.YOUR_TURN);
          try {
             String[] response = readLine().split(ProtocolV1.SEPARATOR);
             choiceCard = Integer.parseInt(response[1]);
+            System.out.println("carte reçu choisie : " + choiceCard);
          } catch(IOException ex) {
-            //TODO
+            ex.printStackTrace();
+            System.out.println("problème lors de la reception de la carte");
          }
-      } while(!hand[choiceCard].hasEffect() || hasCardWithEffect);
-      
+      } while(!hand[choiceCard].hasEffect() && hasCardWithEffect);
+      System.out.println("use card no : " + hand[choiceCard]);
       hand[choiceCard].effect();
       hand[choiceCard] = null;
       
@@ -129,6 +134,7 @@ public class Client {
    }
    
    public void distribute(int position, Action newCard) {
+      newCard.setPlayer(this);
       hand[position] = newCard;
       writeLine(ProtocolV1.messageDistributeCard(newCard.getId()));
    }

@@ -284,7 +284,7 @@ public class FXMLCanardageController implements Initializable {
    private void showHand(Integer[] cards) {
       Platform.runLater(() -> {
          for(int i = 0; i < cards.length; i++) {
-            ImageView viewCards = new ImageView(new Image(Global.cards[i].getFile()));
+            ImageView viewCards = new ImageView(new Image(Global.cards[cards[i]].getFile()));
             resizeImageView(viewCards);
 
             cardsList.get(i).setGraphic(viewCards);

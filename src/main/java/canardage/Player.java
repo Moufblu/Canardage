@@ -201,6 +201,10 @@ public class Player implements Runnable {
                for(int i = 0; i < Global.Rules.HAND_SIZE; i++) {
                   cards[i] = readLineCardFileInfo(Integer.parseInt(splittedCommand[i + 1]));
                }
+               System.out.println("carte reçues : " + cards);
+                  for(Integer card : cards) {
+                     System.out.println(card);
+                  }
                canardageFxml.updateCards(cards);
 
                break;
@@ -219,6 +223,7 @@ public class Player implements Runnable {
    }
 
    public void playCard(int posCard) {
+      System.out.println("envoie carte a la pos : " + posCard);
       writer.println(ProtocolV1.messageUseCard(posCard));
       writer.flush();
    }
