@@ -9,17 +9,16 @@ import canardage.Board;
  * @version 0.1
  */
 public class Hide extends WithDirection {
-
    
-   private static final int id;
+   private static final int ID;
    
    static {
-      id = counter++;
+      ID = Action.counter++;
    }
    
    @Override
-   public int getId() {
-      return id;
+   public int getID() {
+      return ID;
    }
    
    /**
@@ -45,10 +44,8 @@ public class Hide extends WithDirection {
 
          return false;
       }
-      if(board.possibleHide(position, direction)&& board.isMyDuck(position, getPlayer().getId())) {
-         return true;
-      }
-      return false;
+      
+      return board.possibleHide(position, direction)&& board.isMyDuck(position, getPlayer().getId());
    }
 
    /**

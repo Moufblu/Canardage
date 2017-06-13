@@ -35,29 +35,23 @@ public class ChatClient {
    }
    
    public void listen() {
-      new Thread(new Runnable() {
-
-         @Override
-         public void run() 
+      new Thread(() -> {
+         while (true) 
          {
-            while (true)
+            String line = "";
+            try
             {
-               String line = "";
-               try
-               {
-                  line = reader.readLine();
-               } catch(SocketTimeoutException ex)
-               { 
-                  System.out.println("TIMEOUT CLIENT !!!");
-               }catch (IOException ex)
-               {
-                  //J'ai pas reçu le message, c'est pas grave je recommence
-                  //Je pourrai envoyer KO pour annoncer qu'il y a eu un problème
-                  line = "KO";
-                  Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-               }
-               process(line);
+               line = reader.readLine();
+            } catch(SocketTimeoutException ex)
+            {
+               System.out.println("TIMEOUT CLIENT !!!");
+            }catch (IOException ex)
+            {
+               // On n'a pas reçu le message, c'est pas grave on recommence
+               line = "KO";
+               Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
+            process(line);
          }
       }).start();
    }

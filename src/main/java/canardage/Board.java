@@ -83,9 +83,6 @@ public class Board {
    private final static int MISSING = -1;        // Signifie qu'il n'y a pas de carte
    private final static int WATER_CARD_VALUE = 0;// Pour dire qu'il y a une carte eau
    public final static int MAX_DUCK_PER_PLAYER = 5;  // Maximum de canard par joueur
-   
-//   public final static int NB_PLAYERS_MIN = 2;       // Nombre minimum de joueur
-//   public final static int NB_PLAYERS_MAX = 6;       // Nombre maximum de joueur
 
    private List<Integer> ducks;     // Liste de canard sur le plateau
    private int currentPlayer = 0;   // Le numéro du joueur courrant
@@ -366,7 +363,7 @@ public class Board {
     * Vérifie si la position est ciblée ou pas
     *
     * @param location La position à vérifier
-    * @return Vrai si possibilité de ciblé, faux sinon
+    * @return Vrai si c'est de ciblé, faux sinon
     * @throws IndexOutOfBoundsException Si on veut mettre une cible dans une position
     * en dehors des possibles
     */
@@ -565,10 +562,8 @@ public class Board {
    public boolean isMyDuck(int location, int player) throws IndexOutOfBoundsException {
       validate(location);
       currentPlayer = player;
-      if(locations[location].duck == currentPlayer) {
-         return true;
-      }
-      return false;
+      
+      return locations[location].duck == currentPlayer;
    }
 
    public static void main(String... args) {

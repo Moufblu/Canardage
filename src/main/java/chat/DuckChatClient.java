@@ -12,6 +12,7 @@ public class DuckChatClient extends ChatClient {
    @Override
    protected void process(String text) {
       super.process(text);
+      
       String[] answer = text.split(canardage.Global.ProtocolV1.SEPARATOR);
       if (answer[0].equals(canardage.Global.ProtocolV1.EMOTICON)) {
          int player = Integer.valueOf(answer[1]);

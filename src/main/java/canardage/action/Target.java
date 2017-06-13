@@ -15,7 +15,7 @@ public class Target extends WithLocation {
    }
    
    @Override
-   public int getId() {
+   public int getID() {
       return id;
    }
    

@@ -25,7 +25,7 @@ public abstract class Action implements Cloneable {
    }
    
    public abstract int getNbCards();
-   public abstract int getId();
+   public abstract int getID();
 
    /**
     * Méthode qui défini le joueur courrant

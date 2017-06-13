@@ -247,7 +247,7 @@ public class Player implements Runnable {
     * @throws BadGameInitialisation Lancée si le nombre de joueurs est trop faible si
     * pas de cartes pas de connexion avec le serveur
     */
-   public void startGame(FXMLCanardageController canardageFxml) throws IllegalStateException, BadGameInitialisation, IOException {
+   public void startGame(FXMLCanardageController canardageFxml) throws IllegalStateException, BadGameInitialisation {
       if(isConnected()) {
          this.canardageFxml = canardageFxml;
 
@@ -415,87 +415,4 @@ public class Player implements Runnable {
          canardageFxml.showEmoticon(player, emoticon);
       }
    }
-
-   /*public void createServer() {
-    boolean nameNotRedondant = false;
-    while (!nameNotRedondant) {
-    nameNotRedondant = true;
-    player.getServers();
-    System.out.println("quel est le nom du serveur ?");
-    in.reset();
-    answerNameServer = in.nextLine();
-    answerNameServer = answerNameServer.equals("") ? defaultServerName : answerNameServer;
-
-    for (Server server : player.servers) {
-    if (server.getName().equals(answerNameServer)) {
-    nameNotRedondant = false;
-    }
-    }
-    }
-    System.out.println("quel est le mot de passe ?");
-    in.reset();
-    String answerPassword = in.nextLine();
-    answerPassword = answerPassword.equals("") ? defaultPassword : answerPassword;
-    System.out.println("NOM : " + answerNameServer + ", MDP : " + answerPassword);
-    ServerManager server = player.createServer(answerNameServer, answerPassword);
-    do {
-    System.out.println("'go' pour commencer!!!");
-    answer = in.next();
-    if(answer.equals("go")) {
-    try {
-    server.startGame();
-    break;
-    } catch(BadGameInitialisation e) {
-    System.out.println(e.getMessage());
-    }
-    }
-    } while(true);
-    }*/
-//   public static void main(String... args) {
-//      Player player = new Player(args[0]);
-//      player.getServer();
-//   }
-   public static void main(String... args) {
-//      Player player = new Player();
-//      System.out.println("souhaitez-vous creer ou rejoindre un server ? (c/r)");
-//      Scanner in = new Scanner(System.in);
-//      String answer;
-//      String answerNameServer = defaultServerName;
-//      boolean nameNotRedondant = false;
-//      while(!nameNotRedondant) {
-//         nameNotRedondant = true;
-//         player.getServers();
-//         System.out.println("quel est le nom du serveur ?");
-//         in.reset();
-//         answerNameServer = in.nextLine();
-//         answerNameServer = answerNameServer.equals("") ? defaultServerName : answerNameServer;
-//
-//         for(Server server : player.servers) {
-//            if(server.getName().equals(answerNameServer)) {
-//               nameNotRedondant = false;
-//            }
-//         }
-//      }
-//      System.out.println("quel est le mot de passe ?");
-//      in.reset();
-//      String answerPassword = in.nextLine();
-//      answerPassword = answerPassword.equals("") ? defaultPassword : answerPassword;
-//      System.out.println("NOM : " + answerNameServer + ", MDP : " + answerPassword);
-//      ServerManager server = player.createServer(answerNameServer, answerPassword);
-//      do {
-//         System.out.println("'go' pour commencer!!!");
-//         answer = in.next();
-//         if(answer.equals("go")) {
-//            try {
-//               server.startGame();
-//               break;
-//            } catch(BadGameInitialisation e) {
-//               System.out.println(e.getMessage());
-//            }
-//         }
-//      } while(true);
-//
-//      player.startGame();
-   }
-
 }

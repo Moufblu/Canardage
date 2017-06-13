@@ -80,7 +80,7 @@ public class Client {
       System.arraycopy(hand, 0, this.hand, 0, hand.length);
       
       writeLine(canardage.Global.ProtocolV1.messageHand(Stream.of(hand)
-         .map(Action::getId)
+         .map(Action::getID)
          .toArray(Integer[]::new)
       ));
    }
@@ -114,6 +114,8 @@ public class Client {
       
       int choiceCard = -1;
       boolean hasCardWithEffect = hasAnyCardPlayable();
+      System.out.println("Card with Effect" + hasCardWithEffect);
+      System.out.println("Has Effect" + !hand[choiceCard].hasEffect());
       System.out.println(hasCardWithEffect);
       do {
          writeLine(canardage.Global.ProtocolV1.YOUR_TURN);
@@ -128,7 +130,7 @@ public class Client {
       } while(!hand[choiceCard].hasEffect() && hasCardWithEffect);
       System.out.println("use card no : " + hand[choiceCard]);
       hand[choiceCard].effect();
-      CardInfo cardInfo = new CardInfo(choiceCard, hand[choiceCard].getId());
+      CardInfo cardInfo = new CardInfo(choiceCard, hand[choiceCard].getID());
       hand[choiceCard] = null;
       
       
@@ -138,7 +140,7 @@ public class Client {
    public void distribute(int position, Action newCard) {
       newCard.setPlayer(this);
       hand[position] = newCard;
-      writeLine(canardage.Global.ProtocolV1.messageDistributeCard(newCard.getId()));
+      writeLine(canardage.Global.ProtocolV1.messageDistributeCard(newCard.getID()));
    }
 
 }
