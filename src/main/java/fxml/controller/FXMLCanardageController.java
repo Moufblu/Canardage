@@ -68,7 +68,7 @@ public class FXMLCanardageController implements Initializable {
 
    private final ArrayList<ImageView> playersList;
 
-   private final ArrayList<Button> buttonsList;
+   private final ArrayList<Button> smileysList;
 
    private final ArrayList<Button> cardsList;
 
@@ -108,7 +108,7 @@ public class FXMLCanardageController implements Initializable {
       // Liste des images des canards en jeu
       playersList = new ArrayList(Global.Rules.MAX_NO_POS);
       playersChatList = new ArrayList(Global.Rules.MAX_NO_POS);
-      buttonsList = new ArrayList(NUMBER_OF_SMILEYS);
+      smileysList = new ArrayList(NUMBER_OF_SMILEYS);
 
       for(int i = 0; i < Global.Rules.MAX_NO_POS; i++) {
          playersList.add(new ImageView(duckImages[i + 1]));
@@ -117,13 +117,14 @@ public class FXMLCanardageController implements Initializable {
       }
 
       for(int i = 0; i < NUMBER_OF_SMILEYS; i++) {
-         buttonsList.add(new Button("B" + i));
+         smileysList.add(new Button());
       }
 
       cardsList = new ArrayList(Global.Rules.HAND_SIZE);
       for(int i = 0; i < Global.Rules.HAND_SIZE; i++) {
          ImageView viewCards = new ImageView(imageBackCard);
          resizeImageView(viewCards);
+         
          Button b = new Button();
          b.setGraphic(viewCards);
          b.setDisable(true);
@@ -168,22 +169,23 @@ public class FXMLCanardageController implements Initializable {
          for(int j = 0; j < NUMBER_OF_SMILEYS / GRID_POS; j++) {
 
             final int position = i * GRID_POS + j;
-            Button b = buttonsList.get(position);
-            imagesPosition(buttonsList, position, j, i, HPos.CENTER, VPos.CENTER);
-
-            b.setOnAction((ActionEvent event) -> {
+            imagesPosition(smileysList, position, j, i, HPos.CENTER, VPos.CENTER);
+            smileysList.get(position).setGraphic(Emoticon.values()[position].getEmote());
+            resizeImageView(Emoticon.values()[position].getEmote());
+            
+            smileysList.get(position).setOnAction((ActionEvent event) -> {
                player.sendEmoticon(Emoticon.values()[position]);
             });
          }
       }
 
-      smileyGrid.getChildren().addAll(buttonsList);
+      smileyGrid.getChildren().addAll(smileysList);
 
       // La partie arrière d'une carte canard pour la pile de canard
       imagesMarginAndPosition(Arrays.asList(viewBackCard), 0, 6, 0,
               HPos.CENTER, VPos.CENTER, MARGIN_DOWN, 0);
       ducksAndProtectionsGrid.getChildren().add(viewBackCard);
-
+      
       showPlayers();
       targets();
       hidenDucks();
@@ -191,24 +193,41 @@ public class FXMLCanardageController implements Initializable {
       protectionCards();
       showPlayerCards();
 
+      startButton = new Button("Commencer!");
+      imagesPosition(Arrays.asList(startButton), 0, 0, 1, HPos.LEFT, VPos.BOTTOM);
+      smileyGrid.getChildren().add(startButton);
+      
       if(player.getPlayerNumber() != 0) {
          startButton.setVisible(false);
       }
+      
+      startButton.setOnAction((ActionEvent event) -> {
+         try {
+            player.startGame();
+            player.startGame(FXMLCanardageController.this);
+            startButton.setDisable(true);
+            startButton.setVisible(false);
+         } catch(BadGameInitialisation e) {
+            AlertPopup.alert("Avertissement", "Pas assez de joueurs", e.getMessage(), Alert.AlertType.WARNING);
+         } catch(IllegalStateException | IOException e) {
+            AlertPopup.alert(e);
+         }
+      });
    }
 
-   @FXML
-   private void startGame(ActionEvent event) {
-      try {
-         player.startGame();
-         player.startGame(this);
-         startButton.setDisable(true);
-         startButton.setVisible(false);
-      } catch(BadGameInitialisation e) {
-         AlertPopup.alert("Avertissement", "Pas assez de joueurs", e.getMessage(), Alert.AlertType.WARNING);
-      } catch(IllegalStateException | IOException e) {
-         AlertPopup.alert(e);
-      }
-   }
+//   @FXML
+//   private void startGame(ActionEvent event) {
+//      try {
+//         player.startGame();
+//         player.startGame(this);
+//         startButton.setDisable(true);
+//         startButton.setVisible(false);
+//      } catch(BadGameInitialisation e) {
+//         AlertPopup.alert("Avertissement", "Pas assez de joueurs", e.getMessage(), Alert.AlertType.WARNING);
+//      } catch(IllegalStateException | IOException e) {
+//         AlertPopup.alert(e);
+//      }
+//   }
 
    public void showPlayers() {
       for(int i = nbCurrentPlayers; i < 6; i++) {
