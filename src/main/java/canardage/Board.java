@@ -411,9 +411,13 @@ public class Board {
    public void fire(int location) throws IndexOutOfBoundsException {
       validate(location);
       if(locations[location].targetted) {
-         removeDuck(location);
+         if(!locations[location].guarded) {
+            removeDuck(location);
+         }
          setTarget(location, false);
-         advance(location);
+         if(!locations[location].guarded) {
+            advance(location);
+         }
       }
    }
 

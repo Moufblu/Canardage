@@ -42,7 +42,7 @@ public class PlaceBefore extends WithLocation {
       if(position == 0) {
          return false;
       } else {
-         return board.isDuck(position - 1) && board.isMyDuck(position, getPlayer().getId());
+         return board.isDuck(position) && board.isDuck(position - 1) && board.isMyDuck(position, getPlayer().getId());
       }
    }
 

@@ -219,6 +219,7 @@ public class ServerManager implements Runnable {
                               synchronized (mutex) {
                                  nbPlayers++;
                               }
+                              client.setId(nbPlayers);
                            } else {
                               System.out.println("    Refus de la connexion du joueur");
                               client.writeLine(ProtocolV1.REFUSE_CONNECTION);
