@@ -37,7 +37,7 @@ public class Target extends WithLocation {
     */
    @Override
    public boolean isPlayable(int position) {
-      if(!board.isTargetted(position)) {
+      if(!board.isTargetted(position) && board.isDuck(position)) {
          return true;
       }
       return false;
