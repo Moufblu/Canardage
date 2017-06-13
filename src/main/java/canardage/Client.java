@@ -106,7 +106,9 @@ public class Client {
    
    public int getLocation() throws IOException {
       writeLine(ProtocolV1.ASK_FOR_POSITION);
-      int choiceLocation = Integer.parseInt(readLine());
+      String[] positionAnswer = readLine().split(ProtocolV1.SEPARATOR);
+      System.out.println("position recu cote server : " + positionAnswer[1]);
+      int choiceLocation = Integer.parseInt(positionAnswer[1]);
       return choiceLocation;
    }
    

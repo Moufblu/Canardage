@@ -317,7 +317,9 @@ public class FXMLCanardageController implements Initializable {
          final int trigger = i;
          createAndResizeImageView(ducksGameList, i, duckImages[i]);
          ducksAndProtectionsGrid.setOnMouseClicked((MouseEvent event) -> {
+            System.out.println("clic sur case no : " + trigger);
             if(areCardsUsable) {
+               System.out.println("est rentré dans le if : " + (Global.Rules.MAX_NO_POS - 1 - trigger));
                player.posChoose(Global.Rules.MAX_NO_POS - 1 - trigger);
                areCardsUsable = false;
             }
