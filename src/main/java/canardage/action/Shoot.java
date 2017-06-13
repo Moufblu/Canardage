@@ -42,12 +42,11 @@ public class Shoot extends WithLocation {
    @Override
    public boolean isPlayable(int position) {
       if(board.isTargetted(position)) {
-         Media sound = new Media(new File("/sounds/PAN.aac").toURI().toString());
-         MediaPlayer mediaPlayer = new MediaPlayer(sound);
-         mediaPlayer.play();
+//         Media sound = new Media(new File("/sounds/PAN.mp3").getAbsolutePath());
+//         MediaPlayer mediaPlayer = new MediaPlayer(sound);
+//         mediaPlayer.play();
          return true;
       }
-      System.out.println("DAMN");
       return false;
    }
 
