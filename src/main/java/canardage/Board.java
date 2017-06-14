@@ -3,7 +3,6 @@ package canardage;
 import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
-import canardage.action.*;
 
 /**
  * Description: Classe principale dans laquelle on implémente le plateau de jeu Date:
@@ -13,6 +12,9 @@ import canardage.action.*;
  */
 public class Board {
 
+   /**
+    * Enlève les gardes dont le temps s'est écoulé
+    */
    void cleanNecessariesGards() {
       for(int i  = 0; i < locations.length; i++) {
          if(locations[i].tickStartGard + nbPlayers == tick) {
@@ -21,6 +23,9 @@ public class Board {
       }
    }
 
+   /**
+    * augmente le nombre de tours pour la gestion des gardes
+    */
    void nextTick() {
       tick++;
    }
@@ -77,8 +82,8 @@ public class Board {
       }
    }
 
-   private final static int NOT_FINISHED = -2;
-   private final static int ALL_DUCKS_DEAD = -1;
+   private final static int NOT_FINISHED = -2;     // flag pour indiquer une partie non finie
+   private final static int ALL_DUCKS_DEAD = -1;   // flag pour une partie sans canards
    
    private final static int MISSING = -1;        // Signifie qu'il n'y a pas de carte
    private final static int WATER_CARD_VALUE = 0;// Pour dire qu'il y a une carte eau
@@ -89,8 +94,8 @@ public class Board {
 
    public final static int NB_LOCATIONS = 6; // Le nombre de position maximum
    private final Location[] locations;       // Tableau avec les positions
-   private int tick = 0;
-   private int nbPlayers;
+   private int tick = 0;      // nombre de tours de jeu
+   private int nbPlayers;     // nombre de joueurs
 
    private static Board instance;   // Instance pour le plateau
 
@@ -453,6 +458,10 @@ public class Board {
       return display;
    }
 
+   /**
+    * Récupère l'état du board
+    * @return une string qui représente le board
+    */
    public String getBoardState() {
       String display = "";
 
@@ -566,7 +575,11 @@ public class Board {
       return locations[location].duck == currentPlayer;
    }
 
-   public static void main(String... args) {
+   /**
+    * Main de test de la partie board
+    * @param args 
+    */
+   /*public static void main(String... args) {
 
       //creation de 2 plateau un a 2 joueur et un a 6
       Board.registerInstance(6);
@@ -722,10 +735,10 @@ public class Board {
       board6Player.setLocation(2, 3);
       hide.effect();
       System.out.println(board6Player);
-   }
+   }*/
 
    /**
-    * This method exists only to eliminate the random factor in the tests.
+    * Méthode de debug pour utilisation par les tests unitaires.
     *
     * @param location
     * @param duck

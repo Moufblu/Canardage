@@ -4,10 +4,17 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 
 /**
- * Allow an easy way to show a alert message from a string
+ * Classe pour afficher des popups
  */
 public class AlertPopup {
 
+   /**
+    * Lance une popup avec des informations
+    * @param title   le titre de la fenêtre
+    * @param header  La première ligne d'information
+    * @param content    le corps du message
+    * @param alertType  type d'alerte
+    */
    public static void alert(String title, String header, String content, Alert.AlertType alertType) {
 
       Platform.runLater(() -> {
@@ -20,6 +27,10 @@ public class AlertPopup {
       });
    }
 
+   /**
+    * Affiche une exception avec une popup
+    * @param e l'exception
+    */
    public static void alert(Exception e) {
       String error = "";
 
