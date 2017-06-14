@@ -4,17 +4,17 @@ import canardage.Board;
 import canardage.Client;
 
 /**
- * Description: Classe à hériter quand on veut rajouter une carte ou un effet Date:
- * 03.05.2017
+ * Description: Classe à hériter quand on veut rajouter une carte ou un effet
+ * Date: 03.05.2017
  * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
  * @version 0.1
  */
 public abstract class Action implements Cloneable {
 
-   protected final static int BAD_LOCATION = -1;
-   protected Board board;  // Où l'effet ce réalisera
+   protected final static int BAD_LOCATION = -1;   // Mauvais choix de position
+   protected Board board;     // Où l'effet ce réalisera
    protected Client client;   // Joueur courrant
-   protected static int counter = 0;
+   protected static int counter = 0;   // Compteur
 
    /**
     * Constructeur de la classe Action
@@ -43,8 +43,6 @@ public abstract class Action implements Cloneable {
    public Client getPlayer() {
       return client;
    }
-   
-   //public static abstract int getId();
 
    /**
     * Méthode à redéfinir dans les sous-classes pour implémenter un nouveau effet
@@ -58,10 +56,20 @@ public abstract class Action implements Cloneable {
     */
    public abstract boolean hasEffect();
 
+   /**
+    * Surcharge de la méthode clone() dans Action
+    * @return L'Action qui a été copiée
+    * @throws CloneNotSupportedException S'il y a eu une erreur au moment de cloner 
+    * l'objet
+    */
    @Override
    public Action clone() throws CloneNotSupportedException {
       return (Action)super.clone();
    }
 
+   /**
+    * Obtention du chemin du fichier de l'image de la carte
+    * @return Le chemin vers l'image de la carte
+    */
    abstract public String getFile();
 }

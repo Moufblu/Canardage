@@ -4,7 +4,10 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 
 /**
- * Classe pour afficher des popups
+ * Description: Classe pour afficher des popups
+ * Date: 03.05.2017
+ * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
+ * @version 0.1
  */
 public class AlertPopup {
 

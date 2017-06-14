@@ -30,62 +30,63 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 
 /**
- * FXML Controller class
- *
- * @author Miguel-Portable
+ * Description: Classe qui sert à créer la fenêtre principale du jeu
+ * Date: 03.05.2017
+ * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
+ * @version 0.1
  */
 public class FXMLCanardageController implements Initializable {
 
-   private final int RESIZE_CARDS = 5;
-   private final int MARGIN_LEFT = 20;
-   private final int MARGIN_DOWN = 15;
+   private final int RESIZE_IMAGES = 5; // Sert à redimensionner la taille des images
+   private final int MARGIN_LEFT = 20;  // Déplace le marge de gauche d'une image
+   private final int MARGIN_DOWN = 15;  // Déplace le marge du bas d'une image
 
-   private final int NUMBER_OF_SMILEYS = 4;
-   private final int GRID_POS = 2;
+   private final int NUMBER_OF_SMILEYS = 4;  // Nombre d'émoticônes sur le plateau
+   private final int GRID_POS = 2;  // Position sur la grille des émoticônes
 
-   private int nbCurrentPlayers = 0;
+   private int nbCurrentPlayers = 0;   // Nombre de joueurs dans la partie
 
-   private boolean areCardsUsable = false;
+   private boolean areCardsUsable = false;   // Utilisation d'une carte
 
-   // Changer les trucs en dur (String) par base de données pour tout ce qui est carte et affichage (?)
+   // Création d'un joueur
    Player player = Player.getInstance();
 
    @FXML
-   private Button startButton;
+   private Button startButton;   // Bouton pour commencer la partie
    @FXML
-   private GridPane playersGrid;
+   private GridPane playersGrid; // Grille pour afficher les joueurs
    @FXML
-   private GridPane smileyGrid;
+   private GridPane smileyGrid;  // Grille pour les émôticones
    @FXML
-   private GridPane playerCardsGrid;
+   private GridPane playerCardsGrid;   // Grille pour les cartes du joueur
    @FXML
-   private GridPane targetsGrid;
+   private GridPane targetsGrid; // Grille pour les cibles
    @FXML
-   private GridPane ducksAndProtectionsGrid;
+   private GridPane ducksAndProtectionsGrid; // Grille pour les cartes du jeu
 
-   private final ArrayList<Label> playersChatList;
+   private final ArrayList<Label> playersChatList; // Liste de label des joueurs
 
-   private final ArrayList<ImageView> playersList;
+   private final ArrayList<ImageView> playersList; // Liste de joueurs (canards)
 
-   private final ArrayList<Button> smileysList;
+   private final ArrayList<Button> smileysList; // Liste d'émoticônes
 
-   private final ArrayList<Button> cardsList;
+   private final ArrayList<Button> cardsList;   // Liste des cartes du joueur
 
-   private final ArrayList<ImageView> targetsList;
-   private final Image imageTarget;
+   private final ArrayList<ImageView> targetsList; // Liste de cibles
+   private final Image imageTarget; // Image d'une cible
 
-   private final ArrayList<ImageView> ducksGameList;
+   private final ArrayList<ImageView> ducksGameList;  // Liste de canards en jeu
 
-   private final ArrayList<ImageView> ducksHidenList;
+   private final ArrayList<ImageView> ducksHidenList; // Liste de canards cachés
 
-   private final ArrayList<ImageView> protectionCardsList;
-   private final Image imageProtection;
+   private final ArrayList<ImageView> protectionCardsList;  // Liste de cartes protections
+   private final Image imageProtection;   // Image d'une protection
 
-   private final Image imageBackCard;
-   private final ImageView viewBackCard;
+   private final Image imageBackCard;  // Image du dos d'une carte
+   private final ImageView viewBackCard;  // ImageView du dos d'uune carte
 
    /**
-    * Variables pour les cartes, à faire dans un autre endroit plutôt (?)
+    * Variables pour les cartes
     */
    Image[] duckImages = {
       new Image("/images/DuckEmpty.jpg"),
@@ -96,8 +97,11 @@ public class FXMLCanardageController implements Initializable {
       new Image("/images/DuckYellow.jpg"),
       new Image("/images/DuckOrange.jpg")
    };
-   ArrayList<ImageView> duckViews;
+   ArrayList<ImageView> duckViews; // Images des cartes pour afficher
 
+   /**
+    * Constructeur de la classe FXMLCanardageController
+    */
    public FXMLCanardageController() {
 
       imageProtection = new Image("/images/CardACouvert.jpg");
@@ -158,8 +162,8 @@ public class FXMLCanardageController implements Initializable {
 
    /**
     * Initialise le controlleur de la classe.
-    * @param url
-    * @param rb
+    * @param url Pas utilisé
+    * @param rb Pas utilisé
     */
    @Override
    public void initialize(URL url, ResourceBundle rb) {
@@ -209,19 +213,26 @@ public class FXMLCanardageController implements Initializable {
             startButton.setDisable(true);
             startButton.setVisible(false);
          } catch(BadGameInitialisation e) {
-            AlertPopup.alert("Avertissement", "Pas assez de joueurs", e.getMessage(), Alert.AlertType.WARNING);
+            AlertPopup.alert("Avertissement", "Pas assez de joueurs", e.getMessage(),
+                    Alert.AlertType.WARNING);
          } catch(IllegalStateException | IOException e) {
             AlertPopup.alert(e);
          }
       });
    }
 
+   /**
+    * Méthode pour afficher les émoticônes pour le chat
+    * @param player Numéro du joueur que envoie un émoticône
+    * @param emoticon L'émoticône envoyé par un joueur
+    */
    public void showEmoticon(int player, Emoticon emoticon) {
       PauseTransition pause = new PauseTransition(Duration.seconds(5));
       Platform.runLater(() -> {
          ImageView smileyChat = new ImageView(emoticon.getEmote());
          resizeImageView(smileyChat);
-         imagesMarginAndPosition(Arrays.asList(smileyChat), 0, player, 0, HPos.CENTER, VPos.BOTTOM, MARGIN_DOWN, 0);
+         imagesMarginAndPosition(Arrays.asList(smileyChat), 0, player, 0,
+                                 HPos.CENTER, VPos.BOTTOM, MARGIN_DOWN, 0);
          playersGrid.add(smileyChat, player, 0);
          pause.pause();
          pause.setOnFinished(e -> playersGrid.getChildren().removeAll(smileyChat));
@@ -229,6 +240,9 @@ public class FXMLCanardageController implements Initializable {
       });
    }
    
+   /**
+    * Affichage des joueurs en dessus en disant quel est le canard d'un joueur
+    */
    public void showPlayers() {
       for(int i = nbCurrentPlayers; i < 6; i++) {
          nbCurrentPlayers++;
@@ -236,19 +250,24 @@ public class FXMLCanardageController implements Initializable {
          imagesPosition(playersList, i, i, 0, HPos.CENTER, VPos.TOP);
          imagesPosition(playersChatList, i, i, 0, HPos.CENTER, VPos.BOTTOM);
          if(i == player.getPlayerNumber()) {
-            playersChatList.get(i).setText("You");
+            playersChatList.get(i).setText("Votre canard");
          }
       }
    }
 
+   /**
+    * Affichage des cartes des joueurs
+    */
    public void showPlayerCards() {
-      // Les cartes des joueurs, à refaire selon la liste de cartes dans Player, liste aussi à changer pour que ce soit une liste de boutons
       for(int i = 0; i < Global.Rules.HAND_SIZE; i++) {
          imagesPosition(cardsList, i, i, 0, HPos.CENTER, VPos.CENTER);
       }
       playerCardsGrid.getChildren().addAll(cardsList);
    }
 
+   /**
+    * Affichage des cibles
+    */
    public void targets() {
       // Les cibles qui peuvent être posées sur le plateau de jeu
       for(int i = 0; i < Global.Rules.MAX_NO_POS; i++) {
@@ -259,16 +278,26 @@ public class FXMLCanardageController implements Initializable {
       targetsGrid.getChildren().addAll(targetsList);
    }
 
+   /**
+    * Méthode pour cacher une cible
+    * @param position La position de la cible
+    */
    public void unshowTargets(int position) {
       targetsList.get(position).setVisible(false);
    }
 
+   /**
+    * Méthode pour afficher une cible
+    * @param position La position de la cible
+    */
    public void showTargets(int position) {
       targetsList.get(position).setVisible(true);
    }
 
+   /**
+    * Méthode pour afficher les canards cachés
+    */
    public void hidenDucks() {
-      // BOUCLE POUR LES CANARDS CACHÉS, FAIT JUSTE POUR L'AFFICHAGE, UTILISÉ SI ON VEUT CACHER UN CANARD PLUS TARD
       for(int i = 0; i < Global.Rules.MAX_NO_POS; i++) {
          createAndResizeImageView(ducksHidenList, i, duckImages[i]);
          imagesMarginAndPosition(ducksHidenList, i, i, 0, HPos.CENTER, VPos.CENTER,
@@ -278,10 +307,19 @@ public class FXMLCanardageController implements Initializable {
       ducksAndProtectionsGrid.getChildren().addAll(ducksHidenList);
    }
 
+   /**
+    * Sert à enlever un canard caché
+    * @param position 
+    */
    public void unshowHidenDucks(int position) {
       ducksHidenList.get(position).setVisible(false);
    }
 
+   /**
+    * Sert à afficher un canard caché derrière un autre
+    * @param position Position du canard
+    * @param duck Numéro du canard à caché
+    */
    public void showHidenDuck(int position, int duck) {
       Platform.runLater(new Runnable() {
 
@@ -300,6 +338,10 @@ public class FXMLCanardageController implements Initializable {
       });
    }
 
+   /**
+    * Affichage des cartes du joueurs
+    * @param cards Liste de cartes
+    */
    private void showHand(Integer[] cards) {
       Platform.runLater(() -> {
          for(int i = 0; i < cards.length; i++) {
@@ -311,26 +353,28 @@ public class FXMLCanardageController implements Initializable {
       });
    }
 
+   /**
+    * Affichage d'un canard sur le jeu
+    * @param position Position du canard
+    * @param duck Le numéro du canard
+    */
    public void showDuck(int position, int duck) {
-
-      Platform.runLater(new Runnable() {
-
-         @Override
-         public void run() {
-            ducksGameList.get(position).setVisible(true);
-
-            ducksAndProtectionsGrid.getChildren().removeAll(ducksGameList.get(position));
-
-            ducksGameList.get(position).setImage(duckImages[duck]);
-
-            ducksAndProtectionsGrid.getChildren().add(position, ducksGameList.get(position));
-            imagesMarginAndPosition(ducksGameList, position, position, 0, HPos.LEFT, VPos.CENTER,
-                    MARGIN_DOWN, MARGIN_LEFT);
-
-         }
+      Platform.runLater(() -> {
+         ducksGameList.get(position).setVisible(true);
+         
+         ducksAndProtectionsGrid.getChildren().removeAll(ducksGameList.get(position));
+         
+         ducksGameList.get(position).setImage(duckImages[duck]);
+         
+         ducksAndProtectionsGrid.getChildren().add(position, ducksGameList.get(position));
+         imagesMarginAndPosition(ducksGameList, position, position, 0, HPos.LEFT, VPos.CENTER,
+                 MARGIN_DOWN, MARGIN_LEFT);
       });
    }
 
+   /**
+    * Affichage des canards du jeu
+    */
    public void ducksGame() {
       for(int i = 0; i < Global.Rules.MAX_NO_POS; i++) {
          final int trigger = i;
@@ -345,6 +389,11 @@ public class FXMLCanardageController implements Initializable {
       }
    }
 
+   /**
+    * Modification d'un canard en jeu
+    * @param position Position du canard
+    * @param duck Le numéro du canard
+    */
    public void modifieDucksInGame(int position, int duck) {
       ducksAndProtectionsGrid.getChildren().removeAll(ducksGameList.get(position));
 
@@ -355,24 +404,42 @@ public class FXMLCanardageController implements Initializable {
               MARGIN_DOWN, MARGIN_LEFT);
    }
 
+   /**
+    * Affichage des cartes protections
+    */
    public void protectionCards() {
       for(int i = 0; i < Global.Rules.MAX_NO_POS; i++) {
          createAndResizeImageView(protectionCardsList, i, imageProtection);
          imagesMarginAndPosition(protectionCardsList, i, i, 0, HPos.LEFT, VPos.CENTER,
                  MARGIN_DOWN, 0);
-         protectionCardsList.get(i).setVisible(false);
+         protectionCardsList.get(i).setVisible(false); // On les caches au début
       }
       ducksAndProtectionsGrid.getChildren().addAll(protectionCardsList);
    }
 
+   /**
+    * Méthode pour cacher une carte protection
+    * @param position Position de la carte
+    */
    public void unshowGuard(int position) {
       protectionCardsList.get(position).setVisible(false);
    }
 
+
+   /**
+    * Méthode pour afficher une carte protection
+    * @param position Position de la carte
+    */
    public void showGuard(int position) {
       protectionCardsList.get(position).setVisible(true);
    }
 
+   /**
+    * Création des images et redimensionnement des mêmes
+    * @param list La liste des cartes à créer/redimensionner
+    * @param position La position dans la liste
+    * @param image L'image à redimensionner
+    */
    private void createAndResizeImageView(List<ImageView> list, int position, Image image) {
       ImageView imageView = new ImageView(image);
       imageView.setOnMouseClicked((MouseEvent event) -> {
@@ -395,11 +462,24 @@ public class FXMLCanardageController implements Initializable {
       resizeImageView(list.get(position));
    }
 
+   /**
+    * Redimensionnement d'une image
+    * @param imageView L'image à redimensionner
+    */
    private void resizeImageView(ImageView imageView) {
-      imageView.setFitHeight(imageView.getBoundsInLocal().getHeight() / RESIZE_CARDS);
-      imageView.setFitWidth(imageView.getBoundsInLocal().getWidth() / RESIZE_CARDS);
+      imageView.setFitHeight(imageView.getBoundsInLocal().getHeight() / RESIZE_IMAGES);
+      imageView.setFitWidth(imageView.getBoundsInLocal().getWidth() / RESIZE_IMAGES);
    }
 
+   /**
+    * Méthode pour donner une position aux différents éléments sur le plateau
+    * @param list Liste des éléments à placer
+    * @param position Position de l'élément à placer
+    * @param columnPosition Position sur une colonne sur une grille
+    * @param rowPosition Position sur une ligne sur une grille
+    * @param hPos Position horizontale dans une grille
+    * @param vPos Position verticale dans une grille
+    */
    private void imagesPosition(List<?> list, int position,
            int columnPosition, int rowPosition,
            HPos hPos, VPos vPos) {
@@ -407,6 +487,17 @@ public class FXMLCanardageController implements Initializable {
               columnPosition, rowPosition, 1, 1, hPos, vPos);
    }
 
+   /**
+    * 
+    * @param list Liste des éléments à placer
+    * @param position Position de l'élément à placer
+    * @param columnPosition Position sur une colonne sur une grille
+    * @param rowPosition Position sur une ligne sur une grille
+    * @param hPos Position horizontale dans une grille
+    * @param vPos Position verticale dans une grille
+    * @param bottom Marge en bas sur une grille
+    * @param left Marge à gache sur une grille
+    */
    private void imagesMarginAndPosition(List<?> list, int position,
            int columnPosition, int rowPosition,
            HPos hPos, VPos vPos,
@@ -415,32 +506,19 @@ public class FXMLCanardageController implements Initializable {
       GridPane.setMargin((Node) list.get(position), new Insets(0, 0, bottom, left));
    }
 
-   public void update() {
-
-      showTargets(2);
-      showTargets(5);
-
-      showGuard(2);
-
-      modifieDucksInGame(0, 6);
-
-      showHidenDuck(2, 4);
-      showHidenDuck(5, 6);
-      showHidenDuck(3, 2);
-      showHidenDuck(1, 3);
-      showHidenDuck(0, 5);
-      showHidenDuck(4, 1);
-
-      showGuard(0);
-      showGuard(4);
-   }
-
+   /**
+    * Actualisation des cartes du joueur
+    * @param cards La liste de cartes du joueur
+    */
    public void updateCards(Integer[] cards) {
       showHand(cards);
    }
 
+   /**
+    * Actualisation du plateau de jeu
+    * @param stringBoard Affichage console de quoi il reçoit comme information
+    */
    public void updateBoard(String stringBoard) {
-
       System.out.println("BOARD GOT : " + stringBoard);
       String[] blocs = stringBoard.split(String.valueOf(Global.BoardParam.SEPARATOR));
       boolean hasGuard;
@@ -494,19 +572,31 @@ public class FXMLCanardageController implements Initializable {
       }
    }
 
+   /**
+    * Demande d'une carte pour un joueur
+    */
    public void askCard() {
       cardsList.stream().forEach((cardButton) -> {
          cardButton.setDisable(false);
       });
    }
 
+   /**
+    * Alerte si une action est fausse
+    * @param message 
+    */
    public void alert(Global.ERROR_MESSAGES message) {
-      AlertPopup.alert("Wrong move", "You cannot do this action", canardage.Global.ProtocolV1.messageError(message), Alert.AlertType.INFORMATION);
+      AlertPopup.alert("Wrong move", "You cannot do this action",
+                     canardage.Global.ProtocolV1.messageError(message),
+                     Alert.AlertType.INFORMATION);
    }
 
+   /**
+    * Demande d'une position pour utiliser une carte
+    */
    public void askPosition() {
       areCardsUsable = true;
-      AlertPopup.alert("Position", "Choisissez une position", "Veuillez choisir une position", Alert.AlertType.INFORMATION);
+      AlertPopup.alert("Position", "Choisissez une position",
+                     "Veuillez choisir une position", Alert.AlertType.INFORMATION);
    }
-
 }

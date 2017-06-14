@@ -1,22 +1,20 @@
 package canardage.action;
 
 import java.io.IOException;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * Description: Classe pour vérifier la position dans le tableau de jeu et pouvoir
- * jouer à une certaine position Date: 03.05.2017
+ * jouer à une certaine position
+ * Date: 03.05.2017
  * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
  * @version 0.1
  */
 public abstract class WithLocation extends Action {
-
-   protected static final int BAD_LOCATION = -1;
    
    /**
-    * Constructeur de WithLocation (utile?)
+    * Constructeur de WithLocation
     */
    public WithLocation() {
       super();
@@ -31,13 +29,13 @@ public abstract class WithLocation extends Action {
    public abstract boolean isPlayable(int position);
 
    /**
-    * Demande une position en console (à modifier)
+    * Demande une position
     * @return La position demandée à l'utilisateur
     */
    protected int getLocationChoice() {
-      int positionChoice = BAD_LOCATION;
+      int positionChoice = Action.BAD_LOCATION;
 
-      // Bocle tant que le choix de l'utilisateur est fausse
+      // Boucle tant que le choix de l'utilisateur est fausse
       while(true) {
          try {
             positionChoice = client.getLocation();

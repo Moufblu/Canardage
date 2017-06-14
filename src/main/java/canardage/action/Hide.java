@@ -10,12 +10,16 @@ import canardage.Board;
  */
 public class Hide extends WithDirection {
    
-   private static final int ID;
+   private static final int ID;  // Id de la carte
    
    static {
       ID = Action.counter++;
    }
    
+   /**
+    * Surcharge de la méthode 'getId()' pour l'obtention de l'ID de la carte
+    * @return L'ID de la carte
+    */
    @Override
    public int getID() {
       return ID;
@@ -61,12 +65,21 @@ public class Hide extends WithDirection {
       return effect;
    }
 
+   /**
+    * Surcharge de la méthode 'getNbCards()' pour nous donner le nombre de cartes de 
+    * disponibles de ce type
+    * @return Le numéro de la carte
+    */
    @Override
    public int getNbCards() {
       return 2;
    }
-   
-   
+
+   /**
+    * Surcharge de la méthode 'getFile()' pour obtenir le chemin vers l'image de la 
+    * carte
+    * @return Le chemin vers cett image
+    */
    @Override
    public String getFile() {
       return "/images/CardPlanque.jpg";

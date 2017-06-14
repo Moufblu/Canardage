@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fxml.controller;
 
 import canardage.AlertPopup;
@@ -14,7 +9,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -29,34 +23,41 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 /**
- * FXML Controller class
- *
- * @author Miguel-Portable
+ * Description: Classe responsable de créer la fenêtre pour la création d'un serveur
+ * Date: 03.05.2017
+ * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
+ * @version 0.1
  */
 public class FXMLCreateServerController implements Initializable {
 
    @FXML
-   private Button createServer;
+   private Button createServer;  // Bouton pour créer le serveur
    @FXML
-   private GridPane gridPane;
+   private GridPane gridPane;    // Panel pour l'affichage de FieldText et Label
    @FXML
-   private TextField serverNameField;
+   private TextField serverNameField; // Nom du serveur
    @FXML
-   private TextField passwordField;
+   private TextField passwordField; // Mot de passe du serveur
 
-   private String gameName;
-   private String password;
+   private String gameName;   // Nom donnée à la partie
+   private String password;   // Mot de passe de la partie
 
    Player player;
 
    /**
-    * Initializes the controller class.
+    * Initialise le controller de cette classe
+    * @param url Pas utilisé
+    * @param rb Pas utilisé
     */
    @Override
    public void initialize(URL url, ResourceBundle rb) {
       player = Player.getInstance();
    }
 
+   /**
+    * Méthode pour la création du serveur pour une partie
+    * @param event Donne l'événement de cette fenêtre courante
+    */
    @FXML
    public void createServer(ActionEvent event) {
       gameName = serverNameField.getText();
@@ -76,12 +77,9 @@ public class FXMLCreateServerController implements Initializable {
 
             ((Node) (event.getSource())).getScene().getWindow().hide();
             joinStage.show();
-            joinStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-               @Override
-               public void handle(WindowEvent event) {
-                  Platform.exit();
-                  System.exit(0);
-               }
+            joinStage.setOnCloseRequest((WindowEvent event1) -> {
+               Platform.exit();
+               System.exit(0);
             });
          } catch(IOException e) {
             Logger logger = Logger.getLogger(getClass().getName());

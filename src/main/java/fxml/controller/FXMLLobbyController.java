@@ -13,7 +13,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -24,36 +23,43 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 /**
- * FXML Controller class
- *
- * @author Miguel-Portable
+ * Description: Classe pour le lobby qui affiche les serveurs que l'on peut rejoindre
+ * Date: 03.05.2017
+ * @author Nadir Benallal, Nathan Gonzalez Montes, Miguel Pombo Dias, Jimmy Verdasca
+ * @version 0.1
  */
 public class FXMLLobbyController implements Initializable {
 
    @FXML
-   private Button joinServerBtn;
+   private Button joinServerBtn; // Bouton pour rejoindre une partie
    @FXML
-   private Button refreshBtn;
+   private Button refreshBtn;    // Bouton pour actualilser les serveurs
    @FXML
-   private ListView<Server> serverList; // Juste pour afficher, faudra changer
+   private ListView<Server> serverList; // Liste de serveurs
    @FXML
-   private TextField passwordTextField;
+   private TextField passwordTextField;   // Champs de texte pour mettre le mot de passe
 
    Player player;
 
    /**
-    * Initializes the controller class.
+    * Initialise le controller de cette classe
+    * @param url Pas utilisé
+    * @param rb Pas utilisé
     */
    @Override
    public void initialize(URL url, ResourceBundle rb) {
       player = Player.getInstance();
    }
 
+   /**
+    * Méthode qui sert à rejoindre une partie après avoir sélectionné un serveur et 
+    * mis un mot de passe si nécessaire
+    * @param event Donne l'événement de cette fenêtre courante
+    */
    @FXML
    public void joinGame(ActionEvent event) {
 
@@ -89,12 +95,9 @@ public class FXMLLobbyController implements Initializable {
 
                ((Node) (event.getSource())).getScene().getWindow().hide();
                joinStage.show();
-               joinStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                  @Override
-                  public void handle(WindowEvent event) {
-                     Platform.exit();
-                     System.exit(0);
-                  }
+               joinStage.setOnCloseRequest((WindowEvent event1) -> {
+                  Platform.exit();
+                  System.exit(0);
                });
                               player.startGame(fxmlLoader.getController());
             } catch(IOException e) {
