@@ -6,3 +6,4 @@
 5;EnAvantMarche;fait avancer tous les canard;4;0
 6;PeaceAndLove;retire toutes les cibles;4;0
 7;DuckyLuke;place une cible et tir en une action;4;0
+8;PlaceAfter;deplace notre canard contre un autre devant;4;0

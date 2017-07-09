@@ -27,7 +27,7 @@ public class DuckyLuke extends WithLocation {
 
    @Override
    public int getNbCards() {
-      return 50;
+      return 1;
    }
 
    @Override

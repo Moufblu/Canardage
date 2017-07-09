@@ -6,6 +6,7 @@ import canardage.action.EnAvantMarche;
 import canardage.action.Guard;
 import canardage.action.Hide;
 import canardage.action.PeaceAndLove;
+import canardage.action.PlaceAfter;
 import canardage.action.PlaceBefore;
 import canardage.action.Shoot;
 import canardage.action.Target;
@@ -50,7 +51,8 @@ public class Global {
       new Target(),
       new EnAvantMarche(),
       new PeaceAndLove(),
-      new DuckyLuke()
+      new DuckyLuke(),
+      new PlaceAfter()
    };
 
    /**
