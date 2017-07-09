@@ -73,7 +73,7 @@ public class PlaceAfter  extends WithLocation {
     */
    @Override
    public int getNbCards() {
-      return 50;
+      return 3;
    }
 
    /**

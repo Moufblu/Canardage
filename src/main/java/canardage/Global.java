@@ -8,6 +8,7 @@ import canardage.action.Hide;
 import canardage.action.PeaceAndLove;
 import canardage.action.PlaceAfter;
 import canardage.action.PlaceBefore;
+import canardage.action.RectifierTirDroite;
 import canardage.action.Shoot;
 import canardage.action.Target;
 import chat.Emoticon;
@@ -52,7 +53,8 @@ public class Global {
       new EnAvantMarche(),
       new PeaceAndLove(),
       new DuckyLuke(),
-      new PlaceAfter()
+      new PlaceAfter(),
+      new RectifierTirDroite()
    };
 
    /**

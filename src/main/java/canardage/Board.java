@@ -363,6 +363,14 @@ public class Board {
          locations[posDuck].targetted = value;
       }
    }
+   
+   public void forceTarget(int posDuck) throws IndexOutOfBoundsException {
+      validate(posDuck);
+
+      if(locations[posDuck].duck >= 0) {
+         locations[posDuck].targetted = true;
+      }
+   }
 
    /**
     * Vérifie si la position est ciblée ou pas
