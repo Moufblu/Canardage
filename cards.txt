@@ -9,3 +9,6 @@
 8;PlaceAfter;deplace notre canard contre un autre devant;4;0
 9;RectifierTirDroite;deplace une cible vers la droite;4;0
 10;RectifierTirGauche;deplace une cible vers la gauche;4;0
+11;Oups;tir a cote de la cible;4;0
+12;DoubleTarget; place deux cible sur des canard adjacents;4;0
+13;Enchaine;tir sur deux cible adjacentes;4;0

@@ -17,6 +17,19 @@ public abstract class WithDirection extends WithLocation {
                                        // canard; vrai - gauche, faux - droite
    
    /**
+    * Vérifie si l'on peut utiliser la carte sur une des positions
+    * @return Vrai si possible, faux sinon
+    */
+   @Override
+   public boolean hasEffect() {
+      boolean effect = super.hasEffect();
+      direction = !direction;
+      effect |= super.hasEffect();
+
+      return effect;
+   }
+   
+   /**
     * Surcharge de la méthode 'getLocationChoice()' qui demande une position au joueur
     * @return La position demandée à l'utilisateur
     */

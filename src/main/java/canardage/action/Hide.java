@@ -52,18 +52,7 @@ public class Hide extends WithDirection {
       return board.possibleHide(position, direction)&& board.isMyDuck(position, getPlayer().getId());
    }
 
-   /**
-    * Vérifie si l'on peut utiliser la carte sur une des positions
-    * @return Vrai si possible, faux sinon
-    */
-   @Override
-   public boolean hasEffect() {
-      boolean effect = super.hasEffect();
-      direction = !direction;
-      effect |= super.hasEffect();
-
-      return effect;
-   }
+   
 
    /**
     * Surcharge de la méthode 'getNbCards()' pour nous donner le nombre de cartes de 

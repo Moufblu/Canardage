@@ -3,8 +3,11 @@ package canardage;
 import canardage.action.Action;
 import canardage.action.DuckyLuke;
 import canardage.action.EnAvantMarche;
+import canardage.action.DoubleTarget;
+import canardage.action.Enchaine;
 import canardage.action.Guard;
 import canardage.action.Hide;
+import canardage.action.Oups;
 import canardage.action.PeaceAndLove;
 import canardage.action.PlaceAfter;
 import canardage.action.PlaceBefore;
@@ -56,7 +59,10 @@ public class Global {
       new DuckyLuke(),
       new PlaceAfter(),
       new RectifierTirDroite(),
-      new RectifierTirGauche()
+      new RectifierTirGauche(),
+      new Oups(),
+      new DoubleTarget(),
+      new Enchaine()
    };
 
    /**

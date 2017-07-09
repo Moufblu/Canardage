@@ -5,13 +5,14 @@
  */
 package canardage.action;
 
+import canardage.Board;
+
 /**
  *
  * @author jiver
  */
-public class RectifierTirGauche extends WithLocation {
+public class Oups extends WithDirection {
 
-   
    private static final int ID;  // Id de la carte
    
    static {
@@ -20,10 +21,17 @@ public class RectifierTirGauche extends WithLocation {
    
    @Override
    public boolean isPlayable(int position) {
-      if(position == board.getNbLocations() - 1) {
+      if((position == 0 && !direction)
+              || (position == Board.NB_LOCATIONS - 1 && direction)) {
+
          return false;
       }
-      if(!board.isTargetted(position) || board.isTargetted(position + 1)) {
+      
+      if(!board.isTargetted(position)) {
+         return false;
+      }
+      int addFromDirection = direction ? 1 : -1;
+      if(!board.isDuck(position + addFromDirection)) {
          return false;
       }
       return true;
@@ -43,14 +51,18 @@ public class RectifierTirGauche extends WithLocation {
    public void effect() {
       if(hasEffect()) {
          int positionChoice = getLocationChoice();
+         int addFromDirection = direction ? 1 : -1;
          board.setTarget(positionChoice, false);
-         board.forceTarget(positionChoice + 1);
+         boolean temp = board.isTargetted(positionChoice + addFromDirection);
+         board.setTarget(positionChoice + addFromDirection, true);
+         board.fire(positionChoice + addFromDirection);
+         board.setTarget(positionChoice + addFromDirection, temp);
       }
    }
 
    @Override
    public String getFile() {
-      return "/images/CardRectifierTirGauche.jpg";
+      return "/images/CardOups.jpg";
    }
    
 }
