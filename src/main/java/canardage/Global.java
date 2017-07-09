@@ -1,6 +1,7 @@
 package canardage;
 
 import canardage.action.Action;
+import canardage.action.EnAvantMarche;
 import canardage.action.Guard;
 import canardage.action.Hide;
 import canardage.action.PlaceBefore;
@@ -32,7 +33,7 @@ public class Global {
       public final static int MIN_NB_PLAYERS = 3;
       public final static int MAX_NB_PLAYERS = 6;    // Nombre maximum de joueur
 
-      public static final int MAX_ID_CARD = 4; // Maximum de l'id d'une carte
+      public static final int MAX_ID_CARD = 5; // Maximum de l'id d'une carte
       public static final int MAX_NO_POS = 6; // Maximum pour la position d'une carte
       public static final int MIN_ID_CARD = 0; // Minimum de l'id d'une carte
       public static final int MIN_NO_POS = 0; // Minimum pour la position d'une carte
@@ -44,7 +45,8 @@ public class Global {
       new Hide(),
       new PlaceBefore(),
       new Shoot(),
-      new Target()
+      new Target(),
+      new EnAvantMarche()
    };
 
    /**

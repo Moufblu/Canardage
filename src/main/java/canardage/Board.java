@@ -536,6 +536,19 @@ public class Board {
          placeDuck(0);
       }
    }
+   
+   /**
+    * fait avancer tous les canards d'une case, celui étant en tête retourne dans la pile
+    */
+   public void enAvantMarche() {
+      int duck;
+      //met le ou les canard en tête dans la pile
+      while( (duck = removeDuck(NB_LOCATIONS - 1)) != MISSING) {
+         ducks.add(duck);
+      }
+      //fait avancer les canards
+      advance(NB_LOCATIONS - 1);
+   }
 
    /**
     * Méthode pour vérifier si une action est possible sur une position donnée
