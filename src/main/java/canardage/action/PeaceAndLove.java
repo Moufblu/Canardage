@@ -9,7 +9,7 @@ package canardage.action;
  *
  * @author jiver
  */
-public class EnAvantMarche extends Action {
+public class PeaceAndLove extends Action {
 
    private static final int ID;  // Id de la carte
    
@@ -19,7 +19,7 @@ public class EnAvantMarche extends Action {
    
    @Override
    public int getNbCards() {
-      return 3;
+      return 50;
    }
 
    @Override
@@ -29,17 +29,28 @@ public class EnAvantMarche extends Action {
 
    @Override
    public void effect() {
-      board.enAvantMarche();
+      if(hasEffect()) {
+         int nbLocation = board.getNbLocations();
+         for(int i = 0; i < nbLocation; i++) {
+            board.setTarget(i, false);
+         }
+      }
    }
 
    @Override
    public boolean hasEffect() {
-      return true;
+      int nbLocation = board.getNbLocations();
+      for(int i = 0; i < nbLocation; i++) {
+         if(board.isTargetted(i)) {
+            return true;
+         }
+      }
+      return false;
    }
 
    @Override
    public String getFile() {
-      return "/images/CardEnAvantMarche.jpg";
+      return "/images/CardPeaceAndLove.jpg";
    }
    
 }

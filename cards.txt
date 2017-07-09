@@ -4,3 +4,4 @@
 3;Shoot;utilise une cible et tue le canard de la position s'il y en a un;4;0
 4;Target;cible un position;4;0
 5;EnAvantMarche;fait avancer tous les canard;4;0
+6;PeaceAndLove;retire toutes les cibles;4;0
