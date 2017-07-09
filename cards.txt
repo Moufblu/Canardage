@@ -8,3 +8,4 @@
 7;DuckyLuke;place une cible et tir en une action;4;0
 8;PlaceAfter;deplace notre canard contre un autre devant;4;0
 9;RectifierTirDroite;deplace une cible vers la droite;4;0
+10;RectifierTirGauche;deplace une cible vers la gauche;4;0

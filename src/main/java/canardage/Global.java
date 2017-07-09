@@ -9,6 +9,7 @@ import canardage.action.PeaceAndLove;
 import canardage.action.PlaceAfter;
 import canardage.action.PlaceBefore;
 import canardage.action.RectifierTirDroite;
+import canardage.action.RectifierTirGauche;
 import canardage.action.Shoot;
 import canardage.action.Target;
 import chat.Emoticon;
@@ -54,7 +55,8 @@ public class Global {
       new PeaceAndLove(),
       new DuckyLuke(),
       new PlaceAfter(),
-      new RectifierTirDroite()
+      new RectifierTirDroite(),
+      new RectifierTirGauche()
    };
 
    /**

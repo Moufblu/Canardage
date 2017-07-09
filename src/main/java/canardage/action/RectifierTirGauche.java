@@ -5,13 +5,11 @@
  */
 package canardage.action;
 
-import canardage.Board;
-
 /**
  *
  * @author jiver
  */
-public class RectifierTirDroite extends WithLocation {
+public class RectifierTirGauche extends WithLocation {
 
    
    private static final int ID;  // Id de la carte
@@ -22,10 +20,10 @@ public class RectifierTirDroite extends WithLocation {
    
    @Override
    public boolean isPlayable(int position) {
-      if(position == 0) {
+      if(position == board.getNbLocations() - 1) {
          return false;
       }
-      if(!board.isTargetted(position) || board.isTargetted(position - 1)) {
+      if(!board.isTargetted(position) || board.isTargetted(position + 1)) {
          return false;
       }
       return true;
@@ -33,7 +31,7 @@ public class RectifierTirDroite extends WithLocation {
 
    @Override
    public int getNbCards() {
-      return 3;
+      return 50;
    }
 
    @Override
@@ -46,13 +44,13 @@ public class RectifierTirDroite extends WithLocation {
       if(hasEffect()) {
          int positionChoice = getLocationChoice();
          board.setTarget(positionChoice, false);
-         board.forceTarget(positionChoice - 1);
+         board.forceTarget(positionChoice + 1);
       }
    }
 
    @Override
    public String getFile() {
-      return "/images/CardRectifierTirDroite.jpg";
+      return "/images/CardRectifierTirGauche.jpg";
    }
    
 }
