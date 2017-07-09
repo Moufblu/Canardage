@@ -9,8 +9,8 @@ package canardage.action;
  *
  * @author jiver
  */
-public class PeaceAndLove extends Action {
-
+public class DuckyLuke extends WithLocation {
+   
    private static final int ID;  // Id de la carte
    
    static {
@@ -18,8 +18,16 @@ public class PeaceAndLove extends Action {
    }
    
    @Override
+   public boolean isPlayable(int position) {
+      if(board.isDuck(position)) {
+         return true;
+      }
+      return false;
+   }
+
+   @Override
    public int getNbCards() {
-      return 1;
+      return 50;
    }
 
    @Override
@@ -30,27 +38,15 @@ public class PeaceAndLove extends Action {
    @Override
    public void effect() {
       if(hasEffect()) {
-         int nbLocation = board.getNbLocations();
-         for(int i = 0; i < nbLocation; i++) {
-            board.setTarget(i, false);
-         }
+         int positionChoice = getLocationChoice();
+         board.setTarget(positionChoice, true);
+         board.fire(positionChoice);
       }
-   }
-
-   @Override
-   public boolean hasEffect() {
-      int nbLocation = board.getNbLocations();
-      for(int i = 0; i < nbLocation; i++) {
-         if(board.isTargetted(i)) {
-            return true;
-         }
-      }
-      return false;
    }
 
    @Override
    public String getFile() {
-      return "/images/CardPeaceAndLove.jpg";
+      return "/images/CardDuckyLuke.jpg";
    }
    
 }
