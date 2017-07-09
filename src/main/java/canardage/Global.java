@@ -5,6 +5,7 @@ import canardage.action.DuckyLuke;
 import canardage.action.EnAvantMarche;
 import canardage.action.DoubleTarget;
 import canardage.action.Enchaine;
+import canardage.action.Fulguro;
 import canardage.action.Guard;
 import canardage.action.Hide;
 import canardage.action.Oups;
@@ -62,7 +63,8 @@ public class Global {
       new RectifierTirGauche(),
       new Oups(),
       new DoubleTarget(),
-      new Enchaine()
+      new Enchaine(),
+      new Fulguro()
    };
 
    /**

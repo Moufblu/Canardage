@@ -5,13 +5,11 @@
  */
 package canardage.action;
 
-import canardage.Board;
-
 /**
  *
  * @author jiver
  */
-public class Enchaine extends WithDirection {
+public class Fulguro extends WithLocation {
 
    private static final int ID;
    
@@ -21,22 +19,18 @@ public class Enchaine extends WithDirection {
    
    @Override
    public boolean isPlayable(int position) {
-      if((position == 0 && !direction)
-              || (position == Board.NB_LOCATIONS - 1 && direction)) {
-
+      if(position == board.getNbLocations() - 1) {
          return false;
       }
-      int addFromDirection = direction ? 1 : -1;
-      if(!board.isTargetted(position) 
-              || !board.isTargetted(position + addFromDirection)) {
-         return false;
+      if(board.isMyDuck(position, getPlayer().getId())) {
+         return true;
       }
-      return true;
+      return false;
    }
 
    @Override
    public int getNbCards() {
-      return 3;
+      return 30;
    }
 
    @Override
@@ -48,15 +42,15 @@ public class Enchaine extends WithDirection {
    public void effect() {
       if(hasEffect()) {
          int positionChoice = getLocationChoice();
-         int addFromDirection = direction ? 1 : -1;
-         board.fire(positionChoice);
-         board.fire(positionChoice + addFromDirection);
+         for(int i = positionChoice; i < board.getNbLocations() - 1; i++) {
+            board.swap(i, true);
+         }
       }
    }
 
    @Override
    public String getFile() {
-      return "/images/CardCanardsEnchaines.jpg";
+      return "/images/CardFulguroCoin.jpg";
    }
    
 }
