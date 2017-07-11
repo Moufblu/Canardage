@@ -145,6 +145,48 @@ public class Board {
       /* Place les canards sur la partie visible du plateau */
       placeDucks();
    }
+   
+   /**
+    * @return le nombre de joueur du plateau actuel
+    */
+   public int getNbPlayers() {
+      return nbPlayers;
+   }
+   
+   /**
+    * permet de savoir si un joueur possède des canard mort
+    * @param idPlayer identifiant du joueur que l'on sonde
+    * @return vrai si le joueur possède au mmoins 1 canard mort
+    */
+   public boolean hasDeadDuck(int idPlayer) {
+      int nbDucks = 0;
+      for(Integer duck : ducks) {
+         if(duck == idPlayer) {
+            nbDucks++;
+         }
+      }
+      for(int i = 0; i < locations.length; i++) {
+         if(locations[i].getDuck() == idPlayer) {
+            nbDucks++;
+         }
+      }
+      if(nbDucks == MAX_DUCK_PER_PLAYER) {
+         return false;
+      }
+      return true;
+   }
+   
+   /**
+    * fait revivre un canard d'un joueur spécifié et le place sous le tas
+    * il vaut mieux utilisé cette méthode plutôt que pushBack car 
+    * elle vérifie que le joueur possède au moins un canard mort
+    * @param idPlayer identifiant du joueur qu'on souhaite faire revivre
+    */
+   public void reviveDuck(int idPlayer) {
+      if(hasDeadDuck(idPlayer)) {
+         pushBack(idPlayer);
+      }
+   }
 
    /**
     * Classe Board en tant que Singleton, on utilise la méthode getInstance pour

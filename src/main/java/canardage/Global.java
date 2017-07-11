@@ -1,6 +1,7 @@
 package canardage;
 
 import canardage.action.Action;
+import canardage.action.Canarchie;
 import canardage.action.DuckyLuke;
 import canardage.action.EnAvantMarche;
 import canardage.action.DoubleTarget;
@@ -16,6 +17,7 @@ import canardage.action.RectifierTirDroite;
 import canardage.action.RectifierTirGauche;
 import canardage.action.Shoot;
 import canardage.action.Target;
+import canardage.action.WalkingDuck;
 import chat.Emoticon;
 
 public class Global {
@@ -64,7 +66,9 @@ public class Global {
       new Oups(),
       new DoubleTarget(),
       new Enchaine(),
-      new Fulguro()
+      new Fulguro(),
+      new WalkingDuck(),
+      new Canarchie()
    };
 
    /**
@@ -88,7 +92,9 @@ public class Global {
       public static final String DISCONNECT = "Stop"; // Déconnecter
       public static final String YOUR_TURN = "Turn"; // Donner le tour
       public static final String ASK_FOR_POSITION = "Position"; // Position sur plateau
+      public static final String ASK_FOR_PLAYER_ID = "Player"; // Joueurs
       public static final String END_GAME = "End"; // Fin de la partie
+      public static final String START_SWAP = "SWAP"; // Debut de demandes de swap
       public static final String SEPARATOR = " "; // Séparateur
       public static final String[] ERRORS = {"Mauvaise commande utilisee", "Erreur pas definie"}; //Possibles erreurs
       public static final String ACCEPT_CONNECTION = "Accept"; // Accepter un requête
@@ -124,13 +130,17 @@ public class Global {
        * Indique le choix de la position
        * @param noPosition numéro de la position choisie
        * @return une string valide du protocol indiquant le choix de la position
-       * @throws IllegalArgumentException si le numéro de la position est impossible
        */
-      public static String messageAskPosition(int noPosition) throws IllegalArgumentException {
-         if(noPosition < Global.Rules.MIN_NO_POS || noPosition > Global.Rules.MAX_NO_POS) {
-            throw new IllegalArgumentException("Num\u00e9ro de case impossible: " + noPosition);
-         }
+      public static String messageAskPosition(int noPosition) {
          String result = ASK_FOR_POSITION + SEPARATOR + noPosition;
+         return result;
+      }
+      
+      public static String messageAskPlayer(int idPlayer) throws IllegalArgumentException {
+         if(idPlayer < 0 || idPlayer > Global.Rules.MAX_NB_PLAYERS) {
+            throw new IllegalArgumentException("Num\u00e9ro de case impossible: " + idPlayer);
+         }
+         String result = ASK_FOR_PLAYER_ID + SEPARATOR + idPlayer;
          return result;
       }
 

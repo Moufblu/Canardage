@@ -1,14 +1,43 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package canardage.action;
 
-/**
- *
- * @author jiver
- */
-public class WalkingDuck {
+public class WalkingDuck extends WithPlayer {
+
+   private static final int ID;
+   
+   static {
+      ID = Action.counter++;
+   }
+   
+   @Override
+   public int getNbCards() {
+      return 50;
+   }
+
+   @Override
+   public int getID() {
+      return ID;
+   }
+
+   @Override
+   public void effect() {
+      if(hasEffect()) {
+         int idPlayerChoice = getIDPlayerChoice();
+         board.reviveDuck(idPlayerChoice);
+      }
+   }
+
+   @Override
+   public String getFile() {
+      return "/images/CardWalkingDuck.jpg";
+   }
+
+   @Override
+   public boolean isPlayable(int idPlayer) {
+      if(board.hasDeadDuck(idPlayer)) {
+         return true;
+      }
+      return false;
+   }
    
 }

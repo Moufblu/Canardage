@@ -211,6 +211,12 @@ public class Player implements Runnable {
                canardageFxml.alert(Global.ERROR_MESSAGES.valueOf(splittedCommand[1]));
                System.out.println(canardage.Global.ProtocolV1.ERRORS[Integer.parseInt(splittedCommand[1])]);
                break;
+            case canardage.Global.ProtocolV1.ASK_FOR_PLAYER_ID:
+               canardageFxml.askPlayerID();
+               break;
+            case canardage.Global.ProtocolV1.START_SWAP:
+               canardageFxml.startSwap();
+               
          }
       } while(!splittedCommand[0].equals(canardage.Global.ProtocolV1.END_GAME));
    }
@@ -225,6 +231,12 @@ public class Player implements Runnable {
    public void posChoose(int position) {
       System.out.println("position jouee par player : " + position);
       writer.println(canardage.Global.ProtocolV1.messageAskPosition(position));
+      writer.flush();
+   }
+   
+   public void playerChoose(int idPlayer) {
+      System.out.println("player choisie par player : " + idPlayer);
+      writer.println(canardage.Global.ProtocolV1.messageAskPlayer(idPlayer));
       writer.flush();
    }
 

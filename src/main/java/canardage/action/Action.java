@@ -12,6 +12,8 @@ import canardage.Client;
 public abstract class Action implements Cloneable {
 
    protected final static int BAD_LOCATION = -1;   // Mauvais choix de position
+   protected final static int BAD_ID_PLAYER = -1; // Mauvais choix de joueur
+   protected final static int END_OF_SWAPPING = -10; // le joueur arrête de swapper
    protected Board board;     // Où l'effet ce réalisera
    protected Client client;   // Joueur courrant
    protected static int counter = 0;   // Compteur

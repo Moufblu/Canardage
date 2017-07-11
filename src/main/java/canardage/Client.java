@@ -47,11 +47,15 @@ public class Client {
       return id;
    }
    
+   public void startSwaps() {
+      writeLine(Global.ProtocolV1.START_SWAP);
+   }
+   
    /**
     * Méthode pour que le client puisse écrire une requête au serveur
     * @param message Le message envoyé par le client
     */
-   void writeLine(String message) {
+   public void writeLine(String message) {
       writer.println(message);
       writer.flush();
    }
@@ -108,6 +112,14 @@ public class Client {
       System.out.println("position recu cote server : " + positionAnswer[1]);
       int choiceLocation = Integer.parseInt(positionAnswer[1]);
       return choiceLocation;
+   }
+   
+   public int getIDPlayer() throws IOException {
+      writeLine(canardage.Global.ProtocolV1.ASK_FOR_PLAYER_ID);
+      String[] positionAnswer = readLine().split(canardage.Global.ProtocolV1.SEPARATOR);
+      System.out.println("idPlayer recu cote server : " + positionAnswer[1]);
+      int playerIDChoice = Integer.parseInt(positionAnswer[1]);
+      return playerIDChoice;
    }
    
    public CardInfo useCard() {

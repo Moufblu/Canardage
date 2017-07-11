@@ -3,6 +3,7 @@ package fxml.controller;
 import canardage.AlertPopup;
 import canardage.Global;
 import canardage.Player;
+import canardage.action.WithSwapingUntilActionPlayer;
 import chat.Emoticon;
 import duckException.BadGameInitialisation;
 import java.io.IOException;
@@ -47,6 +48,7 @@ public class FXMLCanardageController implements Initializable {
    private int nbCurrentPlayers = 0;   // Nombre de joueurs dans la partie
 
    private boolean areCardsUsable = false;   // Utilisation d'une carte
+   private boolean arePlayersClickable = false; // choix d'un joueur
 
    // Création d'un joueur
    Player player = Player.getInstance();
@@ -63,6 +65,8 @@ public class FXMLCanardageController implements Initializable {
    private GridPane targetsGrid; // Grille pour les cibles
    @FXML
    private GridPane ducksAndProtectionsGrid; // Grille pour les cartes du jeu
+   
+   private Button endSwappingButton;
 
    private final ArrayList<Label> playersChatList; // Liste de label des joueurs
 
@@ -114,11 +118,22 @@ public class FXMLCanardageController implements Initializable {
       smileysList = new ArrayList(NUMBER_OF_SMILEYS);
 
       for(int i = 0; i < Global.Rules.MAX_NO_POS; i++) {
+         final int j = i;
          playersList.add(new ImageView(duckImages[i + 1]));
          playersChatList.add(new Label());
          resizeImageView(playersList.get(i));
+         
+         playersList.get(i).setOnMouseClicked((MouseEvent event) -> {
+            System.out.println("clic sur joueur no : " + j);
+            if(arePlayersClickable) {
+               System.out.println("est rentré dans ");
+               player.playerChoose(j);
+               arePlayersClickable = false;
+            }
+         });
       }
 
+      
       for(int i = 0; i < NUMBER_OF_SMILEYS; i++) {
          smileysList.add(new Button());
       }
@@ -219,6 +234,21 @@ public class FXMLCanardageController implements Initializable {
             AlertPopup.alert(e);
          }
       });
+      
+      endSwappingButton = new Button("J'ai finis!");
+      imagesPosition(Arrays.asList(endSwappingButton), 0, 0, 1, HPos.LEFT, VPos.BOTTOM);
+      smileyGrid.getChildren().add(endSwappingButton);
+      endSwappingButton.setVisible(false);
+      endSwappingButton.setOnAction((ActionEvent event) -> {
+         endSwappingButton.setDisable(true);
+         endSwappingButton.setVisible(false);
+         player.posChoose(WithSwapingUntilActionPlayer.endSwapping());
+      });
+   }
+   
+   public void startSwap() {
+      endSwappingButton.setDisable(false);
+      endSwappingButton.setVisible(true);
    }
 
    /**
@@ -598,5 +628,11 @@ public class FXMLCanardageController implements Initializable {
       areCardsUsable = true;
       AlertPopup.alert("Position", "Choisissez une position",
                      "Veuillez choisir une position", Alert.AlertType.INFORMATION);
+   }
+   
+   public void askPlayerID() {
+      arePlayersClickable = true;
+      AlertPopup.alert("Joueur", "Choisissez un joueur",
+                     "Veuillez choisir un joueur", Alert.AlertType.INFORMATION);
    }
 }
