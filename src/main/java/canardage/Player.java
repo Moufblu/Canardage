@@ -219,8 +219,13 @@ public class Player implements Runnable {
                break;
             case canardage.Global.ProtocolV1.START_SWAP:
                canardageFxml.startSwap();
+               break;
             case canardage.Global.ProtocolV1.PLAY_SOUND:
                playSound(Global.SOUNDS.valueOf(splittedCommand[1]));
+               break;
+            case canardage.Global.ProtocolV1.PATCH_LIFES:
+               canardageFxml.updateLifes(inputServer.substring(inputServer.indexOf(canardage.Global.ProtocolV1.SEPARATOR) + 1));
+               break;
                
          }
       } while(!splittedCommand[0].equals(canardage.Global.ProtocolV1.END_GAME));

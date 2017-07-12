@@ -159,21 +159,26 @@ public class Board {
     * @return vrai si le joueur possède au mmoins 1 canard mort
     */
    public boolean hasDeadDuck(int idPlayer) {
-      int nbDucks = 0;
-      for(Integer duck : ducks) {
-         if(duck == idPlayer) {
-            nbDucks++;
-         }
-      }
-      for(int i = 0; i < locations.length; i++) {
-         if(locations[i].getDuck() == idPlayer) {
-            nbDucks++;
-         }
-      }
+      int nbDucks = countNbDuckAlive(idPlayer);
       if(nbDucks == MAX_DUCK_PER_PLAYER) {
          return false;
       }
       return true;
+   }
+   
+   private int countNbDuckAlive(int idPlayer) {
+      int nbDucks = 0;
+      for(Integer duck : ducks) {
+         if(duck == idPlayer + 1) {
+            nbDucks++;
+         }
+      }
+      for(int i = 0; i < locations.length; i++) {
+         if(locations[i].getDuck() == idPlayer + 1) {
+            nbDucks++;
+         }
+      }
+      return nbDucks;
    }
    
    /**
@@ -535,7 +540,20 @@ public class Board {
             display += Global.BoardParam.SEPARATOR;
          }
       }
-
+      
+      return display;
+   }
+   
+   public String getLifesState() {
+      String display = "";
+      
+      for(int i = 0; i < nbPlayers; i++) {
+         if(i != 0) {
+            display += Global.BoardParam.SEPARATOR;
+         }
+         display += countNbDuckAlive(i);
+      }
+      
       return display;
    }
 

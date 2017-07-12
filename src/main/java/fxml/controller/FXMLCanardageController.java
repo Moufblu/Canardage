@@ -3,7 +3,6 @@ package fxml.controller;
 import canardage.AlertPopup;
 import canardage.Global;
 import canardage.Player;
-import canardage.action.WithTwoLocation;
 import chat.Emoticon;
 import duckException.BadGameInitialisation;
 import java.io.IOException;
@@ -53,7 +52,6 @@ public class FXMLCanardageController implements Initializable {
    // Création d'un joueur
    Player player = Player.getInstance();
 
-   @FXML
    private Button startButton;   // Bouton pour commencer la partie
    @FXML
    private GridPane playersGrid; // Grille pour afficher les joueurs
@@ -67,6 +65,8 @@ public class FXMLCanardageController implements Initializable {
    private GridPane ducksAndProtectionsGrid; // Grille pour les cartes du jeu
    
    private Button endSwappingButton;
+   
+   private ArrayList<Label> lifesLabelList;
 
    private final ArrayList<Label> playersChatList; // Liste de label des joueurs
 
@@ -116,6 +116,7 @@ public class FXMLCanardageController implements Initializable {
       playersList = new ArrayList(Global.Rules.MAX_NO_POS);
       playersChatList = new ArrayList(Global.Rules.MAX_NO_POS);
       smileysList = new ArrayList(NUMBER_OF_SMILEYS);
+      lifesLabelList = new ArrayList();
 
       for(int i = 0; i < Global.Rules.MAX_NO_POS; i++) {
          final int j = i;
@@ -136,6 +137,10 @@ public class FXMLCanardageController implements Initializable {
       
       for(int i = 0; i < NUMBER_OF_SMILEYS; i++) {
          smileysList.add(new Button());
+      }
+      
+      for(int i = 0; i < Global.Rules.MAX_NB_PLAYERS; i++) {
+         lifesLabelList.add(new Label("-"));
       }
 
       cardsList = new ArrayList(Global.Rules.HAND_SIZE);
@@ -282,6 +287,7 @@ public class FXMLCanardageController implements Initializable {
       for(int i = nbCurrentPlayers; i < 6; i++) {
          nbCurrentPlayers++;
          playersGrid.addColumn(i, playersList.get(i), playersChatList.get(i));
+         playersGrid.add(lifesLabelList.get(i), i, 0);
          imagesPosition(playersList, i, i, 0, HPos.CENTER, VPos.TOP);
          imagesPosition(playersChatList, i, i, 0, HPos.CENTER, VPos.BOTTOM);
          if(i == player.getPlayerNumber()) {
@@ -606,6 +612,20 @@ public class FXMLCanardageController implements Initializable {
 
       }
    }
+   
+   public void updateLifes(String stringBoard) {
+      Platform.runLater(new Runnable() {
+         @Override
+         public void run() {
+            String[] blocs = stringBoard.split(String.valueOf(Global.BoardParam.SEPARATOR));
+            System.out.println("lifes : " + stringBoard);
+            for(int k = 0; k < blocs.length; k++) {
+               lifesLabelList.get(k).setText(blocs[k]);
+            }
+         } 
+      });
+   }
+   
 
    /**
     * Demande d'une carte pour un joueur

@@ -89,6 +89,7 @@ public class Global {
       public static final String DISTRIBUTE_HAND = "Hand"; // Donner les cartes
       public static final String REFUSE_CARD = "Refuse"; // Refuser une action
       public static final String PATCH_BOARD = "Board"; // Affichage du plateau
+      public static final String PATCH_LIFES = "Lifes"; // Affichage du plateau
       public static final String DISTRIBUTE_CARD = "Card"; // Donner une carte
       public static final String DISCONNECT = "Stop"; // Déconnecter
       public static final String YOUR_TURN = "Turn"; // Donner le tour
@@ -242,6 +243,14 @@ public class Global {
          String result = PATCH_BOARD;
          result += SEPARATOR;
          result += board.getBoardState();
+         return result;
+      }
+      
+      public static String messageLifesState() {
+         Board board = Board.getInstance();
+         String result = PATCH_LIFES;
+         result += SEPARATOR;
+         result += board.getLifesState();
          return result;
       }
 
