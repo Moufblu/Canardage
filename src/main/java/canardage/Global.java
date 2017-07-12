@@ -96,8 +96,9 @@ public class Global {
       public static final String ASK_FOR_POSITION = "Position"; // Position sur plateau
       public static final String ASK_FOR_PLAYER_ID = "Player"; // Joueurs
       public static final String END_GAME = "End"; // Fin de la partie
-      public static final String START_SWAP = "SWAP"; // Debut de demandes de swap
-      public static final String PLAY_SOUND = "SOUND"; //Jouer un son 
+      public static final String START_SWAP = "Swap"; // Debut de demandes de swap
+      public static final String PLAY_SOUND = "Sound"; //Jouer un son 
+      public static final String GAME_FINISH = "Finish"; //fin de la partie
       public static final String SEPARATOR = " "; // Séparateur
       public static final String[] ERRORS = {"Mauvaise commande utilisee", "Erreur pas definie"}; //Possibles erreurs
       public static final String ACCEPT_CONNECTION = "Accept"; // Accepter un requête
@@ -131,6 +132,14 @@ public class Global {
       
       public static String messageSound(SOUNDS sound) {
          String result = PLAY_SOUND + SEPARATOR + sound;
+         return result;
+      }
+      
+      public static String messageFinish(int winnerId) throws IllegalArgumentException {
+         if(winnerId < -1 || winnerId > Global.Rules.MAX_NB_PLAYERS) {
+            throw new IllegalArgumentException("Id du gagnant impossible: " + winnerId);
+         }
+         String result = GAME_FINISH + SEPARATOR + winnerId;
          return result;
       }
 
@@ -299,4 +308,5 @@ public class Global {
       
       public abstract File getFile();
    }
+   
 }

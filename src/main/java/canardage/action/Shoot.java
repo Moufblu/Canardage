@@ -67,7 +67,7 @@ public class Shoot extends WithLocation {
     */
    @Override
    public int getNbCards() {
-      return 13;
+      return 20;
    }
 
    /**

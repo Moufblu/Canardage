@@ -53,9 +53,13 @@ public class Enchaine extends WithDirection {
    public void effect() {
       if(hasEffect()) {
          int positionChoice = getLocationChoice();
-         int addFromDirection = direction ? 1 : -1;
-         board.fire(positionChoice);
-         board.fire(positionChoice + addFromDirection);
+         if(direction) {
+            board.fire(positionChoice);
+            board.fire(positionChoice + 1);
+         } else {
+            board.fire(positionChoice - 1);
+            board.fire(positionChoice);
+         }
       }
    }
 

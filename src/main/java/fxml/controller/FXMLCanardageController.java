@@ -28,6 +28,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.TextAlignment;
 
 /**
  * Description: Classe qui sert à créer la fenêtre principale du jeu
@@ -140,7 +141,7 @@ public class FXMLCanardageController implements Initializable {
       }
       
       for(int i = 0; i < Global.Rules.MAX_NB_PLAYERS; i++) {
-         lifesLabelList.add(new Label("-"));
+         lifesLabelList.add(new Label("      -"));
       }
 
       cardsList = new ArrayList(Global.Rules.HAND_SIZE);
@@ -620,7 +621,7 @@ public class FXMLCanardageController implements Initializable {
             String[] blocs = stringBoard.split(String.valueOf(Global.BoardParam.SEPARATOR));
             System.out.println("lifes : " + stringBoard);
             for(int k = 0; k < blocs.length; k++) {
-               lifesLabelList.get(k).setText(blocs[k]);
+               lifesLabelList.get(k).setText("      " + blocs[k]);
             }
          } 
       });
@@ -644,6 +645,13 @@ public class FXMLCanardageController implements Initializable {
       AlertPopup.alert("Wrong move", "You cannot do this action",
                      canardage.Global.ProtocolV1.messageError(message),
                      Alert.AlertType.INFORMATION);
+   }
+   
+   
+   
+   public void showWinner(int idWinner) {
+      String[] COLOR_PLAYERS = {"green", "pink", "purple"};
+      AlertPopup.alert("","","the winner is player " + COLOR_PLAYERS[idWinner],Alert.AlertType.INFORMATION);
    }
 
    /**

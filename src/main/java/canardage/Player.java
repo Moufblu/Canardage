@@ -226,6 +226,9 @@ public class Player implements Runnable {
             case canardage.Global.ProtocolV1.PATCH_LIFES:
                canardageFxml.updateLifes(inputServer.substring(inputServer.indexOf(canardage.Global.ProtocolV1.SEPARATOR) + 1));
                break;
+            case canardage.Global.ProtocolV1.GAME_FINISH:
+               canardageFxml.showWinner(Integer.parseInt(splittedCommand[1]));
+               break;
                
          }
       } while(!splittedCommand[0].equals(canardage.Global.ProtocolV1.END_GAME));

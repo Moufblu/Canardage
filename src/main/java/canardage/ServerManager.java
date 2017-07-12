@@ -272,12 +272,16 @@ public class ServerManager implements Runnable {
          for(Client player : playersSockets) {
             playATurn(player);
             winner = board.won();
-            if(winner > -1) {
+            if(winner >= 0) {
                gameFinished = true;
                break;
             }
          }
       } while(!gameFinished);
+      
+      for(Client player : playersSockets) {
+         player.writeLine(Global.ProtocolV1.messageFinish(winner));
+      }
       System.out.println("PARTIE TERMINEEEEEEEE" + winner);
    }
    
@@ -292,7 +296,7 @@ public class ServerManager implements Runnable {
       } catch(CloneNotSupportedException ex) {
          Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE, null, ex);
       }
-      if(cardInfo.hasEffect()) {
+      if(cardInfo.hasEffect() && board.isDuck(cardInfo.getPosition())) {
          Global.SOUNDS soundToPlay = usedCard.getSound();
          if(soundToPlay != Global.SOUNDS.NONE) {
             for(Client others : playersSockets) {

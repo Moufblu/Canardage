@@ -177,6 +177,9 @@ public class Board {
          if(locations[i].getDuck() == idPlayer + 1) {
             nbDucks++;
          }
+         if(locations[i].hiddenDuck == idPlayer + 1) {
+            nbDucks++;
+         }
       }
       return nbDucks;
    }
@@ -189,7 +192,7 @@ public class Board {
     */
    public void reviveDuck(int idPlayer) {
       if(hasDeadDuck(idPlayer)) {
-         pushBack(idPlayer);
+         pushBack(idPlayer + 1);
       }
    }
 
@@ -469,7 +472,7 @@ public class Board {
    public void fire(int location) throws IndexOutOfBoundsException {
       validate(location);
       if(locations[location].targetted) {
-         if(!locations[location].guarded) {
+         if(!locations[location].guarded && isDuck(location)) {
             removeDuck(location);
          }
          setTarget(location, false);
@@ -627,7 +630,7 @@ public class Board {
     */
    private void validate(int location) throws IndexOutOfBoundsException {
       if(!(location >= 0 && location < NB_LOCATIONS)) {
-         throw new IndexOutOfBoundsException("Location out of bounds !");
+         throw new IndexOutOfBoundsException("Location out of bounds ! " + location);
       }
    }
 
@@ -836,18 +839,16 @@ public class Board {
     */
    public int won() {
       int result = ALL_DUCKS_DEAD;
-      for(Integer duck : ducks) {
-         if(result == ALL_DUCKS_DEAD && isDuck(duck)) {
-            result = duck;
-         } else if (result > ALL_DUCKS_DEAD && isDuck(duck) && duck != result) {
-            return NOT_FINISHED;
-         }
-      }
-      for(int i = 0; i < locations.length; i++) {
-         if(result == ALL_DUCKS_DEAD && isDuck(locations[i].getDuck())) {
-            result = locations[i].getDuck();
-         } else if (result > ALL_DUCKS_DEAD && isDuck(locations[i].getDuck()) && locations[i].getDuck() != result) {
-            return NOT_FINISHED;
+      int nbDuck = 0;
+      boolean foundFirst = false;
+      for(int i = 0; i < nbPlayers; i++) {
+         if(countNbDuckAlive(i) > 0) {
+            if(!foundFirst) {
+               result = i;
+               foundFirst = true;
+            } else {
+               return NOT_FINISHED;
+            }
          }
       }
       return result;
