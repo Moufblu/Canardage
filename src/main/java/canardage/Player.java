@@ -19,6 +19,9 @@ import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 
 /**
  * Description: Classe pour créer et gérer les joueurs d'une partie Date: 03.05.2017
@@ -216,11 +219,25 @@ public class Player implements Runnable {
                break;
             case canardage.Global.ProtocolV1.START_SWAP:
                canardageFxml.startSwap();
+            case canardage.Global.ProtocolV1.PLAY_SOUND:
+               playSound(Global.SOUNDS.valueOf(splittedCommand[1]));
                
          }
       } while(!splittedCommand[0].equals(canardage.Global.ProtocolV1.END_GAME));
    }
 
+   public void playSound(Global.SOUNDS sound) {
+      try{
+         AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(sound.getFile());
+         Clip clip = AudioSystem.getClip();
+         clip.open(audioInputStream);
+         clip.start();
+      }
+      catch(Exception ex)
+      {
+      }
+   }
+   
    public void playCard(int posCard) {
       locationChoice = posCard;
       System.out.println("envoie carte a la pos : " + posCard);

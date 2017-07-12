@@ -285,10 +285,20 @@ public class ServerManager implements Runnable {
       System.out.println("demande l'utilisation d'une carte");
       CardInfo cardInfo = client.useCard();
       int choiceCard = cardInfo.getPosition();
+      Action usedCard = null;
       try {
-         usedCards.add(Global.cards[cardInfo.getIdCard()].clone());
+         usedCard = Global.cards[cardInfo.getIdCard()].clone();
+         usedCards.add(usedCard);
       } catch(CloneNotSupportedException ex) {
          Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      if(cardInfo.hasEffect()) {
+         Global.SOUNDS soundToPlay = usedCard.getSound();
+         if(soundToPlay != Global.SOUNDS.NONE) {
+            for(Client others : playersSockets) {
+               others.playSound(soundToPlay);
+            }
+         }
       }
       if(deck.isEmpty()) {
          System.out.println("redistribution du deck action");

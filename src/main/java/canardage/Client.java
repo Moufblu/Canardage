@@ -122,6 +122,10 @@ public class Client {
       return playerIDChoice;
    }
    
+   public void playSound(Global.SOUNDS sound) {
+      writeLine(Global.ProtocolV1.messageSound(sound));
+   }
+   
    public CardInfo useCard() {
       
       int choiceCard = -1;
@@ -139,8 +143,9 @@ public class Client {
          }
       } while(!hand[choiceCard].hasEffect() && hasCardWithEffect);
       System.out.println("use card no : " + hand[choiceCard]);
+      boolean hasEffect = hand[choiceCard].hasEffect();
       hand[choiceCard].effect();
-      CardInfo cardInfo = new CardInfo(choiceCard, hand[choiceCard].getID());
+      CardInfo cardInfo = new CardInfo(choiceCard, hand[choiceCard].getID(), hasEffect);
       hand[choiceCard] = null;
       
       

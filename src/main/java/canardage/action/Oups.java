@@ -6,6 +6,7 @@
 package canardage.action;
 
 import canardage.Board;
+import canardage.Global;
 
 /**
  *
@@ -17,6 +18,10 @@ public class Oups extends WithDirection {
    
    static {
       ID = Action.counter++;
+   }
+   
+   public Oups() {
+      super.sound = Global.SOUNDS.PAN;
    }
    
    @Override

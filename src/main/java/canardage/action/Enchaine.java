@@ -6,6 +6,7 @@
 package canardage.action;
 
 import canardage.Board;
+import canardage.Global;
 
 /**
  *
@@ -17,6 +18,10 @@ public class Enchaine extends WithDirection {
    
    static {
       ID = Action.counter++;
+   }
+   
+   public Enchaine() {
+      super.sound = Global.SOUNDS.PAN;
    }
    
    @Override

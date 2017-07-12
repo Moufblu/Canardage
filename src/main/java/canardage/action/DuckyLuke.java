@@ -5,6 +5,8 @@
  */
 package canardage.action;
 
+import canardage.Global;
+
 /**
  *
  * @author jiver
@@ -15,6 +17,10 @@ public class DuckyLuke extends WithLocation {
    
    static {
       ID = Action.counter++;
+   }
+   
+   public DuckyLuke() {
+      super.sound = Global.SOUNDS.PAN;
    }
    
    @Override

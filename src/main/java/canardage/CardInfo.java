@@ -10,10 +10,12 @@ public class CardInfo {
 
    private int position;
    private int idCard;
+   private boolean hasEffect;
 
-   public CardInfo(int position, int idCard) {
+   public CardInfo(int position, int idCard, boolean hasEffect) {
       this.position = position;
       this.idCard = idCard;
+      this.hasEffect = hasEffect;
    }
 
    public int getIdCard() {
@@ -22,6 +24,10 @@ public class CardInfo {
 
    public int getPosition() {
       return position;
+   }
+   
+   public boolean hasEffect() {
+      return hasEffect;
    }
 
 }

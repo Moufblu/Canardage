@@ -2,6 +2,7 @@ package canardage.action;
 
 import canardage.Board;
 import canardage.Client;
+import canardage.Global;
 
 /**
  * Description: Classe à hériter quand on veut rajouter une carte ou un effet
@@ -11,6 +12,7 @@ import canardage.Client;
  */
 public abstract class Action implements Cloneable {
 
+   protected Global.SOUNDS sound;
    protected final static int BAD_LOCATION = -1;   // Mauvais choix de position
    protected final static int BAD_ID_PLAYER = -1; // Mauvais choix de joueur
    protected final static int END_OF_SWAPPING = -10; // le joueur arrête de swapper
@@ -24,11 +26,16 @@ public abstract class Action implements Cloneable {
    public Action() {
       Board.registerInstance(3);
       board = Board.getInstance();
+      sound = Global.SOUNDS.NONE;
    }
    
    public abstract int getNbCards();
    public abstract int getID();
 
+   public Global.SOUNDS getSound() {
+      return sound;
+   }
+   
    /**
     * Méthode qui défini le joueur courrant
     * @param client Le numéro du joueur courrant

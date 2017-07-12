@@ -11,7 +11,7 @@ public class WalkingDuck extends WithPlayer {
    
    @Override
    public int getNbCards() {
-      return 50;
+      return 3;
    }
 
    @Override

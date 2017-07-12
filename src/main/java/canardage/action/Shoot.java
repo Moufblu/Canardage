@@ -1,5 +1,14 @@
 package canardage.action;
-
+import canardage.Global;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 /**
  * Description: Classe pour implémenter la carte de tirer sur un canard ciblé
  * Date: 03.05.2017
@@ -12,6 +21,10 @@ public class Shoot extends WithLocation {
    
    static {
       ID = Action.counter++;
+   }
+   
+   public Shoot() {
+      super.sound = Global.SOUNDS.PAN;
    }
    
    /**

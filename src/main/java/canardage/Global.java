@@ -19,6 +19,7 @@ import canardage.action.Shoot;
 import canardage.action.Target;
 import canardage.action.WalkingDuck;
 import chat.Emoticon;
+import java.io.File;
 
 public class Global {
 
@@ -95,6 +96,7 @@ public class Global {
       public static final String ASK_FOR_PLAYER_ID = "Player"; // Joueurs
       public static final String END_GAME = "End"; // Fin de la partie
       public static final String START_SWAP = "SWAP"; // Debut de demandes de swap
+      public static final String PLAY_SOUND = "SOUND"; //Jouer un son 
       public static final String SEPARATOR = " "; // Séparateur
       public static final String[] ERRORS = {"Mauvaise commande utilisee", "Erreur pas definie"}; //Possibles erreurs
       public static final String ACCEPT_CONNECTION = "Accept"; // Accepter un requête
@@ -123,6 +125,11 @@ public class Global {
             throw new IllegalArgumentException("Id carte invalide: " + idCard);
          }
          String result = USE_CARD + SEPARATOR + idCard;
+         return result;
+      }
+      
+      public static String messageSound(SOUNDS sound) {
+         String result = PLAY_SOUND + SEPARATOR + sound;
          return result;
       }
 
@@ -265,4 +272,22 @@ public class Global {
       public abstract String getMessage();
    }
 
+   public enum SOUNDS {
+      NONE {
+         String path = "";
+         File file = null;
+         public File getFile() {
+            return file;
+         }
+      },
+      PAN {
+         String path = System.getProperty("user.dir") + "/src/main/resources/sounds/PAN.wav";
+         File file = new File(path);
+         public File getFile() {
+            return file;
+         }
+      };
+      
+      public abstract File getFile();
+   }
 }

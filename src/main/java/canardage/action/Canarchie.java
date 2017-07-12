@@ -18,7 +18,7 @@ public class Canarchie extends WithTwoLocation {
 
    @Override
    public int getNbCards() {
-      return 30;
+      return 3;
    }
 
    @Override
