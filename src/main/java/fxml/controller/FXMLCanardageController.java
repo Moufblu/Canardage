@@ -149,11 +149,11 @@ public class FXMLCanardageController implements Initializable {
 
          final int trigger = i;
          b.setOnAction((ActionEvent event) -> {
-            player.playCard(trigger);
 
             cardsList.stream().forEach((cardsButton) -> {
                cardsButton.setDisable(true);
             });
+            player.playCard(trigger);
          });
          cardsList.add(b);
       }

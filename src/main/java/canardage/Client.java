@@ -134,6 +134,7 @@ public class Client {
       do {
          writeLine(canardage.Global.ProtocolV1.YOUR_TURN);
          try {
+            System.out.println("ATTEND UNE REPONSE");
             String[] response = readLine().split(canardage.Global.ProtocolV1.SEPARATOR);
             choiceCard = Integer.parseInt(response[1]);
             System.out.println("carte reçu choisie : " + choiceCard);
