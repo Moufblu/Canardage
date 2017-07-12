@@ -5,12 +5,10 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class WithSwapingUntilActionPlayer extends Action {
+public abstract class WithTwoLocation extends Action {
    
    protected static int firstLocation = BAD_LOCATION;
    protected static int secondLocation = BAD_LOCATION;
-   protected static boolean ended = false;
-   protected final WithSwapingUntilActionPlayer mutex = this;
    
    /**
     * Méthode à redéfinir dans les sous-classes pour savoir si la carte est jouable à
@@ -33,32 +31,18 @@ public abstract class WithSwapingUntilActionPlayer extends Action {
       return false;
    }
    
-   public static int endSwapping() {
-      ended = true;
-      return BAD_LOCATION;
-   }
-   
    protected void getTwoLocationsChoice() {
 
-      client.startSwaps();
       // Boucle tant que le choix de l'utilisateur est fausse
       while(true) {
          try {
-            synchronized (this) {
-               if(!ended) {
-                  firstLocation = client.getLocation();
-                  if(ended) {
-                     break;
-                  }
-               }
+            firstLocation = client.getLocation();
+            if(firstLocation == BAD_LOCATION) {
+               break;
             }
-            synchronized (this) {
-               if(!ended) {
-                  secondLocation = client.getLocation();
-                  if(ended) {
-                     break;
-                  }
-               }
+            secondLocation = client.getLocation();
+            if(secondLocation == BAD_LOCATION) {
+               break;
             }
          } catch(IOException ex) {
             Logger.getLogger(WithLocation.class.getName()).log(Level.SEVERE, null, ex);
@@ -70,5 +54,6 @@ public abstract class WithSwapingUntilActionPlayer extends Action {
             System.out.println("Les positions choisies ne sont pas valides");
          }
       }
+      System.out.println("J'aiFINIS de DEMANDER LES POSITIONS");
    }
 }

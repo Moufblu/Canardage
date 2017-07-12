@@ -3,7 +3,7 @@ package canardage.action;
 
 import canardage.Global;
 
-public class Canarchie extends WithSwapingUntilActionPlayer {
+public class Canarchie extends WithTwoLocation {
 
    private static final int ID;
    
@@ -29,15 +29,15 @@ public class Canarchie extends WithSwapingUntilActionPlayer {
    @Override
    public void effect() {
       if(hasEffect()) {
-         while(!ended) {
+         client.startSwaps();
+         while(true) {
             getTwoLocationsChoice();
             if(firstLocation != BAD_LOCATION && secondLocation != BAD_LOCATION) {
                board.swap(firstLocation, secondLocation);
                client.writeLine(Global.ProtocolV1.messageBoardState());
+            } else {
+               break;
             }
-         }
-         synchronized (mutex) {
-            ended = false;
          }
       }
    }

@@ -3,7 +3,7 @@ package fxml.controller;
 import canardage.AlertPopup;
 import canardage.Global;
 import canardage.Player;
-import canardage.action.WithSwapingUntilActionPlayer;
+import canardage.action.WithTwoLocation;
 import chat.Emoticon;
 import duckException.BadGameInitialisation;
 import java.io.IOException;
@@ -240,9 +240,14 @@ public class FXMLCanardageController implements Initializable {
       smileyGrid.getChildren().add(endSwappingButton);
       endSwappingButton.setVisible(false);
       endSwappingButton.setOnAction((ActionEvent event) -> {
+         
          endSwappingButton.setDisable(true);
          endSwappingButton.setVisible(false);
-         player.posChoose(WithSwapingUntilActionPlayer.endSwapping());
+         
+         cardsList.stream().forEach((cardsButton) -> {
+            cardsButton.setDisable(true);
+         });
+         player.posChoose(-1);
       });
    }
    
