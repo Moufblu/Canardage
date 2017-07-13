@@ -24,10 +24,12 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 
 /**
@@ -132,6 +134,14 @@ public class FXMLCanardageController implements Initializable {
                player.playerChoose(j);
                arePlayersClickable = false;
             }
+         });
+         
+         playersList.get(j).setOnMouseEntered((MouseEvent event) -> {
+            playersList.get(j).setOpacity(.5);
+         });
+
+         playersList.get(j).setOnMouseExited((MouseEvent event) -> {
+            playersList.get(j).setOpacity(1);
          });
       }
 
@@ -402,11 +412,17 @@ public class FXMLCanardageController implements Initializable {
     */
    public void showDuck(int position, int duck) {
       Platform.runLater(() -> {
+         DropShadow ds = new DropShadow( 20, Color.GOLD );
          ducksGameList.get(position).setVisible(true);
          
          ducksAndProtectionsGrid.getChildren().removeAll(ducksGameList.get(position));
          
          ducksGameList.get(position).setImage(duckImages[duck]);
+         if(playableLocations[position]) {
+            ducksGameList.get(position).setEffect(ds);
+         } else {
+            ducksGameList.get(position).setEffect( new DropShadow(0, Color.TRANSPARENT));
+         }
          
          ducksAndProtectionsGrid.getChildren().add(position, ducksGameList.get(position));
          imagesMarginAndPosition(ducksGameList, position, position, 0, HPos.LEFT, VPos.CENTER,
@@ -483,6 +499,7 @@ public class FXMLCanardageController implements Initializable {
     * @param image L'image à redimensionner
     */
    private void createAndResizeImageView(List<ImageView> list, int position, Image image) {
+      
       ImageView imageView = new ImageView(image);
       imageView.setOnMouseClicked((MouseEvent event) -> {
          System.out.println("clic sur case no : " + (Global.Rules.MAX_NO_POS - 1 - position));
@@ -492,6 +509,7 @@ public class FXMLCanardageController implements Initializable {
             areCardsUsable = false;
          }
       });
+      
       imageView.setOnMouseEntered((MouseEvent event) -> {
          imageView.setOpacity(.5);
       });
@@ -653,19 +671,27 @@ public class FXMLCanardageController implements Initializable {
       String[] COLOR_PLAYERS = {"green", "pink", "purple"};
       AlertPopup.alert("","","the winner is player " + COLOR_PLAYERS[idWinner],Alert.AlertType.INFORMATION);
    }
-
+   private boolean[] playableLocations = new boolean[Global.Rules.MAX_NO_POS];
+   
+   public void disableBordersPlayableLocations() {
+      for(int i = 0; i < playableLocations.length; i++) {
+         playableLocations[i] = false;
+      }
+   }
+   
    /**
     * Demande d'une position pour utiliser une carte
     */
-   public void askPosition() {
+   public void askPosition(String playablePositions) {
+      System.out.println("coup possible " + playablePositions);
+      String[] positions = playablePositions.split(String.valueOf(Global.BoardParam.SEPARATOR));
+      for(int i = 0; i < positions.length; i++) {
+         playableLocations[Global.Rules.MAX_NO_POS - 1 - Integer.parseInt(positions[i])] = true;
+      }
       areCardsUsable = true;
-      AlertPopup.alert("Position", "Choisissez une position",
-                     "Veuillez choisir une position", Alert.AlertType.INFORMATION);
    }
    
    public void askPlayerID() {
       arePlayersClickable = true;
-      AlertPopup.alert("Joueur", "Choisissez un joueur",
-                     "Veuillez choisir un joueur", Alert.AlertType.INFORMATION);
    }
 }

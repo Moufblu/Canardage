@@ -2,6 +2,7 @@ package canardage.action;
 
 import static canardage.action.WithLocation.BAD_LOCATION;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,12 +37,45 @@ public abstract class WithDirection extends WithLocation {
    @Override
    protected int getLocationChoice() {
       int positionChoice = BAD_LOCATION;
-
+      
       // Boucle tant que le choix de l'utilisateur est faux
       while(true) {
+         ArrayList<Integer> positions = new ArrayList<>();
+         ArrayList<Integer> positionsDirection = new ArrayList<>();
+         for(int i = 0; i < board.getNbLocations(); i++) {
+            if(isPlayable(i)) {
+               positions.add(i);
+            }
+         }
+         direction = !direction;
+         for(int i = 0; i < board.getNbLocations(); i++) {
+            if(isPlayable(i)) {
+               positions.add(i);
+            }
+         }
          try {
-            positionChoice = client.getLocation();
-            int adjacentPosition = client.getLocation();
+            positionChoice = client.getLocation(positions);
+            if(direction) {
+               if(isPlayable(positionChoice)) {
+                  positionsDirection.add(positionChoice + 1);
+               }
+               direction = !direction;
+               if(isPlayable(positionChoice)) {
+                  positionsDirection.add(positionChoice - 1);
+               }
+            } else {
+               if(isPlayable(positionChoice)) {
+                  positionsDirection.add(positionChoice - 1);
+               }
+               direction = !direction;
+               if(isPlayable(positionChoice)) {
+                  positionsDirection.add(positionChoice + 1);
+               }
+            }
+            if(positionsDirection.size() == 0) {
+               continue;
+            }
+            int adjacentPosition = client.getLocation(positionsDirection);
             if(positionChoice + 1 == adjacentPosition) {
                direction = true;
             } else if (positionChoice - 1 == adjacentPosition) {

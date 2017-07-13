@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.stream.Stream;
 
 /**
@@ -106,8 +107,9 @@ public class Client {
       return false;
    }
    
-   public int getLocation() throws IOException {
-      writeLine(canardage.Global.ProtocolV1.ASK_FOR_POSITION);
+   public int getLocation(ArrayList<Integer> positions) throws IOException {
+      
+      writeLine(canardage.Global.ProtocolV1.messageAskForPosition(positions));
       String[] positionAnswer = readLine().split(canardage.Global.ProtocolV1.SEPARATOR);
       System.out.println("position recu cote server : " + positionAnswer[1]);
       int choiceLocation = Integer.parseInt(positionAnswer[1]);

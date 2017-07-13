@@ -20,6 +20,7 @@ import canardage.action.Target;
 import canardage.action.WalkingDuck;
 import chat.Emoticon;
 import java.io.File;
+import java.util.ArrayList;
 
 public class Global {
 
@@ -148,8 +149,16 @@ public class Global {
        * @param noPosition numéro de la position choisie
        * @return une string valide du protocol indiquant le choix de la position
        */
-      public static String messageAskPosition(int noPosition) {
+      public static String messageAnswerPosition(int noPosition) {
          String result = ASK_FOR_POSITION + SEPARATOR + noPosition;
+         return result;
+      }
+      
+      public static String messageAskForPosition(ArrayList<Integer> positions) {
+         String result = ASK_FOR_POSITION;
+         for(int i = 0; i < positions.size(); i++) {
+            result += SEPARATOR + positions.get(i);
+         }
          return result;
       }
       

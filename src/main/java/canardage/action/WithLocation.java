@@ -1,6 +1,7 @@
 package canardage.action;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,11 +35,16 @@ public abstract class WithLocation extends Action {
     */
    protected int getLocationChoice() {
       int positionChoice = Action.BAD_LOCATION;
-
+      ArrayList<Integer> positions = new ArrayList<>();
+      for(int i = 0; i < board.getNbLocations(); i++) {
+         if(isPlayable(i)) {
+            positions.add(i);
+         }
+      }
       // Boucle tant que le choix de l'utilisateur est fausse
       while(true) {
          try {
-            positionChoice = client.getLocation();
+            positionChoice = client.getLocation(positions);
          } catch(IOException ex) {
             Logger.getLogger(WithLocation.class.getName()).log(Level.SEVERE, null, ex);
          }

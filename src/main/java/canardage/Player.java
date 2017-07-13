@@ -54,6 +54,7 @@ public class Player implements Runnable {
 
    private final static String defaultServerName = "Canardage";
    private final static String defaultPassword = "";
+   private String actualBoardState = "";
 
    /**
     * Constructeur de la classe Player
@@ -187,7 +188,8 @@ public class Player implements Runnable {
 
          switch(splittedCommand[0]) {
             case canardage.Global.ProtocolV1.ASK_FOR_POSITION:
-               canardageFxml.askPosition();
+               canardageFxml.askPosition(inputServer.substring(inputServer.indexOf(canardage.Global.ProtocolV1.SEPARATOR) + 1));
+               canardageFxml.updateBoard(actualBoardState);
                break;
             case canardage.Global.ProtocolV1.DISTRIBUTE_CARD:
                cards[locationChoice] = readLineCardFileInfo(Integer.parseInt(splittedCommand[1]));
@@ -202,10 +204,10 @@ public class Player implements Runnable {
                      System.out.println(card);
                   }
                canardageFxml.updateCards(cards);
-
                break;
             case canardage.Global.ProtocolV1.PATCH_BOARD:
-               canardageFxml.updateBoard(inputServer.substring(inputServer.indexOf(canardage.Global.ProtocolV1.SEPARATOR) + 1));
+               actualBoardState = inputServer.substring(inputServer.indexOf(canardage.Global.ProtocolV1.SEPARATOR) + 1);
+               canardageFxml.updateBoard(actualBoardState);
                break;
             case canardage.Global.ProtocolV1.YOUR_TURN:
                canardageFxml.askCard();
@@ -255,7 +257,9 @@ public class Player implements Runnable {
 
    public void posChoose(int position) {
       System.out.println("position jouee par player : " + position);
-      writer.println(canardage.Global.ProtocolV1.messageAskPosition(position));
+      canardageFxml.disableBordersPlayableLocations();
+      canardageFxml.updateBoard(actualBoardState);
+      writer.println(canardage.Global.ProtocolV1.messageAnswerPosition(position));
       writer.flush();
    }
    
