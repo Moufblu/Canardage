@@ -11,9 +11,9 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="176.0" prefWidth="266.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fxml.controller.FXMLCreateServerController">
+<AnchorPane id="AnchorPane" prefHeight="200.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fxml.controller.FXMLCreateServerController">
    <children>
-      <BorderPane layoutX="188.0" layoutY="88.0" prefHeight="170.0" prefWidth="511.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <BorderPane layoutX="188.0" layoutY="88.0" prefHeight="170.0" prefWidth="397.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <bottom>
             <Button fx:id="createServer" mnemonicParsing="false" onAction="#createServer" text="Créer serveur" BorderPane.alignment="CENTER">
                <BorderPane.margin>

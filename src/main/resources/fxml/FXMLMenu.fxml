@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane id="AnchorPane" prefHeight="209.0" prefWidth="165.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fxml.controller.FXMLMenuController">
+<AnchorPane id="AnchorPane" prefHeight="220.0" prefWidth="270.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fxml.controller.FXMLMenuController">
    <children>
       <VBox alignment="CENTER" layoutX="43.0" layoutY="15.0" prefHeight="215.0" prefWidth="155.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
